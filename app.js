@@ -5,33 +5,46 @@ C({
 
 room01 = function(){
 
+mouse = C({
+	Location: { x:0, y:0 },
+	Translate: { x: -0.5, y: -0.5 },
+	Mouse: {},
+})
+
 player = C({
 	Drawable: {},
+	Angle: { value: 0 },
+	Facing: { entity: mouse },
 	Location: {x:0,y:0},
 	Velocity: {x:0,y:0},
-	Dimensions: { width: 20, height: 20},
+	Friction: { value: 0 },
+	Dimensions: { width: 32, height: 32},
 	Sprite: { image: s_player },
 	KeyboardActivated: {
 		'A|LEFT': {
-			AddVelocity: { x: -0.1 }
+			AddVelocity: { x: -3 }
 		},
 		'D|RIGHT': {
-			AddVelocity: { x: 0.1 }
+			AddVelocity: { x: 3 }
 		},
 		'W|UP': {
-			AddVelocity: { y: -0.1 }
+			AddVelocity: { y: -3 }
 		},
 		'S|DOWN': {
-			AddVelocity: { y: 0.1 }
+			AddVelocity: { y: 3 }
 		}
 	}
 })
 
 use = [
 	'Screen',
+	'Mouse',
+	'Translate',
 	'KeyboardActivated',
 	'AddVelocity',
+	'Facing',
 	'Move',
+	'Friction',
 	'Draw',
 	'CleanUp'
 ]

@@ -28,6 +28,32 @@ systems = {
 		})
 	},
 
+	Mouse: (function(){
+		var mouse = {x:0,y:0}
+		window.onmousemove = function(e){
+			mouse.x = e.clientX
+			mouse.y = e.clientY
+		}
+		return function(){
+			_.each(C('Mouse'),function(synced,id){
+				var p = C('Location',id)
+				p.x = mouse.x
+				p.y = mouse.y
+			})
+		}
+	}()),
+
+	Translate: function(){
+		var screenDim = C('Screen',1).el
+
+		_.each(C('Translate'),function(translate,id){
+			var p = C('Location',id)
+
+			p.x = p.x + (translate.x || 0) * screenDim.width
+			p.y = p.y + (translate.y || 0) * screenDim.height
+		})
+	},
+
 	AddVelocity: function(){
 		_.each(C('AddVelocity'),function(add,id){
 			var v = C('Velocity',id)
@@ -44,6 +70,23 @@ systems = {
 		})
 	},
 
+	Friction: function(){
+		_.each(C('Friction'),function(friction,id){
+			var v = C('Velocity',id)
+			v.x *= friction.value
+			v.y *= friction.value
+		})
+	},
+
+	Facing: function(){
+		_.each(C('Facing'),function(facing,id){
+			var other = C('Location',facing.entity)
+			var p = C('Location',id)
+			//console.log(other,p)
+			C('Angle',id).value = Math.atan2(other.y-p.y, other.x-p.x)
+		})
+	},
+
 	Draw: function(){
 		var canvas = C('Screen',1).el
 		var con = canvas.getContext('2d')
@@ -51,13 +94,19 @@ systems = {
 		_.each(C('Sprite'),function(sprite,id){
 			var p = C('Location',id)
 			var d = C('Dimensions',id)
+			var angle = C('Angle',id).value
 
+			con.save()
+			con.translate(p.x,p.y)
+			con.rotate(angle)
 			con.drawImage(
 				sprite.image,
-				p.x - d.width/2,
-				p.y - d.height/2,
+				0-d.width/2,
+				0-d.height/2,
 				d.width, d.height
 			)
+			con.restore()
+
 		})
 	},
 

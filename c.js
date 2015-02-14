@@ -61,7 +61,7 @@
 	}
 
 	var getEntitityComponentsOfType = function(type,entity){
-		return C.components[type][entity] || {}
+		return (C.components[type] || {})[entity] || {}
 	}
 
 	var routes = {
