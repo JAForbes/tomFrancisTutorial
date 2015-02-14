@@ -41,10 +41,16 @@ player = C({
 			size_variation: 0,
 			spread: 0,
 			speed_range: [10,10],
-			image: s_bullet
+			image: s_bullet,
+			components: {
+				Collideable: {},
+				GarbageCollected: {},
+				SAT: {}
+			}
 		}, every: 25, count: 0 }
 	},
 	Collideable: {},
+	SAT: {},
 	GarbageCollected: {}
 })
 
@@ -57,8 +63,9 @@ enemy = C({
 	Dimensions: { width: 64, height: 64 },
 	Sprite: { image: s_enemy },
 	GarbageCollected: {},
-	BounceBox: { x:-400, y:-400, width: 800, height: 800 },
-	Collideable: {}
+	BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+	Collideable: {},
+	SAT: {}
 })
 
 use = [
@@ -75,6 +82,7 @@ use = [
 	'Move',
 //	'Collideable',
 //	'Collided',
+	'SAT_sync',
 	'Friction',
 	'Draw',
 	'GarbageCollection',

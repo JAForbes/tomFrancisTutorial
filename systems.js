@@ -214,18 +214,31 @@ systems = {
 				Velocity: { x: 0, y: 0 },
 				VelocitySyncedWithAngle: {},
 				Speed: { value: _.random(shoot.speed_range[0],shoot.speed_range[1]) },
-				Collideable: {},
-				GarbageCollected: {},
 			})
 
 			systems.VelocitySyncedWithAngle()
-
+			C(shoot.components,bullet)
 			//spawn bullet ahead of player
 			var p = C('Location',bullet)
 			var v = C('Velocity', bullet)
 
 			p.x += v.x * shoot.spawn_radius
 			p.y += v.y * shoot.spawn_radius
+		})
+	},
+
+	SAT_sync: function(){
+		_.each(C('SAT'),function(sat,id){
+
+			if( !sat.box ) {
+				sat.box = new SAT.Box()
+			}
+
+			var d = C('Dimensions',id)
+
+			sat.box.pos = C('Location',id)
+			sat.box.w = d.width
+			sat.box.h = d.height
 		})
 	},
 
