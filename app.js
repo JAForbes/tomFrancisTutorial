@@ -16,7 +16,7 @@ player = C({
 	Facing: { entity: mouse },
 	Location: {x:0,y:0},
 	Velocity: {x:0,y:0},
-	Friction: { value: 0 },
+	Friction: { value: 0.4 },
 	Dimensions: { width: 32, height: 32},
 	Sprite: { image: s_player },
 	KeyboardActivated: {
@@ -34,8 +34,9 @@ player = C({
 		},
 	},
 	ClickActivated: {
-		Shoot: {}
+		Shoot: { component : {}, every: 20, count: 0 }
 	},
+	Collideable: {},
 	GarbageCollected: {}
 })
 
@@ -48,7 +49,8 @@ enemy = C({
 	Dimensions: { width: 64, height: 64 },
 	Sprite: { image: s_enemy },
 	GarbageCollected: {},
-	BounceBox: { x:-400, y:-400, width: 800, height: 800 }
+	BounceBox: { x:-400, y:-400, width: 800, height: 800 },
+	Collideable: {}
 })
 
 use = [
@@ -63,6 +65,8 @@ use = [
 	'Facing',
 	'BounceBox',
 	'Move',
+//	'Collideable',
+//	'Collided',
 	'Friction',
 	'Draw',
 	'GarbageCollection',

@@ -12,6 +12,7 @@
     "e": "git://github.com/JAForbes/e",
     "lodash": "^3.2.0",
     "lodash-fp": "^0.2.0",
-    "ramda": "^0.9.1"
+    "ramda": "^0.9.1",
+    "sat": "git://github.com/jriecken/sat-js"
   }
 }

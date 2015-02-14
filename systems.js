@@ -16,7 +16,6 @@ systems = {
 
 	ClickActivated: (function(){
 		var down = 0
-
 		window.onmousedown = function(e){
 			down = 1
 		}
@@ -24,11 +23,15 @@ systems = {
 			down = 0
 		}
 		return function(){
+
+
 			if(down){
 				down++
 				_.each(C('ClickActivated'), function(clickActivated,id){
 					_.each(clickActivated, function(component, componentName){
-						C(componentName, component, id)
+						if( (down-2) % component.every == 0){
+							C(componentName, component.component, id)
+						}
 					})
 				})
 			}
@@ -141,12 +144,58 @@ systems = {
 		})
 	},
 
+	Collideable: function(){
+		test = function(a,b){
+			var aP = C('Location',a)
+			var bP = C('Location',b)
+			var aD = C('Dimensions',a)
+			var bD = C('Dimensions',b)
+
+			var b1 = new SAT.Box(
+				new SAT.Vector(
+					aP.x-aD.width/2,
+					aP.y-aD.height/2
+				),
+				aD.width, aD.height
+			)
+			var b2 = new SAT.Box(
+				new SAT.Vector(
+					bP.x-bD.width/2,
+					bP.y-bD.height/2
+				),
+				bD.width, bD.height
+			)
+
+			var response = new SAT.Response()
+
+
+			return SAT.testPolygonPolygon(b1.toPolygon(),b2.toPolygon(),response) && response;
+		}
+		_.each(C('Collideable'), function(collideable, a){
+		_.each(C('Collideable'),function(collideable, b){
+			if( a != b) {
+				var response = test(a,b)
+				if(response){
+					C('Collided',{ against: b , response: response }, a)
+					C('Collided',{ against: a }, b)
+				}
+			}
+		})
+		})
+	},
+
+	Collided: function(){
+		_.each(C('Collided'),function(collided,id){
+
+		})
+	},
+
 	GarbageCollection: function(){
-		var screen = C('Screen',1).el
+		var screen = C('Screen',1)
+		var canvas = screen.el
 		_.each(C('GarbageCollected'),function(gc, id){
 			var p = C('Location',id)
-
-			if( Math.abs(p.x) > screen.width *screen.translate[0] || Math.abs(p.y) > screen.height * screen.translate[1]){
+			if( Math.abs(p.x) > canvas.width *screen.translate[0] || Math.abs(p.y) > canvas.height * screen.translate[1]){
 				C(id,null)
 			}
 		})
@@ -154,16 +203,20 @@ systems = {
 
 	Shoot: function(){
 		_.each(C('Shoot'),function(shoot,id){
-
+			var p = C('Location',id)
+			var size = 3 + _.random(10)
+			var angle = _.clone( C('Angle',id)).value
 			var bullet = C({
-				Location: _.clone( C('Location',id)),
-				Angle: _.clone( C('Angle',id)),
+				Location: {x: p.x + _.random(-0.5,0.5), y: p.y + _.random(-0.5,0.5) },
+				Angle: { value: angle + _.random(-0.3,0.3)},
 				Sprite: { image: s_bullet },
-				Dimensions: { width: 32, height: 32 },
+				Dimensions: { width: size, height: size },
 				Velocity: { x: 0, y: 0 },
 				VelocitySyncedWithAngle: {},
-				Speed: { value: 5 },
-				GarbageCollected: {}
+				Speed: { value: _.random(3,5) },
+				Collideable: { ignore: ['Bullet'] },
+				GarbageCollected: {},
+				Bullet: {}
 			})
 
 			systems.VelocitySyncedWithAngle()
@@ -185,14 +238,10 @@ systems = {
 
 
 			if(	p.x + d.width/2 > bb.x + bb.width || p.x - d.width/2 < bb.x ){
-				console.log('outside x')
 				v.x *= -1
-				//p.x += v.x * 10
 			}
 			if(p.y + d.height/2 > bb.y + bb.height || p.y - d.height/2 < bb.y ) {
-				console.log('outside y')
-					v.y *= -1
-					//p.y += v.y * 10
+				v.y *= -1
 			}
 		})
 	},
@@ -200,5 +249,6 @@ systems = {
 	CleanUp: function(){
 		delete C.components.AddVelocity
 		delete C.components.Shoot
+		delete C.components.Collided
 	}
 }
