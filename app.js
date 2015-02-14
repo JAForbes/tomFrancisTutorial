@@ -3,10 +3,8 @@ systems = {
 		_.each(C('Screen'),function(screen,id){
 			screen.el.width = window.innerWidth * screen.width
 			screen.el.height = window.innerHeight * screen.height
-			var con = screen.el.getContext('2d')
 
-			con.translate.apply(con, screen.translate)
-			con.translate(screen.translate[0] * window.innerWidth,screen.translate[0] *window.innerHeight)
+			screen.con.translate(screen.translate[0] * window.innerWidth,screen.translate[0] *window.innerHeight)
 		})
 	},
 
@@ -19,6 +17,22 @@ systems = {
 						})
 					}
 				})
+		})
+	},
+
+	AddVelocity: function(){
+		_.each(C('AddVelocity'),function(add,id){
+			var v = C('Velocity',id)
+			v.x += add.x || 0
+			v.y += add.y || 0
+		})
+	},
+
+	Move: function(){
+		_.each(C('Velocity'),function(v,id){
+			var p = C('Location',id);
+			p.x += v.x || 0
+			p.y += v.y || 0
 		})
 	},
 
@@ -37,11 +51,15 @@ systems = {
 				d.width, d.height
 			)
 		})
+	},
+
+	CleanUp: function(){
+		delete C.components.AddVelocity
 	}
 }
 
 C({
-	Screen: { width: 1, height: 1, el: document.querySelector('canvas'), translate: [0.5, 0.5] }
+	Screen: { width: 1, height: 1, el: document.querySelector('canvas'), con: document.querySelector('canvas').getContext('2d'), translate: [0.5, 0.5] }
 })
 
 player = C({
@@ -51,16 +69,16 @@ player = C({
 	Dimensions: { width: 20, height: 20},
 	KeyboardActivated: {
 		'LEFT': {
-			AddVelocity: { x: -0.5 }
+			AddVelocity: { x: -0.1 }
 		},
 		'RIGHT': {
-			AddVelocity: { x: 0.5 }
+			AddVelocity: { x: 0.1 }
 		},
 		'UP': {
-			AddVelocity: { y: 0.5 }
+			AddVelocity: { y: -0.1 }
 		},
 		'DOWN': {
-			AddVelocity: { y: -0.5 }
+			AddVelocity: { y: 0.1 }
 		}
 	}
 })
@@ -68,7 +86,10 @@ player = C({
 use = [
 	'Screen',
 	'KeyboardActivated',
-	'Draw'
+	'AddVelocity',
+	'Move',
+	'Draw',
+	'CleanUp'
 ]
 
 loop = function(){
