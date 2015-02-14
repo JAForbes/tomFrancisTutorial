@@ -34,7 +34,15 @@ player = C({
 		},
 	},
 	ClickActivated: {
-		Shoot: { component : { jitter: 0, size: 10, size_variation: 1, spread: 0, speed_range: [5,5] }, every: 1, count: 0 }
+		Shoot: { component : {
+			spawn_radius: 5,
+			jitter: 0,
+			size: 10,
+			size_variation: 0,
+			spread: 0,
+			speed_range: [10,10],
+			image: s_bullet
+		}, every: 25, count: 0 }
 	},
 	Collideable: {},
 	GarbageCollected: {}

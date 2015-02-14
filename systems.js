@@ -203,21 +203,19 @@ systems = {
 
 	Shoot: function(){
 		_.each(C('Shoot'),function(shoot,id){
-			//Shoot: { component : { size_variation: 1.5, spread: 0.15, speed_range: [3,5] }, every: 20, count: 0 }
 			var p = C('Location',id)
 			var size = shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
 			var angle = _.clone( C('Angle',id)).value
 			var bullet = C({
 				Location: {x: p.x + _.random(-shoot.jitter,shoot.jitter), y: p.y + _.random(-shoot.jitter,shoot.jitter) },
 				Angle: { value: angle + _.random(shoot.spread * -1, shoot.spread * 1)},
-				Sprite: { image: s_bullet },
+				Sprite: { image: shoot.image },
 				Dimensions: { width: size, height: size },
 				Velocity: { x: 0, y: 0 },
 				VelocitySyncedWithAngle: {},
 				Speed: { value: _.random(shoot.speed_range[0],shoot.speed_range[1]) },
 				Collideable: {},
 				GarbageCollected: {},
-				Bullet: {}
 			})
 
 			systems.VelocitySyncedWithAngle()
@@ -226,8 +224,8 @@ systems = {
 			var p = C('Location',bullet)
 			var v = C('Velocity', bullet)
 
-			p.x += v.x * 5
-			p.y += v.y * 5
+			p.x += v.x * shoot.spawn_radius
+			p.y += v.y * shoot.spawn_radius
 		})
 	},
 
