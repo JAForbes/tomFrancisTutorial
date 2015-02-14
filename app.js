@@ -44,7 +44,11 @@ player = C({
 			image: s_bullet,
 			components: {
 				GarbageCollected: {},
-				SAT: {}
+				SAT: {},
+				ShrinkDamager: {},
+				CollideActivated: {
+					RemoveVulnerable: {}
+				}
 			}
 		}, every: 25, count: 0 }
 	},
@@ -62,7 +66,11 @@ enemy = C({
 	Sprite: { image: s_enemy },
 	GarbageCollected: {},
 	BounceBox: { x:-300, y:-300, width: 600, height: 600 },
-	SAT: {}
+	SAT: {},
+	CollideActivated: {
+		ShrinkVulnerable: {}
+	},
+	Remover: { value: true},
 })
 
 use = [
@@ -83,6 +91,8 @@ use = [
 	'Friction',
 	'Draw',
 	'GarbageCollection',
+	'RemoveVulnerable',
+	'Remove',
 	'CleanUp'
 ]
 

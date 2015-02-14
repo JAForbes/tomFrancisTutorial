@@ -165,7 +165,25 @@ systems = {
 
 	Collided: function(){
 		_.each(C('Collided'),function(collided,id){
-			console.log('collided')
+			_.each(C('CollideActivated',id),function(component,componentName){
+				C(componentName,component,id)
+			})
+		})
+	},
+
+	RemoveVulnerable: function(){
+		_.each(C('RemoveVulnerable'),function(vulnerable,id){
+
+			var collidedWith = C('Collided',id).against
+			if( C('Remover',collidedWith).value ){
+				C('Remove',{},id)
+			}
+		})
+	},
+
+	Remove: function(){
+		_.each(C('Remove'), function(remove,id){
+			console.log('Remove')
 			C(id,null)
 		})
 	},
@@ -176,7 +194,7 @@ systems = {
 		_.each(C('GarbageCollected'),function(gc, id){
 			var p = C('Location',id)
 			if( Math.abs(p.x) > canvas.width *screen.translate[0] || Math.abs(p.y) > canvas.height * screen.translate[1]){
-				C(id,null)
+				C(id,'Remove',{})
 			}
 		})
 	},
@@ -242,5 +260,7 @@ systems = {
 		delete C.components.AddVelocity
 		delete C.components.Shoot
 		delete C.components.Collided
+		delete C.components.ShrinkVulnerable
+		delete C.components.RemoveVulnerable
 	}
 }
