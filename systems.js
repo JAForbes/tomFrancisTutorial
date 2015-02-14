@@ -144,38 +144,17 @@ systems = {
 		})
 	},
 
-	Collideable: function(){
-		test = function(a,b){
-			var aP = C('Location',a)
-			var bP = C('Location',b)
-			var aD = C('Dimensions',a)
-			var bD = C('Dimensions',b)
-
-			var b1 = new SAT.Box(
-				new SAT.Vector(
-					aP.x-aD.width/2,
-					aP.y-aD.height/2
-				),
-				aD.width, aD.height
-			)
-			var b2 = new SAT.Box(
-				new SAT.Vector(
-					bP.x-bD.width/2,
-					bP.y-bD.height/2
-				),
-				bD.width, bD.height
-			)
-
-			var response = new SAT.Response()
-
-
-			return SAT.testPolygonPolygon(b1.toPolygon(),b2.toPolygon(),response) && response;
-		}
-		_.each(C('Collideable'), function(collideable, a){
-		_.each(C('Collideable'),function(collideable, b){
+	SAT: function(){
+		_.each(C('SAT'), function(satA, a){
+		_.each(C('SAT'),function(satB, b){
 			if( a != b) {
-				var response = test(a,b)
-				if(response){
+				var response = new SAT.Response()
+				var collided = SAT.testPolygonPolygon(
+					satA.box.toPolygon(),
+					satB.box.toPolygon(),
+					response
+				) && response
+				if(collided){
 					C('Collided',{ against: b , response: response }, a)
 					C('Collided',{ against: a }, b)
 				}
@@ -186,7 +165,8 @@ systems = {
 
 	Collided: function(){
 		_.each(C('Collided'),function(collided,id){
-
+			console.log('collided')
+			C(id,null)
 		})
 	},
 
