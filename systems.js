@@ -14,6 +14,27 @@ systems = {
 		})
 	},
 
+	ClickActivated: (function(){
+		var down = 0
+
+		window.onmousedown = function(e){
+			down = 1
+		}
+		window.onmouseup = function(e){
+			down = 0
+		}
+		return function(){
+			if(down){
+				down++
+				_.each(C('ClickActivated'), function(clickActivated,id){
+					_.each(clickActivated, function(component, componentName){
+						C(componentName, component, id)
+					})
+				})
+			}
+		}
+	}()),
+
 	KeyboardActivated: function(){
 		_.each(C('KeyboardActivated'),function(kb,id){
 			_.each(kb,function(componentsToActivate, keyNames){
@@ -59,6 +80,16 @@ systems = {
 			var v = C('Velocity',id)
 			v.x += add.x || 0
 			v.y += add.y || 0
+		})
+	},
+
+	VelocitySyncedWithAngle: function(){
+		_.each( C('VelocitySyncedWithAngle'), function(synced, id){
+			var v = C('Velocity',id)
+			var a = C('Angle',id).value
+			var speed = 5
+			v.x = Math.cos(a) * 5
+			v.y = Math.sin(a) * 5 
 		})
 	},
 
@@ -110,7 +141,24 @@ systems = {
 		})
 	},
 
+	Shoot: function(){
+		_.each(C('Shoot'),function(shoot,id){
+
+			var bullet = C({
+				Location: _.clone( C('Location',id)),
+				Angle: _.clone( C('Angle',id)),
+				Sprite: { image: s_bullet },
+				Dimensions: { width: 32, height: 32 },
+				Velocity: { x: 10, y: 0 },
+				VelocitySyncedWithAngle: {}
+			})
+
+			//console.log(bullet)
+		})
+	},
+
 	CleanUp: function(){
 		delete C.components.AddVelocity
+		delete C.components.Shoot
 	}
 }

@@ -32,7 +32,10 @@ player = C({
 		},
 		'S|DOWN': {
 			AddVelocity: { y: 3 }
-		}
+		},
+	},
+	ClickActivated: {
+		Shoot: {}
 	}
 })
 
@@ -40,8 +43,11 @@ use = [
 	'Screen',
 	'Mouse',
 	'Translate',
+	'ClickActivated',
 	'KeyboardActivated',
+	'Shoot',
 	'AddVelocity',
+	'VelocitySyncedWithAngle',
 	'Facing',
 	'Move',
 	'Friction',
