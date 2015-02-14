@@ -36,7 +36,8 @@ player = C({
 	},
 	ClickActivated: {
 		Shoot: {}
-	}
+	},
+	GarbageCollected: {}
 })
 
 use = [
@@ -52,6 +53,7 @@ use = [
 	'Move',
 	'Friction',
 	'Draw',
+	'GarbageCollection',
 	'CleanUp'
 ]
 

@@ -64,6 +64,13 @@
 		return (C.components[type] || {})[entity] || {}
 	}
 
+	var deleteEntity = function(entity){
+		return Object.keys(C.components)
+		.forEach(function(categoryName){
+			delete C.components[categoryName][entity]
+		})
+	}
+
 	var routes = {
 		"StrObjNum": addComponent,
 		"StrObjStr": addComponent,
@@ -74,11 +81,12 @@
 		"StrStr": getEntitityComponentsOfType,
 		"Num": getEntityComponents,
 		"": getAllComponents,
+		"NumNul": deleteEntity,
+		"StrNul": deleteEntity
 	}
 
 	C = function(){
 		var sig = signature.apply(null,arguments)
-
 		var route = routes[sig]
 		if(route){
 			return route.apply(null,arguments)

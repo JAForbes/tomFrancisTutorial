@@ -141,6 +141,16 @@ systems = {
 		})
 	},
 
+	GarbageCollection: function(){
+		_.each(C('GarbageCollected'),function(gc, id){
+			var p = C('Location',id)
+
+			if( Math.abs(p.x) > 100 || Math.abs(p.y) > 100){
+				C(id,null)
+			}
+		})
+	},
+
 	Shoot: function(){
 		_.each(C('Shoot'),function(shoot,id){
 
@@ -149,12 +159,20 @@ systems = {
 				Angle: _.clone( C('Angle',id)),
 				Sprite: { image: s_bullet },
 				Dimensions: { width: 32, height: 32 },
-				Velocity: { x: 10, y: 0 },
+				Velocity: { x: 0, y: 0 },
 				VelocitySyncedWithAngle: {},
-				Speed: { value: 5}
+				Speed: { value: 5 },
+				GarbageCollected: {}
 			})
 
-			//console.log(bullet)
+			systems.VelocitySyncedWithAngle()
+
+			//spawn bullet ahead of player
+			var p = C('Location',bullet)
+			var v = C('Velocity', bullet)
+
+			p.x += v.x * 5
+			p.y += v.y * 5
 		})
 	},
 
