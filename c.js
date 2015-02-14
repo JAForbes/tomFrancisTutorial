@@ -1,0 +1,99 @@
+(function(){
+
+	var uid = 0;
+
+	var type = function(val){
+		return ({}).toString.call(val).slice(8,-1)
+	}
+
+	var signature = function(){
+		var sig = '';
+		for(var i = 0; i < arguments.length; i++){
+			var arg = arguments[i];
+			sig +=type(arg).substring(0,3)
+		}
+		return sig
+	}
+
+	var extend = function(target,source){
+		for(var key in source){
+			target[key] = source[key]
+		}
+		return target
+	}
+
+	var addComponent = function(componentName, componentData, entity_id){
+
+		var category = (C.components[componentName] = C.components[componentName] || {})
+		var current_component = category[entity_id] = category[entity_id] || {}
+
+		return extend(
+			current_component,
+			componentData
+		)
+	}
+
+	var addComponents = function(newComponents, entity_id){
+		entity_id = entity_id || ++uid
+		Object.keys(newComponents).forEach(function(componentName){
+			addComponent(componentName, newComponents[componentName], entity_id)
+		})
+		return entity_id
+	}
+
+	var getEntityComponents = function(entity){
+		return Object.keys(C.components)
+		.reduce(function(entityComponents,componentName){
+			var component = C.components[componentName][entity]
+			if(component){
+				entityComponents[componentName] = component
+			}
+			return entityComponents
+		},{})
+	}
+
+	var getAllComponents = function(){
+		return C.components
+	}
+
+	var getComponentsOfType = function(type){
+		return C.components[type] || {}
+	}
+
+	var getEntitityComponentsOfType = function(type,entity){
+		return C.components[type][entity] || {}
+	}
+
+	var routes = {
+		"StrObjNum": addComponent,
+		"StrObjStr": addComponent,
+		"Obj": addComponents,
+		"ObjNum": addComponents,
+		"Str": getComponentsOfType,
+		"StrNum": getEntitityComponentsOfType,
+		"StrStr": getEntitityComponentsOfType,
+		"Num": getEntityComponents,
+		"": getAllComponents,
+	}
+
+	C = function(){
+		var sig = signature.apply(null,arguments)
+
+		var route = routes[sig]
+		if(route){
+			return route.apply(null,arguments)
+		} else if (arguments.length > 1) {
+			//allow for invalid extra arguments
+			//e.g. NumNum becomes Num
+			([]).pop.apply(arguments)
+			return C.apply(null,arguments)
+		} else {
+			return sig + " is not a valid argument signature.";
+		}
+	}
+
+	C = C.bind(C)
+	C.components = {}
+
+
+}())
