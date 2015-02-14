@@ -12,7 +12,6 @@ mouse = C({
 })
 
 player = C({
-	Drawable: {},
 	Angle: { value: 0 },
 	Facing: { entity: mouse },
 	Location: {x:0,y:0},
@@ -40,6 +39,18 @@ player = C({
 	GarbageCollected: {}
 })
 
+enemy = C({
+	Angle: { value: 0},
+	Facing: { entity: player},
+	Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
+	Velocity: { x:_.random(-2,2), y:_.random(-2,2) },
+
+	Dimensions: { width: 64, height: 64 },
+	Sprite: { image: s_enemy },
+	GarbageCollected: {},
+	BounceBox: { x:-400, y:-400, width: 800, height: 800 }
+})
+
 use = [
 	'Screen',
 	'Mouse',
@@ -50,6 +61,7 @@ use = [
 	'AddVelocity',
 	'VelocitySyncedWithAngle',
 	'Facing',
+	'BounceBox',
 	'Move',
 	'Friction',
 	'Draw',

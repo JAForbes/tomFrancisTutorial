@@ -142,10 +142,11 @@ systems = {
 	},
 
 	GarbageCollection: function(){
+		var screen = C('Screen',1).el
 		_.each(C('GarbageCollected'),function(gc, id){
 			var p = C('Location',id)
 
-			if( Math.abs(p.x) > 100 || Math.abs(p.y) > 100){
+			if( Math.abs(p.x) > screen.width *screen.translate[0] || Math.abs(p.y) > screen.height * screen.translate[1]){
 				C(id,null)
 			}
 		})
@@ -173,6 +174,26 @@ systems = {
 
 			p.x += v.x * 5
 			p.y += v.y * 5
+		})
+	},
+
+	BounceBox: function(){
+		_.each(C('BounceBox'),function(bb,id){
+			var p = C('Location',id)
+			var d = C('Dimensions',id)
+			var v = C('Velocity',id)
+
+
+			if(	p.x + d.width/2 > bb.x + bb.width || p.x - d.width/2 < bb.x ){
+				console.log('outside x')
+				v.x *= -1
+				//p.x += v.x * 10
+			}
+			if(p.y + d.height/2 > bb.y + bb.height || p.y - d.height/2 < bb.y ) {
+				console.log('outside y')
+					v.y *= -1
+					//p.y += v.y * 10
+			}
 		})
 	},
 
