@@ -16,12 +16,14 @@ systems = {
 
 	KeyboardActivated: function(){
 		_.each(C('KeyboardActivated'),function(kb,id){
-			_.each(kb,function(componentsToActivate, keyName){
-				if(Keys[keyName]){
-					_.each(componentsToActivate,function(component,componentName){
-						C(componentName,component,id)
-					})
-				}
+			_.each(kb,function(componentsToActivate, keyNames){
+				keyNames.split('|').map(function(keyName){
+					if(Keys[keyName]){
+						_.each(componentsToActivate,function(component,componentName){
+							C(componentName,component,id)
+						})
+					}
+				})
 			})
 		})
 	},
