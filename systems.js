@@ -87,9 +87,9 @@ systems = {
 		_.each( C('VelocitySyncedWithAngle'), function(synced, id){
 			var v = C('Velocity',id)
 			var a = C('Angle',id).value
-			var speed = 5
-			v.x = Math.cos(a) * 5
-			v.y = Math.sin(a) * 5 
+			var speed = C('Speed',id).value
+			v.x = Math.cos(a) * speed
+			v.y = Math.sin(a) * speed
 		})
 	},
 
@@ -150,7 +150,8 @@ systems = {
 				Sprite: { image: s_bullet },
 				Dimensions: { width: 32, height: 32 },
 				Velocity: { x: 10, y: 0 },
-				VelocitySyncedWithAngle: {}
+				VelocitySyncedWithAngle: {},
+				Speed: { value: 5}
 			})
 
 			//console.log(bullet)
