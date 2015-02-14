@@ -203,18 +203,19 @@ systems = {
 
 	Shoot: function(){
 		_.each(C('Shoot'),function(shoot,id){
+			//Shoot: { component : { size_variation: 1.5, spread: 0.15, speed_range: [3,5] }, every: 20, count: 0 }
 			var p = C('Location',id)
-			var size = 3 + _.random(10)
+			var size = shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
 			var angle = _.clone( C('Angle',id)).value
 			var bullet = C({
-				Location: {x: p.x + _.random(-0.5,0.5), y: p.y + _.random(-0.5,0.5) },
-				Angle: { value: angle + _.random(-0.3,0.3)},
+				Location: {x: p.x + _.random(-shoot.jitter,shoot.jitter), y: p.y + _.random(-shoot.jitter,shoot.jitter) },
+				Angle: { value: angle + _.random(shoot.spread * -1, shoot.spread * 1)},
 				Sprite: { image: s_bullet },
 				Dimensions: { width: size, height: size },
 				Velocity: { x: 0, y: 0 },
 				VelocitySyncedWithAngle: {},
-				Speed: { value: _.random(3,5) },
-				Collideable: { ignore: ['Bullet'] },
+				Speed: { value: _.random(shoot.speed_range[0],shoot.speed_range[1]) },
+				Collideable: {},
 				GarbageCollected: {},
 				Bullet: {}
 			})
