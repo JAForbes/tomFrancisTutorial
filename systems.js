@@ -151,7 +151,7 @@ systems = {
 					relevant[id] = true
 				})
 				return relevant;
-			},(collidesWith.entities = collidesWith.entities || {}) )
+			},(collidesWith.entities = {}) )
 
 		})
 	},
@@ -165,7 +165,6 @@ systems = {
 				processed[b+a] = true
 				var satA = C('SAT',a)
 				var satB = C('SAT',b)
-
 				var response = new SAT.Response()
 				var collided = SAT.testPolygonPolygon(
 					satA.box.toPolygon(),
@@ -215,9 +214,31 @@ systems = {
 		})
 	},
 
+	ShrinkVulnerable: function(){
+		_.each(C('ShrinkVulnerable'),function(vulnerable,id){
+
+			_.each(C('Collided',id).collisions, function(collision,against){
+				if( C.components.Shrinker[against] ) {
+					C('Shrink',vulnerable.settings,id)
+				}
+
+			})
+		})
+	},
+
+	Shrink: function(){
+		_.each(C('Shrink'), function(shrink, id){
+			var d = C('Dimensions',id)
+			d.width *= shrink.ratio
+			d.height *= shrink.ratio
+			if(d.width < shrink.min_size || d.height < shrink.min_size){
+				C('Remove',{},id)
+			}
+		})
+	},
+
 	Remove: function(){
 		_.each(C('Remove'), function(remove,id){
-			console.log('Remove')
 			C(id,null)
 		})
 	},
@@ -296,5 +317,6 @@ systems = {
 		delete C.components.Collided
 		delete C.components.ShrinkVulnerable
 		delete C.components.RemoveVulnerable
+		delete C.components.Shrink
 	}
 }

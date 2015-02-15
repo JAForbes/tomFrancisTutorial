@@ -64,7 +64,7 @@ player = C({
 			components: {
 				GarbageCollected: {},
 				SAT: {},
-				ShrinkDamager: {},
+				Shrinker: {},
 				CollidesWith: { types: ['Remover'] },
 				CollideActivated: {
 					RemoveVulnerable: {}
@@ -73,7 +73,6 @@ player = C({
 		}, every: 1, count: 0 }
 	},
 	SAT: {},
-	GarbageCollected: {}
 })
 
 _.times(50, function(){
@@ -90,7 +89,7 @@ _.times(50, function(){
 		SAT: {},
 		CollidesWith: { types: ['Shrinker'] } ,
 		CollideActivated: {
-			ShrinkVulnerable: {}
+			ShrinkVulnerable: { settings: {min_size: 32, ratio: 0.9 }}
 		},
 		Remover: {},
 	})
@@ -117,6 +116,8 @@ use = [
 	'Friction',
 	'Draw',
 	'GarbageCollection',
+	'ShrinkVulnerable',
+	'Shrink',
 	'RemoveVulnerable',
 	'Remove',
 	'CleanUp'
