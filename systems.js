@@ -160,7 +160,6 @@ systems = {
 		var processed = {}
 		_.each(C('CollidesWith'), function(collidesWith,a){
 		_.each(collidesWith.entities, function(relevant,b){
-
 			if( a != b && !processed[a+':'+b]) {
 				processed[b+':'+a] = true
 				var satA = C('SAT',a)
@@ -276,6 +275,25 @@ systems = {
 		})
 	},
 
+	QuickSave: function(){
+		_.each(C('QuickSave'), function(qSave,id){
+
+			C('Save',id).state = _(C()).cloneDeep()
+		})
+	},
+
+	QuickLoad: function(){
+		_.each(C('QuickLoad'), function(qLoad,id){
+			var save = C('Save',id).state
+
+			if( !_.isEmpty(save) ){
+				C.components = _.cloneDeep(save)
+				C.components['Save'][id].state = save
+			}
+
+		})
+	},
+
 	GarbageCollection: function(){
 		var screen = C('Screen',1)
 		var canvas = screen.el
@@ -316,9 +334,7 @@ systems = {
 	SAT_sync: function(){
 		_.each(C('SAT'),function(sat,id){
 
-			if( !sat.box ) {
-				sat.box = new SAT.Box()
-			}
+			sat.box = new SAT.Box()
 
 			var d = C('Dimensions',id)
 
@@ -352,5 +368,7 @@ systems = {
 		delete C.components.ShrinkVulnerable
 		delete C.components.RemoveVulnerable
 		delete C.components.Shrink
+		delete C.components.QuickSave
+		delete C.components.QuickLoad
 	}
 }
