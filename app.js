@@ -70,29 +70,33 @@ player = C({
 					RemoveVulnerable: {}
 				}
 			}
-		}, every: Infinity, count: 0 }
+		}, every: 1, count: 0 }
 	},
 	SAT: {},
 	GarbageCollected: {}
 })
 
-enemy = C({
-	Angle: { value: 0},
-	Facing: { entity: player},
-	Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
-	Velocity: { x:_.random(-0.5,0.5), y:_.random(-0.5,0.5) },
+_.times(50, function(){
+	enemy = C({
+		Angle: { value: 0},
+		Facing: { entity: player},
+		Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
+		Velocity: { x:_.random(-0.5,0.5), y:_.random(-0.5,0.5) },
 
-	Dimensions: { width: 64, height: 64 },
-	Sprite: { image: s_enemy },
-	GarbageCollected: {},
-	BounceBox: { x:-300, y:-300, width: 600, height: 600 },
-	SAT: {},
-	CollidesWith: { types: ['Shrinker'] } ,
-	CollideActivated: {
-		ShrinkVulnerable: {}
-	},
-	Remover: {},
+		Dimensions: { width: 64, height: 64 },
+		Sprite: { image: s_enemy },
+		GarbageCollected: {},
+		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+		SAT: {},
+		CollidesWith: { types: ['Shrinker'] } ,
+		CollideActivated: {
+			ShrinkVulnerable: {}
+		},
+		Remover: {},
+	})
 })
+
+
 
 use = [
 	'Screen',
