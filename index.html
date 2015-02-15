@@ -1,26 +1,32 @@
-<style>
-	body {
-		margin: 0;
-	}
-	img {
-		display: none;
-	}
-	canvas {
-		image-rendering: optimizeSpeed;
-		image-rendering: -moz-crisp-edges;
-		image-rendering: -webkit-optimize-contrast;
-		image-rendering: optimize-contrast;
-		-ms-interpolation-mode: nearest-neighbor;
-	}
+<html>
+	<head>
+		<style>
+		body {
+			margin: 0;
+		}
+		img {
+			display: none;
+		}
+		canvas {
+			image-rendering: optimizeSpeed;
+			image-rendering: -moz-crisp-edges;
+			image-rendering: -webkit-optimize-contrast;
+			image-rendering: optimize-contrast;
+			-ms-interpolation-mode: nearest-neighbor;
+		}
 
-</style>
-<canvas></canvas>
-<script src='node_modules/lodash/index.js'></script>
-<script src='node_modules/sat/sat.js'></script>
-<script src='C.js'></script>
-<script src='keys.js'></script>
-<img id='s_player' src='img/player.png'></img>
-<img id='s_bullet' src='img/bullet.png'></img>
-<img id='s_enemy' src='img/enemy.png'></img>
-<script src='systems.js'></script>
-<script src='app.js'></script>
+		</style>
+	</head>
+	<body>
+		<canvas></canvas>
+		<script src='node_modules/lodash/index.js'></script>
+		<script src='node_modules/sat/sat.js'></script>
+		<script src='C.js'></script>
+		<script src='keys.js'></script>
+		<img id='s_player' src='img/player.png'></img>
+		<img id='s_bullet' src='img/bullet.png'></img>
+		<img id='s_enemy' src='img/enemy.png'></img>
+		<script src='systems.js'></script>
+		<script src='app.js'></script>
+	</body>
+</html>
