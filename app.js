@@ -57,9 +57,9 @@ player = C({
 			spawn_radius: 5,
 			jitter: 0,
 			size: 15,
-			size_variation: 0,
-			spread: 0,
-			speed_range: [1,1],
+			size_variation: 5,
+			spread: 0.3,
+			speed_range: [1,5],
 			image: s_bullet,
 			components: {
 				GarbageCollected: {},
