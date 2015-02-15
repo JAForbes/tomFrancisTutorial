@@ -261,7 +261,7 @@ systems = {
 
 	Remove: function(){
 		_.each(C('Remove'), function(remove,id){
-
+			console.log('Removing',id);
 			C(id,null)
 		})
 	},
@@ -300,8 +300,10 @@ systems = {
 		var screen = C('Screen',1)
 		var canvas = screen.el
 		_.each(C('GarbageCollected'),function(gc, id){
+			var camera = C('Location',_.sample(C('Camera')).tracking)
+
 			var p = C('Location',id)
-			if( Math.abs(p.x) > canvas.width *screen.translate[0] || Math.abs(p.y) > canvas.height * screen.translate[1]){
+			if( Math.abs(p.x-camera.x) > canvas.width *screen.translate[0] || Math.abs(p.y-camera.y) > canvas.height * screen.translate[1]){
 				C('Remove',{},id)
 			}
 		})
