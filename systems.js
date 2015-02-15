@@ -228,7 +228,7 @@ systems = {
 		_.each(C('GarbageCollected'),function(gc, id){
 			var p = C('Location',id)
 			if( Math.abs(p.x) > canvas.width *screen.translate[0] || Math.abs(p.y) > canvas.height * screen.translate[1]){
-				C(id,'Remove',{})
+				C('Remove',{},id)
 			}
 		})
 	},
