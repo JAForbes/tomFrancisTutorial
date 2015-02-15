@@ -32,12 +32,31 @@ player = C({
 		'S|DOWN': {
 			AddVelocity: { y: 3 }
 		},
+		" " : {
+			Shoot: {
+				spawn_radius: 5,
+				jitter: 0,
+				size: 50,
+				size_variation: 0,
+				spread: 0,
+				speed_range: [1,1],
+				image: s_bullet,
+				components: {
+					GarbageCollected: {},
+					SAT: {},
+					ShrinkDamager: {},
+					CollideActivated: {
+						RemoveVulnerable: {}
+					}
+				}
+			}
+		}
 	},
 	ClickActivated: {
 		Shoot: { component : {
 			spawn_radius: 5,
 			jitter: 0,
-			size: 100,
+			size: 15,
 			size_variation: 0,
 			spread: 0,
 			speed_range: [1,1],
@@ -60,7 +79,7 @@ enemy = C({
 	Angle: { value: 0},
 	Facing: { entity: player},
 	Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
-	Velocity: { x:_.random(-2,2), y:_.random(-2,2) },
+	Velocity: { x:_.random(-0.5,0.5), y:_.random(-0.5,0.5) },
 
 	Dimensions: { width: 64, height: 64 },
 	Sprite: { image: s_enemy },

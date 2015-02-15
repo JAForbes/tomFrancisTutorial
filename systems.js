@@ -155,8 +155,16 @@ systems = {
 					response
 				) && response
 				if(collided){
-					C('Collided',{ against: b , response: response }, a)
-					C('Collided',{ against: a }, b)
+					var aCollided = C('Collided',a)
+					var bCollided = C('Collided',b)
+
+					;(aCollided.collisions = aCollided.collisions || {})[b] = { response: response }
+
+					;(bCollided.collisions = bCollided.collisions || {})[a] = {}
+
+
+					;(C.components.Collided = C.components.Collided || {})[a] = aCollided
+					;(C.components.Collided = C.components.Collided || {})[b] = bCollided
 				}
 			}
 		})
@@ -165,8 +173,11 @@ systems = {
 
 	Collided: function(){
 		_.each(C('Collided'),function(collided,id){
-			_.each(C('CollideActivated',id),function(component,componentName){
-				C(componentName,component,id)
+
+			_.each(collided.collisions, function(collision, against){
+				_.each(C('CollideActivated',against),function(component,componentName){
+					C(componentName,component,against)
+				})
 			})
 		})
 	},
@@ -174,10 +185,13 @@ systems = {
 	RemoveVulnerable: function(){
 		_.each(C('RemoveVulnerable'),function(vulnerable,id){
 
-			var collidedWith = C('Collided',id).against
-			if( C('Remover',collidedWith).value ){
-				C('Remove',{},id)
-			}
+			_.each(C('Collided',id).collisions, function(collision,against){
+				console.log(collision,against, C.components.Remover[against],id )
+				if( C.components.Remover[against] ) {
+					C('Remove',{},id)
+				}
+
+			})
 		})
 	},
 
