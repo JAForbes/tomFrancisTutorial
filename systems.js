@@ -144,10 +144,26 @@ systems = {
 		})
 	},
 
+	CollidesWith: function(){
+		_.each(C('CollidesWith'), function(collidesWith, id){
+			collidesWith.types.reduce(function(relevant,componentName){
+				Object.keys(C.components[componentName] || {}).map(function(id){
+					relevant[id] = true
+				})
+				return relevant;
+			},(collidesWith.entities = collidesWith.entities || {}) )
+
+		})
+	},
+
 	SAT: function(){
-		_.each(C('SAT'), function(satA, a){
-		_.each(C('SAT'),function(satB, b){
+		_.each(C('CollidesWith'), function(collidesWith,a){
+		_.each(collidesWith.entities, function(relevant,b){
+
 			if( a != b) {
+				var satA = C('SAT',a)
+				var satB = C('SAT',b)
+
 				var response = new SAT.Response()
 				var collided = SAT.testPolygonPolygon(
 					satA.box.toPolygon(),

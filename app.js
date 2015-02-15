@@ -65,11 +65,12 @@ player = C({
 				GarbageCollected: {},
 				SAT: {},
 				ShrinkDamager: {},
+				CollidesWith: { types: ['Remover'] },
 				CollideActivated: {
 					RemoveVulnerable: {}
 				}
 			}
-		}, every: 25, count: 0 }
+		}, every: 1, count: 0 }
 	},
 	SAT: {},
 	GarbageCollected: {}
@@ -86,10 +87,11 @@ enemy = C({
 	GarbageCollected: {},
 	BounceBox: { x:-300, y:-300, width: 600, height: 600 },
 	SAT: {},
+	CollidesWith: { types: ['Shrinker'] } ,
 	CollideActivated: {
 		ShrinkVulnerable: {}
 	},
-	Remover: { value: true},
+	Remover: {},
 })
 
 use = [
@@ -104,6 +106,7 @@ use = [
 	'Facing',
 	'BounceBox',
 	'Move',
+	'CollidesWith',
 	'SAT_sync',
 	'SAT',
 	'Collided',
