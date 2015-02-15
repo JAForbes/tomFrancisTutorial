@@ -202,6 +202,14 @@ systems = {
 		})
 	},
 
+	Camera: function(){
+		_.each( C('Camera'), function(camera, id){
+			var track_position = C('Location',camera.tracking)
+			var screen = C('Screen',id)
+			screen.con.translate(-track_position.x,-track_position.y)
+		})
+	},
+
 	Spawn: function(){
 		_.each(C('Spawn'), function(spawn,id){
 

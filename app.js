@@ -1,5 +1,6 @@
 C({
-	Screen: { width: 1, height: 1, el: document.querySelector('canvas'), con: document.querySelector('canvas').getContext('2d'), translate: [0.5, 0.5] }
+	Screen: { width: 1, height: 1, el: document.querySelector('canvas'), con: document.querySelector('canvas').getContext('2d'), translate: [0.5, 0.5] },
+	Camera: { tracking: 3 }
 })
 
 
@@ -123,6 +124,7 @@ use = [
 	'SAT',
 	'Collided',
 	'Friction',
+	'Camera',
 	'Draw',
 	'GarbageCollection',
 	'ShrinkVulnerable',
