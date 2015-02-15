@@ -157,10 +157,12 @@ systems = {
 	},
 
 	SAT: function(){
+		var processed = {}
 		_.each(C('CollidesWith'), function(collidesWith,a){
 		_.each(collidesWith.entities, function(relevant,b){
 
-			if( a != b) {
+			if( a != b && !processed[a+b]) {
+				processed[b+a] = true
 				var satA = C('SAT',a)
 				var satB = C('SAT',b)
 
@@ -170,17 +172,21 @@ systems = {
 					satB.box.toPolygon(),
 					response
 				) && response
+
 				if(collided){
+
 					var aCollided = C('Collided',a)
-					var bCollided = C('Collided',b)
-
 					;(aCollided.collisions = aCollided.collisions || {})[b] = { response: response }
-
-					;(bCollided.collisions = bCollided.collisions || {})[a] = {}
-
-
 					;(C.components.Collided = C.components.Collided || {})[a] = aCollided
-					;(C.components.Collided = C.components.Collided || {})[b] = bCollided
+
+
+					var bCaresAbout = C('CollidesWith',b) || { entities: {}}
+					var bCaresAboutA = bCaresAbout.entities[a]
+					if( bCaresAboutA ){
+						var bCollided = C('Collided',b)
+						;(C.components.Collided = C.components.Collided || {})[b] = bCollided
+						;(bCollided.collisions = bCollided.collisions || {})[a] = {}
+					}
 				}
 			}
 		})
@@ -189,10 +195,9 @@ systems = {
 
 	Collided: function(){
 		_.each(C('Collided'),function(collided,id){
-
 			_.each(collided.collisions, function(collision, against){
-				_.each(C('CollideActivated',against),function(component,componentName){
-					C(componentName,component,against)
+				_.each(C('CollideActivated',id),function(component,componentName){
+					C(componentName,component,id)
 				})
 			})
 		})
@@ -202,7 +207,6 @@ systems = {
 		_.each(C('RemoveVulnerable'),function(vulnerable,id){
 
 			_.each(C('Collided',id).collisions, function(collision,against){
-				console.log(collision,against, C.components.Remover[against],id )
 				if( C.components.Remover[against] ) {
 					C('Remove',{},id)
 				}

@@ -70,7 +70,7 @@ player = C({
 					RemoveVulnerable: {}
 				}
 			}
-		}, every: 1, count: 0 }
+		}, every: Infinity, count: 0 }
 	},
 	SAT: {},
 	GarbageCollected: {}
