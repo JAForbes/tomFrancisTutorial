@@ -161,8 +161,8 @@ systems = {
 		_.each(C('CollidesWith'), function(collidesWith,a){
 		_.each(collidesWith.entities, function(relevant,b){
 
-			if( a != b && !processed[a+b]) {
-				processed[b+a] = true
+			if( a != b && !processed[a+':'+b]) {
+				processed[b+':'+a] = true
 				var satA = C('SAT',a)
 				var satB = C('SAT',b)
 				var response = new SAT.Response()
@@ -199,6 +199,19 @@ systems = {
 					C(componentName,component,id)
 				})
 			})
+		})
+	},
+
+	Spawn: function(){
+		_.each(C('Spawn'), function(spawn,id){
+
+			var spawned = C(spawn.components)
+			var spawn_point = _.sample(spawn.points)
+			spawn_point.x += _.random(-spawn.variation,spawn.variation)
+			spawn_point.y += _.random(-spawn.variation,spawn.variation)
+			C({
+				Location: { x: spawn_point.x, y: spawn_point.y }
+			},spawned)
 		})
 	},
 
@@ -239,7 +252,19 @@ systems = {
 
 	Remove: function(){
 		_.each(C('Remove'), function(remove,id){
+
 			C(id,null)
+		})
+	},
+
+	RemoveActivated: function(){
+		_.each(C('Remove'),function(remove,id){
+			var activated = C('RemoveActivated',id)
+			!_.isEmpty(activated) && _.each(activated,function(component,componentName){
+
+				C(componentName,component,id)
+
+			})
 		})
 	},
 
@@ -312,6 +337,7 @@ systems = {
 	},
 
 	CleanUp: function(){
+		delete C.components.Spawn
 		delete C.components.AddVelocity
 		delete C.components.Shoot
 		delete C.components.Collided

@@ -75,27 +75,36 @@ player = C({
 	SAT: {},
 })
 
-_.times(50, function(){
-	enemy = C({
-		Angle: { value: 0},
-		Facing: { entity: player},
-		Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
-		Velocity: { x:_.random(-0.5,0.5), y:_.random(-0.5,0.5) },
 
-		Dimensions: { width: 64, height: 64 },
-		Sprite: { image: s_enemy },
-		GarbageCollected: {},
-		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
-		SAT: {},
-		CollidesWith: { types: ['Shrinker'] } ,
-		CollideActivated: {
-			ShrinkVulnerable: { settings: {min_size: 32, ratio: 0.9 }}
-		},
-		Remover: {},
-	})
+enemy = C({
+	Angle: { value: 0},
+	Facing: { entity: player},
+	Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
+	Velocity: { x:_.random(-0.5,0.5), y:_.random(-0.5,0.5) },
+
+	Dimensions: { width: 64, height: 64 },
+	Sprite: { image: s_enemy },
+	GarbageCollected: {},
+	BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+	SAT: {},
+	CollidesWith: { types: ['Shrinker'] } ,
+	CollideActivated: {
+		ShrinkVulnerable: { settings: {min_size: 32, ratio: 0.9 }}
+	},
+	Remover: {},
 })
 
+Enemy = _.cloneDeep(C(enemy))
+Enemy.RemoveActivated = {
+	Spawn: {
+		points: [{x:0,y:0}],
+		variation: 300
+	}
+}
+Enemy.RemoveActivated.Spawn.components = Enemy
+Enemy.RemoveActivated.Spawn.components = Enemy
 
+C('RemoveActivated',Enemy.RemoveActivated,enemy)
 
 use = [
 	'Screen',
@@ -119,6 +128,8 @@ use = [
 	'ShrinkVulnerable',
 	'Shrink',
 	'RemoveVulnerable',
+	'RemoveActivated',
+	'Spawn',
 	'Remove',
 	'CleanUp'
 ]
