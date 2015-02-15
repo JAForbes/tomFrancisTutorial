@@ -1,4 +1,4 @@
-C({
+game = C({
 	Screen: { width: 1, height: 1, el: document.querySelector('canvas'), con: document.querySelector('canvas').getContext('2d'), translate: [0.5, 0.5] },
 	Camera: { tracking: 3 },
 	Save: { state: {} },
@@ -16,7 +16,7 @@ room01 = function(){
 	mouse = C({
 		Location: { x:0, y:0 },
 		Translate: { x: -0.5, y: -0.5 },
-		Mouse: {},
+		Mouse: { game: game },
 	})
 
 	player = C({

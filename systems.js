@@ -61,8 +61,10 @@ systems = {
 		return function(){
 			_.each(C('Mouse'),function(synced,id){
 				var p = C('Location',id)
-				p.x = mouse.x
-				p.y = mouse.y
+				var camera = C('Location',C('Camera',synced.game).tracking)
+
+				p.x = mouse.x + camera.x
+				p.y = mouse.y + camera.y
 			})
 		}
 	}()),
