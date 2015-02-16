@@ -305,29 +305,6 @@ systems = {
 		})
 	},
 
-	// If something exists on your self, add some components to your self
-	Has: function(){
-		var Age = C.components.Age
-		var initial = 1
-
-		_.each( C('Has') , function(has, id){
-
-			_.each(has, function(components, hasName){
-				if( C.components[hasName][id] ){
-
-					var age = Age[hasName]
-
-					_.each( components, function(settings, componentName){
-						if( (age-initial) % settings.every == 0){
-
-							C(componentName, settings.component, id)
-						}
-					})
-
-				}
-			})
-		})
-	},
 
 	// Add some components to yourself after a designated number of cycles
 	After: function(){

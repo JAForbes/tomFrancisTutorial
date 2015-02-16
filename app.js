@@ -55,8 +55,10 @@ room01 = function(){
 							SAT: {},
 							Shrinker: {},
 							CollidesWith: { types: ['Remover'] },
-							CollideActivated: {
-								RemoveVulnerable: {}
+							Is: {
+								'@Collided': {
+									RemoveVulnerable: { component: {}, every: 1}
+								}
 							}
 						}
 					},
@@ -99,6 +101,13 @@ room01 = function(){
 		Is: {
 			'@Collided': {
 				ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }}, every: 1 },
+				Spawn: {
+					component: {
+						points: [{x:0,y:0}],
+						variation: 300
+					},
+					every: 1
+				}
 			}
 		},
 		Remover: {},
@@ -106,16 +115,10 @@ room01 = function(){
 	})
 
 	Enemy = _.cloneDeep(C(enemy))
-	Enemy.RemoveActivated = {
-		Spawn: {
-			points: [{x:0,y:0}],
-			variation: 300
-		}
-	}
-	Enemy.RemoveActivated.Spawn.components = Enemy
-	Enemy.RemoveActivated.Spawn.components = Enemy
+	Enemy.Is['@Collided'].Spawn.component.components = Enemy
+	Enemy.Is['@Collided'].Spawn.component.components = Enemy
 
-	C('RemoveActivated',Enemy.RemoveActivated,enemy)
+	C('Is',Enemy.Is,enemy)
 
 	use = [
 		'Screen',
@@ -143,7 +146,6 @@ room01 = function(){
 		'SplatVulnerable',
 		'Splat',
 		'RemoveVulnerable',
-		'RemoveActivated',
 		'Spawn',
 		'Sounds',
 		'Remove',
