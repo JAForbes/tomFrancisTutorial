@@ -7,7 +7,7 @@ game = C({
 		'Q' : { QuickSave:{} },
 		'R' : { QuickLoad:{} }
 	},
-	InfiniteBackground: { image: s_background }
+//	InfiniteBackground: { image: s_background }
 
 })
 
@@ -100,6 +100,11 @@ room01 = function(){
 				}
 			}, every: 5 }
 		},
+		CollidesWith: { types: ['Splatter','Remover'] } ,
+		CollideActivated: {
+			SplatVulnerable: { settings: {} },
+			Remove: { settings: {} }
+		},
 		SAT: {},
 	})
 
@@ -120,6 +125,7 @@ room01 = function(){
 			ShrinkVulnerable: { settings: {min_size: 32, ratio: 0.9 }}
 		},
 		Remover: {},
+		Splatter: {}
 	})
 
 	Enemy = _.cloneDeep(C(enemy))
@@ -158,6 +164,8 @@ room01 = function(){
 		'GarbageCollection',
 		'ShrinkVulnerable',
 		'Shrink',
+		'SplatVulnerable',
+		'Splat',
 		'RemoveVulnerable',
 		'RemoveActivated',
 		'Spawn',

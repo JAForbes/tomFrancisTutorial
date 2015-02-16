@@ -245,6 +245,37 @@ systems = {
 		})
 	},
 
+	SplatVulnerable: function(){
+		_.each( C('SplatVulnerable'), function(vulnerable,id){
+			_.each(C('Collided',id).collisions, function(collision,against){
+				if( C.components.Splatter[against] ) {
+					C('Splat',vulnerable.settings,id)
+				}
+			})
+		})
+	},
+
+	Splat: function(){
+		_.each( C('Splat') , function(splat, id){
+			var bits = 10;
+			for( var bitsSoFar = 0; bitsSoFar < bits; bitsSoFar++ ){
+
+				var angle = (2 * Math.PI / bits) * bitsSoFar + _.random(-0.3, 0.3);
+
+				var splat = C({
+					Location: { x: Math.cos(angle), y: Math.sin(angle) },
+					Sprite: { image: s_splat },
+					Dimensions: { width: 16, height: 16 },
+					Angle: { value: angle },
+					Velocity: { x: Math.cos(angle) * _.random(30,50), y: Math.sin(angle) * _.random(30,50)},
+					GarbageCollected: {},
+					Friction: { value : 0.8 }
+				})
+
+			}
+		})
+	},
+
 	RemoveVulnerable: function(){
 		_.each(C('RemoveVulnerable'),function(vulnerable,id){
 
@@ -428,6 +459,8 @@ systems = {
 		delete C.components.ShrinkVulnerable
 		delete C.components.RemoveVulnerable
 		delete C.components.Shrink
+		delete C.components.Splat
+		delete C.components.SplatVulnerable
 		delete C.components.QuickSave
 		delete C.components.QuickLoad
 	}
