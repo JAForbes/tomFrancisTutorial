@@ -276,8 +276,11 @@ systems = {
 					Velocity: { x: Math.cos(angle) * _.random(10,15), y: Math.sin(angle) * _.random(10,15)},
 					GarbageCollected: {},
 					Friction: { value : 0.963 },
-					Reform: {
-
+					Reform: { to: start, after: 10, count: 0 },
+					On: {
+						Reformed: {
+							Remove: {}
+						}
 					}
 				})
 
