@@ -245,7 +245,6 @@ systems = {
 			_.each(C('Collided',id).collisions, function(collision,against){
 
 				if( C.components.Splatter[against] ) {
-					console.log('SplatVulnerable',against)
 					C('Splat',vulnerable.settings,id)
 				}
 			})
@@ -294,7 +293,6 @@ systems = {
 						_.each( components, function(settings, componentName){
 
 							if( (age-initial) % settings.every == 0){
-								console.log( componentName,settings.component, id)
 								C(componentName, settings.component, id)
 							}
 						})
@@ -376,6 +374,22 @@ systems = {
 
 	Remove: function(){
 		_.each(C('Remove'), function(remove,id){
+
+			var removed = {}
+			removed.Is = C('Is',id)
+			removed.Delete = {}
+			C(id,null)
+			C.components['Is'] = C.components['Is'] || {}
+			C.components['Is'][id] = removed.Is
+
+			C.components['Delete'] = C.components['Delete'] || {}
+			C.components['Delete'][id] = {}
+		})
+	},
+
+	Delete: function(){
+		_.each( C('Delete'), function( deleted, id){
+			console.log('Delete')
 			C(id,null)
 		})
 	},

@@ -101,6 +101,8 @@ room01 = function(){
 		Is: {
 			'@Collided': {
 				ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }}, every: 1 },
+			},
+			'@Delete' : {
 				Spawn: {
 					component: {
 						points: [{x:0,y:0}],
@@ -115,8 +117,8 @@ room01 = function(){
 	})
 
 	Enemy = _.cloneDeep(C(enemy))
-	Enemy.Is['@Collided'].Spawn.component.components = Enemy
-	Enemy.Is['@Collided'].Spawn.component.components = Enemy
+	Enemy.Is['@Delete'].Spawn.component.components = Enemy
+	Enemy.Is['@Delete'].Spawn.component.components = Enemy
 
 	C('Is',Enemy.Is,enemy)
 
@@ -148,6 +150,7 @@ room01 = function(){
 		'RemoveVulnerable',
 		'Spawn',
 		'Sounds',
+		'Delete',
 		'Remove',
 		'QuickSave',
 		'QuickLoad',
