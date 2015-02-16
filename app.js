@@ -23,7 +23,7 @@ room01 = function(){
 	player = C({
 		Angle: { value: 0 },
 		Facing: { entity: mouse },
-		Location: {x:0,y:0},
+		Location: {x:10,y:14},
 		Velocity: {x:0,y:0},
 		Friction: { value: 0.4 },
 		Dimensions: { width: 32, height: 32},
@@ -117,7 +117,6 @@ room01 = function(){
 
 		Dimensions: { width: 64, height: 64 },
 		Sprite: { image: s_enemy },
-		GarbageCollected: {},
 		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
 		SAT: {},
 		CollidesWith: { types: ['Shrinker'] } ,
