@@ -62,6 +62,9 @@ room01 = function(){
 			}
 		},
 		KickBack: {strength: 5},
+		Sounds: {
+			Shoot: { sounds: [ jsfxlib.createWave(["square",0.0000,0.4000,0.7690,0.8480,0.9270,0.5260,1883.0000,191.0000,2126.0000,-0.1120,-0.1080,0.5350,40.1776,0.3591,0.1120,-0.7140,0.4870,0.4840,-0.7160,0.7944,0.2240,-0.5460,0.9200,0.3640,0.3870,0.9010,-0.0360])] }
+		},
 		ClickActivated: {
 			Shoot: { component : {
 				spawn_radius: 5,
@@ -143,6 +146,7 @@ room01 = function(){
 		'RemoveVulnerable',
 		'RemoveActivated',
 		'Spawn',
+		'Sounds',
 		'Remove',
 		'QuickSave',
 		'QuickLoad',

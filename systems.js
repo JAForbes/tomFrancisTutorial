@@ -397,6 +397,23 @@ systems = {
 		})
 	},
 
+	Sounds: function(){
+		_.each(C('Sounds'),function(sounds,id){
+			_.each(sounds, function(sound, componentName){
+				var category = C.components[componentName]
+				var component = category && category[id]
+				if( component ) {
+					var snd = _.sample(sound.sounds)
+					if(snd.paused){
+						snd.currentTime = 0
+						snd.play()
+					}
+
+				}
+			})
+		})
+	},
+
 	CleanUp: function(){
 		delete C.components.Spawn
 		delete C.components.AddVelocity
