@@ -228,7 +228,8 @@ systems = {
 		_.each( C('Camera'), function(camera, id){
 			var track_position = C('Location',camera.tracking)
 
-			track_position = track_position.x && track_position || camera.last_position || {x:0, y: 0}
+			track_position = (track_position.x || track_position.y) && track_position ||
+				camera.last_position || {x:0, y: 0}
 
 			var screen = C('Screen',id)
 			console.log(track_position)
