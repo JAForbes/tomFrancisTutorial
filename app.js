@@ -1,13 +1,13 @@
 game = C({
 	Screen: { width: 1, height: 1, el: document.querySelector('canvas'), con: document.querySelector('canvas').getContext('2d'), translate: [0.5, 0.5] },
-	Camera: { tracking: 3 },
+	Camera: { tracking: 3 , last_position: {x:0, y:0 }},
 	Save: { state: {} },
 	QuickSave: {},
 	KeyboardActivated: {
 		'Q' : { QuickSave:{} },
 		'R' : { QuickLoad:{} }
 	},
-//	InfiniteBackground: { image: s_background }
+	InfiniteBackground: { image: s_background }
 
 })
 

@@ -18,8 +18,7 @@ systems = {
 		_.each(C('InfiniteBackground'), function(bg,id){
 			var screen = C('Screen',id)
 
-			var tracking = C('Camera',id).tracking
-			var focus = C('Location',tracking)
+			var focus = C('Camera',id).last_position
 
 			screen.con.save()
 			screen.con.translate(-focus.x,-focus.y)
@@ -82,7 +81,7 @@ systems = {
 		return function(){
 			_.each(C('Mouse'),function(synced,id){
 				var p = C('Location',id)
-				var camera = C('Location',C('Camera',synced.game).tracking)
+				var camera = C('Camera',synced.game).last_position
 
 				p.x = mouse.x + camera.x
 				p.y = mouse.y + camera.y
@@ -232,7 +231,7 @@ systems = {
 				camera.last_position || {x:0, y: 0}
 
 			var screen = C('Screen',id)
-			console.log(track_position)
+
 			screen.con.translate(-track_position.x,-track_position.y)
 			camera.last_position = track_position;
 		})
@@ -323,7 +322,6 @@ systems = {
 
 	Remove: function(){
 		_.each(C('Remove'), function(remove,id){
-			console.log('Removing',id);
 			C(id,null)
 		})
 	},
@@ -362,7 +360,7 @@ systems = {
 		var screen = C('Screen',1)
 		var canvas = screen.el
 		_.each(C('GarbageCollected'),function(gc, id){
-			var camera = C('Location',_.sample(C('Camera')).tracking)
+			var camera = _.sample(C('Camera')).last_position
 
 			var p = C('Location',id)
 			if( Math.abs(p.x-camera.x) > canvas.width *screen.translate[0] || Math.abs(p.y-camera.y) > canvas.height * screen.translate[1]){
