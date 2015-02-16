@@ -14,6 +14,27 @@ systems = {
 		})
 	},
 
+	InfiniteBackground: function(){
+		_.each(C('InfiniteBackground'), function(bg,id){
+			var screen = C('Screen',id)
+
+			var tracking = C('Camera',id).tracking
+			var focus = C('Location',tracking)
+
+			screen.con.save()
+			screen.con.translate(-focus.x,-focus.y)
+			var ptrn = screen.con.createPattern(bg.image,'repeat');
+			screen.con.fillStyle = ptrn;
+			var w = screen.el.width
+			var h = screen.el.height
+			var x = focus.x -w/2
+			var y = focus.y -h/2
+			screen.con.fillRect(x,y,w,h);
+			screen.con.restore()
+
+		})
+	},
+
 	ClickActivated: (function(){
 		var down = 0
 		window.onmousedown = function(e){

@@ -6,7 +6,8 @@ game = C({
 	KeyboardActivated: {
 		'Q' : { QuickSave:{} },
 		'R' : { QuickLoad:{} }
-	}
+	},
+	InfiniteBackground: { image: s_background }
 
 })
 
@@ -116,6 +117,7 @@ room01 = function(){
 
 	use = [
 		'Screen',
+		'InfiniteBackground',
 		'Mouse',
 		'Translate',
 		'ClickActivated',
