@@ -403,11 +403,17 @@ systems = {
 				var category = C.components[componentName]
 				var component = category && category[id]
 				if( component ) {
-					var snd = _.sample(sound.sounds)
-					if(snd.paused){
-						snd.currentTime = 0
-						snd.play()
+					var sounds = sound.sounds.filter(function(snd){
+						return snd.paused
+					})
+					if(!sounds.length){
+						sounds = sound.sounds
 					}
+
+					var snd = _.sample(sounds)
+					snd.currentTime = 0
+					snd.play()
+
 
 				}
 			})
