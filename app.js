@@ -25,11 +25,11 @@ room01 = function(){
 		Facing: { entity: mouse },
 		Location: {x:10,y:14},
 		Velocity: {x:0,y:0},
-		Friction: { value: 0.4 },
+		Friction: { value: 1 },
 		Dimensions: { width: 32, height: 32},
 		Sprite: { image: s_player },
 
-		KickBack: {strength: 5},
+		KickBack: {strength: 0.0005},
 		Sounds: {
 			Shoot: { sounds: [
 
@@ -66,16 +66,16 @@ room01 = function(){
 				}
 			},
 			'Key_A|Key_LEFT': {
-				AddVelocity: { component: {x: -3}, every: 1 }
+				AddVelocity: { component: {x: -0.3}, every: 1 }
 			},
 			'Key_D|Key_RIGHT': {
-				AddVelocity: { component: {x: 3}, every: 1 }
+				AddVelocity: { component: {x: 0.3}, every: 1 }
 			},
 			'Key_S|Key_DOWN': {
-				AddVelocity: { component: {y: 3}, every: 1 }
+				AddVelocity: { component: {y: 0.3}, every: 1 }
 			},
 			'Key_W|Key_UP': {
-				AddVelocity: { component: {y: -3}, every: 1 }
+				AddVelocity: { component: {y: -0.3}, every: 1 }
 			},
 			'@Collided': {
 				SplatVulnerable: { component: { settings:{} }, every: 1 },
@@ -101,6 +101,13 @@ room01 = function(){
 		Is: {
 			'@Collided': {
 				ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }}, every: 1 },
+				Spawn: {
+					component: {
+						points: [{x:0,y:0}],
+						variation: 300
+					},
+					every: 1
+				}
 			},
 			'@Delete' : {
 				Spawn: {
@@ -119,6 +126,9 @@ room01 = function(){
 	Enemy = _.cloneDeep(C(enemy))
 	Enemy.Is['@Delete'].Spawn.component.components = Enemy
 	Enemy.Is['@Delete'].Spawn.component.components = Enemy
+
+	Enemy.Is['@Collided'].Spawn.component.components = Enemy
+	Enemy.Is['@Collided'].Spawn.component.components = Enemy
 
 	C('Is',Enemy.Is,enemy)
 

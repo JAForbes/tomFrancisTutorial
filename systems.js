@@ -1,6 +1,6 @@
 //Click
 window.onmousedown = function(e){
-	C('Click',{ down: true })
+	C('Click',{})
 }
 window.onmouseup = function(e){
 	delete C.components.Click
@@ -394,17 +394,6 @@ systems = {
 		})
 	},
 
-	RemoveActivated: function(){
-		_.each(C('Remove'),function(remove,id){
-			var activated = C('RemoveActivated',id)
-			!_.isEmpty(activated) && _.each(activated,function(component,componentName){
-
-				C(componentName,component,id)
-
-			})
-		})
-	},
-
 	QuickSave: function(){
 		_.each(C('QuickSave'), function(qSave,id){
 
@@ -469,8 +458,8 @@ systems = {
 			if(kickBack.strength){
 				var v = C('Velocity',id)
 				var angle = -C('Angle',id).value
-				v.x += -Math.cos(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
-				v.y += Math.sin(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
+				v.x += -Math.cos(angle) * (shoot.size * kickBack.strength) + _.random(-shoot.size_variation,shoot.size_variation)
+				v.y += Math.sin(angle) * (shoot.size * kickBack.strength) + _.random(-shoot.size_variation,shoot.size_variation)
 			}
 		})
 	},
