@@ -23,14 +23,15 @@
 	}
 
 	var addComponent = function(componentName, componentData, entity_id){
-
+		entity_id = entity_id || uid++
 		var category = (C.components[componentName] = C.components[componentName] || {})
 		var current_component = category[entity_id] = category[entity_id] || {}
 
-		return extend(
+		extend(
 			current_component,
 			componentData
 		)
+		return entity_id
 	}
 
 	var addComponents = function(newComponents, entity_id){
@@ -74,6 +75,7 @@
 	var routes = {
 		"StrObjNum": addComponent,
 		"StrObjStr": addComponent,
+		"StrObj": addComponent,
 		"Obj": addComponents,
 		"ObjNum": addComponents,
 		"Str": getComponentsOfType,

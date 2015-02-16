@@ -34,29 +34,15 @@ systems = {
 		})
 	},
 
-	ClickActivated: (function(){
-		var down = 0
+	Click: function(){
+		var click;
 		window.onmousedown = function(e){
-			down = 1
+			C('Click',{ down: true })
 		}
 		window.onmouseup = function(e){
-			down = 0
+			delete C.components.Click
 		}
-		return function(){
-
-
-			if(down){
-				down++
-				_.each(C('ClickActivated'), function(clickActivated,id){
-					_.each(clickActivated, function(component, componentName){
-						if( (down-2) % component.every == 0){
-							C(componentName, component.component, id)
-						}
-					})
-				})
-			}
-		}
-	}()),
+	},
 
 	KeyboardActivated: function(){
 		_.each(C('KeyboardActivated'),function(kb,id){
@@ -258,6 +244,56 @@ systems = {
 				}
 			})
 		})
+	},
+
+	Age: function(){
+		if( !C.components.Age ){
+			C.components.Age = {}
+		}
+
+		for( var key in C.components ){
+			C.components.Age[key] = C.components.Age[key] || 0
+			C.components.Age[key]++
+		}
+		for( var key in C.components.Age ){
+			if( !C.components[key]) {
+				delete C.components.Age[key]
+			}
+		}
+	},
+
+	// If something exists globally add some components to your self
+	Is: function(){
+		var Age = C.components.Age
+		var initial = 1
+
+		_.each( C('Is') , function(is, id){
+
+			_.each(is, function(components, isName){
+				if( C.components[isName] ){
+
+					var age = Age[isName]
+
+					_.each( components, function(settings, componentName){
+						if( (age-initial) % settings.every == 0){
+
+							C(componentName, settings.component, id)
+						}
+					})
+
+				}
+			})
+		})
+	},
+
+	// If something exists on your self, add some components to your self
+	Has: function(){
+
+	},
+
+	// Add some components to yourself after a designated number of cycles
+	After: function(){
+
 	},
 
 	Splat: function(){

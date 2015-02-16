@@ -71,25 +71,30 @@ room01 = function(){
 				jsfxlib.createWave(["noise",0.0000,0.4000,0.0110,1.3740,1.4400,0.0280,1067.0000,2034.0000,1153.0000,-0.6000,-0.5940,0.1450,38.8819,0.4137,0.1980,0.2020,0.2840,0.0870,0.0020,0.2624,-0.6940,-0.3000,0.3290,-0.7060,0.5310,0.3300,-0.4480])
 			] }
 		},
-		ClickActivated: {
-			Shoot: { component : {
-				spawn_radius: 0,
-				jitter: 0,
-				size: 15,
-				size_variation: 5,
-				spread: 0.3,
-				speed_range: [30,30],
-				image: s_bullet,
-				components: {
-					GarbageCollected: {},
-					SAT: {},
-					Shrinker: {},
-					CollidesWith: { types: ['Remover'] },
-					CollideActivated: {
-						RemoveVulnerable: {}
-					}
+		Is: {
+			Click: {
+				Shoot: {
+					component : {
+						spawn_radius: 0,
+						jitter: 0,
+						size: 15,
+						size_variation: 5,
+						spread: 0.3,
+						speed_range: [30,30],
+						image: s_bullet,
+						components: {
+							GarbageCollected: {},
+							SAT: {},
+							Shrinker: {},
+							CollidesWith: { types: ['Remover'] },
+							CollideActivated: {
+								RemoveVulnerable: {}
+							}
+						}
+					},
+					every: 5
 				}
-			}, every: 5 }
+			}
 		},
 		CollidesWith: { types: ['Splatter','Remover'] } ,
 		CollideActivated: {
@@ -135,7 +140,9 @@ room01 = function(){
 		'InfiniteBackground',
 		'Mouse',
 		'Translate',
-		'ClickActivated',
+		'Click',
+		'Age',
+		'Is',
 		'KeyboardActivated',
 		'Shoot',
 		'KickBack',
