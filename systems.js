@@ -273,9 +273,9 @@ systems = {
 					Sprite: { image: s_splat },
 					Dimensions: { width: 16, height: 16 },
 					Angle: { value: angle },
-					Velocity: { x: Math.cos(angle) * _.random(30,50), y: Math.sin(angle) * _.random(30,50)},
+					Velocity: { x: Math.cos(angle) * _.random(10,15), y: Math.sin(angle) * _.random(10,15)},
 					GarbageCollected: {},
-					Friction: { value : 0.8 },
+					Friction: { value : 0.963 },
 					Reform: {
 
 					}
