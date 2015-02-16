@@ -227,8 +227,13 @@ systems = {
 	Camera: function(){
 		_.each( C('Camera'), function(camera, id){
 			var track_position = C('Location',camera.tracking)
+
+			track_position = track_position.x && track_position || camera.last_position || {x:0, y: 0}
+
 			var screen = C('Screen',id)
+			console.log(track_position)
 			screen.con.translate(-track_position.x,-track_position.y)
+			camera.last_position = track_position;
 		})
 	},
 
@@ -258,18 +263,22 @@ systems = {
 	Splat: function(){
 		_.each( C('Splat') , function(splat, id){
 			var bits = 10;
+			var start = C('Location',id)
 			for( var bitsSoFar = 0; bitsSoFar < bits; bitsSoFar++ ){
 
 				var angle = (2 * Math.PI / bits) * bitsSoFar + _.random(-0.3, 0.3);
 
 				var splat = C({
-					Location: { x: Math.cos(angle), y: Math.sin(angle) },
+					Location: { x: start.x , y: start.y },
 					Sprite: { image: s_splat },
 					Dimensions: { width: 16, height: 16 },
 					Angle: { value: angle },
 					Velocity: { x: Math.cos(angle) * _.random(30,50), y: Math.sin(angle) * _.random(30,50)},
 					GarbageCollected: {},
-					Friction: { value : 0.8 }
+					Friction: { value : 0.8 },
+					Reform: {
+
+					}
 				})
 
 			}
