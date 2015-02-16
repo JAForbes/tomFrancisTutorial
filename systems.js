@@ -1,3 +1,39 @@
+//Click
+window.onmousedown = function(e){
+	C('Click',{ down: true })
+}
+window.onmouseup = function(e){
+	delete C.components.Click
+}
+
+//Keyboard keys
+;(function(){
+
+	var name = function(e){
+		return ({
+			32: 'SPACE',
+			37: 'LEFT',
+			38: 'UP',
+			39: 'RIGHT',
+			40: 'DOWN'
+		})[e.keyCode] || String.fromCharCode(e.keyCode)
+	}
+
+	window.onkeydown = _.compose(
+		function(name){
+			C.components['Key_'+name] = C.components['Key_'+name] || {}
+			C.components['Key_'+name][1] = C.components['Key_'+name][1] || {}
+		},
+		name
+	)
+	window.onkeyup = _.compose(
+		function(name){
+			delete C.components['Key_'+name]
+		},
+		name
+	)
+}());
+
 systems = {
 	Screen: function(){
 		_.each(C('Screen'),function(screen,id){
@@ -34,32 +70,10 @@ systems = {
 		})
 	},
 
-	Click: function(){
-		var click;
-		window.onmousedown = function(e){
-			C('Click',{ down: true })
-		}
-		window.onmouseup = function(e){
-			delete C.components.Click
-		}
-	},
-
-	KeyboardActivated: function(){
-		_.each(C('KeyboardActivated'),function(kb,id){
-			_.each(kb,function(componentsToActivate, keyNames){
-				keyNames.split('|').map(function(keyName){
-					if(Keys[keyName]){
-						_.each(componentsToActivate,function(component,componentName){
-							C(componentName,component,id)
-						})
-					}
-				})
-			})
-		})
-	},
-
 	Mouse: (function(){
+
 		var mouse = {x:0,y:0}
+
 		window.onmousemove = function(e){
 			mouse.x = e.clientX
 			mouse.y = e.clientY
@@ -124,7 +138,6 @@ systems = {
 		_.each(C('Facing'),function(facing,id){
 			var other = C('Location',facing.entity)
 			var p = C('Location',id)
-			//console.log(other,p)
 			C('Angle',id).value = Math.atan2(other.y-p.y, other.x-p.x)
 		})
 	},
@@ -262,6 +275,9 @@ systems = {
 		}
 	},
 
+	//TODO, need a more generic Spawn to create new components maybe Create
+	//essentially a call to C({})
+
 	// If something exists globally add some components to your self
 	Is: function(){
 		var Age = C.components.Age
@@ -269,10 +285,38 @@ systems = {
 
 		_.each( C('Is') , function(is, id){
 
-			_.each(is, function(components, isName){
-				if( C.components[isName] ){
+			_.each(is, function(components, isNames){
+				isNames.split('|').forEach(function(isName){
 
-					var age = Age[isName]
+					if( C.components[isName] ){
+
+
+						var age = Age[isName]
+
+						_.each( components, function(settings, componentName){
+							if( (age-initial) % settings.every == 0){
+
+								C(componentName, settings.component, id)
+							}
+						})
+					}
+				})
+
+			})
+		})
+	},
+
+	// If something exists on your self, add some components to your self
+	Has: function(){
+		var Age = C.components.Age
+		var initial = 1
+
+		_.each( C('Has') , function(has, id){
+
+			_.each(has, function(components, hasName){
+				if( C.components[hasName][id] ){
+
+					var age = Age[hasName]
 
 					_.each( components, function(settings, componentName){
 						if( (age-initial) % settings.every == 0){
@@ -284,11 +328,6 @@ systems = {
 				}
 			})
 		})
-	},
-
-	// If something exists on your self, add some components to your self
-	Has: function(){
-
 	},
 
 	// Add some components to yourself after a designated number of cycles

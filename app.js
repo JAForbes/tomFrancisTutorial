@@ -3,9 +3,9 @@ game = C({
 	Camera: { tracking: 3 , last_position: {x:0, y:0 }},
 	Save: { state: {} },
 	QuickSave: {},
-	KeyboardActivated: {
-		'Q' : { QuickSave:{} },
-		'R' : { QuickLoad:{} }
+	Is: {
+		'Key_Q': { QuickSave: { component: {} , every: Infinity }},
+		'Key_R': { QuickLoad: { component: {} , every: Infinity }}
 	},
 	InfiniteBackground: { image: s_background }
 
@@ -28,39 +28,7 @@ room01 = function(){
 		Friction: { value: 0.4 },
 		Dimensions: { width: 32, height: 32},
 		Sprite: { image: s_player },
-		KeyboardActivated: {
-			'A|LEFT': {
-				AddVelocity: { x: -3 }
-			},
-			'D|RIGHT': {
-				AddVelocity: { x: 3 }
-			},
-			'W|UP': {
-				AddVelocity: { y: -3 }
-			},
-			'S|DOWN': {
-				AddVelocity: { y: 3 }
-			},
-			" " : {
-				Shoot: {
-					spawn_radius: 5,
-					jitter: 0,
-					size: 50,
-					size_variation: 0,
-					spread: 0,
-					speed_range: [1,1],
-					image: s_bullet,
-					components: {
-						GarbageCollected: {},
-						SAT: {},
-						ShrinkDamager: {},
-						CollideActivated: {
-							RemoveVulnerable: {}
-						}
-					}
-				}
-			}
-		},
+
 		KickBack: {strength: 5},
 		Sounds: {
 			Shoot: { sounds: [
@@ -72,7 +40,7 @@ room01 = function(){
 			] }
 		},
 		Is: {
-			Click: {
+			'Click|Key_SPACE': {
 				Shoot: {
 					component : {
 						spawn_radius: 0,
@@ -94,6 +62,18 @@ room01 = function(){
 					},
 					every: 5
 				}
+			},
+			'Key_A|Key_LEFT': {
+				AddVelocity: { component: {x: -3}, every: 1 }
+			},
+			'Key_D|Key_RIGHT': {
+				AddVelocity: { component: {x: 3}, every: 1 }
+			},
+			'Key_S|Key_DOWN': {
+				AddVelocity: { component: {y: 3}, every: 1 }
+			},
+			'Key_W|Key_UP': {
+				AddVelocity: { component: {y: -3}, every: 1 }
 			}
 		},
 		CollidesWith: { types: ['Splatter','Remover'] } ,
@@ -140,10 +120,8 @@ room01 = function(){
 		'InfiniteBackground',
 		'Mouse',
 		'Translate',
-		'Click',
 		'Age',
 		'Is',
-		'KeyboardActivated',
 		'Shoot',
 		'KickBack',
 		'AddVelocity',
