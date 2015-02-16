@@ -356,6 +356,18 @@ systems = {
 		})
 	},
 
+	KickBack: function(){
+		_.each(C('Shoot'),function(shoot,id){
+			var kickBack = C('KickBack',id)
+			if(kickBack.strength){
+				var v = C('Velocity',id)
+				var angle = -C('Angle',id).value
+				v.x += -Math.cos(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
+				v.y += Math.sin(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
+			}
+		})
+	},
+
 	SAT_sync: function(){
 		_.each(C('SAT'),function(sat,id){
 

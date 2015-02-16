@@ -61,6 +61,7 @@ room01 = function(){
 				}
 			}
 		},
+		KickBack: {strength: 5},
 		ClickActivated: {
 			Shoot: { component : {
 				spawn_radius: 5,
@@ -79,7 +80,7 @@ room01 = function(){
 						RemoveVulnerable: {}
 					}
 				}
-			}, every: 1, count: 0 }
+			}, every: 1 }
 		},
 		SAT: {},
 	})
@@ -123,6 +124,7 @@ room01 = function(){
 		'ClickActivated',
 		'KeyboardActivated',
 		'Shoot',
+		'KickBack',
 		'AddVelocity',
 		'VelocitySyncedWithAngle',
 		'Facing',
