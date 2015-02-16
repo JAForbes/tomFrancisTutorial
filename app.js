@@ -74,13 +74,13 @@ room01 = function(){
 			},
 			'Key_W|Key_UP': {
 				AddVelocity: { component: {y: -3}, every: 1 }
+			},
+			'@Collided': {
+				SplatVulnerable: { component: { settings:{} }, every: 1 },
+				Remove: { component: { settings:{} }, every: 1 }
 			}
 		},
 		CollidesWith: { types: ['Splatter','Remover'] } ,
-		CollideActivated: {
-			SplatVulnerable: { settings: {} },
-			Remove: { settings: {} }
-		},
 		SAT: {},
 	})
 
@@ -96,8 +96,10 @@ room01 = function(){
 		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
 		SAT: {},
 		CollidesWith: { types: ['Shrinker'] } ,
-		CollideActivated: {
-			ShrinkVulnerable: { settings: {min_size: 32, ratio: 0.9 }}
+		Is: {
+			'@Collided': {
+				ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }}, every: 1 },
+			}
 		},
 		Remover: {},
 		Splatter: {}
@@ -120,6 +122,9 @@ room01 = function(){
 		'InfiniteBackground',
 		'Mouse',
 		'Translate',
+		'CollidesWith',
+		'SAT_sync',
+		'SAT',
 		'Age',
 		'Is',
 		'Shoot',
@@ -129,10 +134,6 @@ room01 = function(){
 		'Facing',
 		'BounceBox',
 		'Move',
-		'CollidesWith',
-		'SAT_sync',
-		'SAT',
-		'Collided',
 		'Friction',
 		'Camera',
 		'Draw',

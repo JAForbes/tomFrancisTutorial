@@ -212,16 +212,6 @@ systems = {
 		})
 	},
 
-	Collided: function(){
-		_.each(C('Collided'),function(collided,id){
-			_.each(collided.collisions, function(collision, against){
-				_.each(C('CollideActivated',id),function(component,componentName){
-					C(componentName,component,id)
-				})
-			})
-		})
-	},
-
 	Camera: function(){
 		_.each( C('Camera'), function(camera, id){
 			var track_position = C('Location',camera.tracking)
@@ -250,9 +240,12 @@ systems = {
 	},
 
 	SplatVulnerable: function(){
+
 		_.each( C('SplatVulnerable'), function(vulnerable,id){
 			_.each(C('Collided',id).collisions, function(collision,against){
+
 				if( C.components.Splatter[against] ) {
+					console.log('SplatVulnerable',against)
 					C('Splat',vulnerable.settings,id)
 				}
 			})
@@ -288,14 +281,20 @@ systems = {
 			_.each(is, function(components, isNames){
 				isNames.split('|').forEach(function(isName){
 
-					if( C.components[isName] ){
+					var self = isName.indexOf('@') > -1
+					isName = isName.replace('@','')
+					var category = C.components[isName]
 
+					var onSelf = !!(self && category && category[id])
+					var onAnyone = !!(category)
+					if( onSelf || !self && onAnyone ){
 
 						var age = Age[isName]
 
 						_.each( components, function(settings, componentName){
-							if( (age-initial) % settings.every == 0){
 
+							if( (age-initial) % settings.every == 0){
+								console.log( componentName,settings.component, id)
 								C(componentName, settings.component, id)
 							}
 						})
