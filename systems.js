@@ -212,6 +212,30 @@ systems = {
 		})
 	},
 
+	Waypoint: function(){
+		_.each( C('Waypoint'), function(w, id){
+			var p = C('Location',id)
+			var v = C('Velocity',id)
+
+			var d = Math.sqrt(
+				Math.pow(w.x -p.x,2) +
+				Math.pow(w.y -p.y,2)
+			)
+			console.log(d,w.minimum_distance)
+			if ( d < w.minimum_distance ){
+				console.log('WaypointReached')
+				C('WaypointReached', {}, id)
+				delete C.components.Waypoint[id]
+			} else {
+				var angle = Math.atan2( w.y-p.y, w.x-p.x )
+				v.x = Math.cos(angle) * w.speed
+				v.y = Math.sin(angle) * w.speed
+
+				C('Angle',id).value = angle
+			}
+		})
+	},
+
 	Camera: function(){
 		_.each( C('Camera'), function(camera, id){
 			var track_position = C('Location',camera.tracking)
@@ -539,5 +563,6 @@ systems = {
 		delete C.components.SplatVulnerable
 		delete C.components.QuickSave
 		delete C.components.QuickLoad
+		delete C.components.WaypointReached
 	}
 }
