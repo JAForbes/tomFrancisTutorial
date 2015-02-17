@@ -20,7 +20,7 @@ room01 = function(){
 		Mouse: { game: game },
 	})
 
-	player = C({
+	Player = {
 		Angle: { value: 0 },
 		Facing: { entity: mouse },
 		Location: {x:10,y:14},
@@ -84,7 +84,9 @@ room01 = function(){
 		},
 		CollidesWith: { types: ['Splatter','Remover'] } ,
 		SAT: {},
-	})
+	}
+
+	player = C(_.cloneDeep(Player))
 
 
 	enemy = C({

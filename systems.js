@@ -351,7 +351,7 @@ systems = {
 					Velocity: {x: velocity.x , y: velocity.y },
 					GarbageCollected: {},
 					Friction: { value : 0.963 },
-					Unsplat: { initial_velocity:  { x: velocity.x, y: velocity.y } }
+					Unsplat: { initial_location: {x: start.x , y: start.y}, initial_velocity:  { x: velocity.x, y: velocity.y } }
 				})
 
 			}
@@ -364,12 +364,32 @@ systems = {
 
 
 		  var v = C('Velocity',id)
+		  var p = C('Location',id)
+		  var w = splatted.initial_location
 		  if( Math.abs(v.x) + Math.abs(v.y) < 0.32 ){
-		  	var f = C('Friction',id)
-		  	v.x = -splatted.initial_velocity.x * 2
-		  	v.y = -splatted.initial_velocity.y * 2
-		  	f.value =0.923
-		  	delete C.components.Unsplat[id]
+
+		  	v.x = -splatted.initial_velocity.x
+		  	v.y = -splatted.initial_velocity.y
+		  	splatted.returning = true
+
+
+		  }
+
+		  var d = Math.sqrt(
+			Math.pow(p.x-w.x,2) +
+			Math.pow(p.y -w.y,2)
+		  )
+		  var back_at_start = (d < (Math.abs(v.x) + Math.abs(v.y)) )
+
+		  if(splatted.returning && back_at_start){
+		  	C('Remove',{},id)
+		  	var player = C(Player)
+		  	var p = C('Location',player)
+		  	p.x = splatted.initial_location.x
+		  	p.y = splatted.initial_location.y
+		  	C('Camera',1).tracking = player
+		  	console.log( id, C(id))
+		  	delete C(id,null)
 		  }
 		})
 	},
