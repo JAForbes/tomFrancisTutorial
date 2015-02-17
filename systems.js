@@ -218,16 +218,18 @@ systems = {
 			var v = C('Velocity',id)
 
 			var d = Math.sqrt(
-				Math.pow(w.x -p.x,2) +
-				Math.pow(w.y -p.y,2)
+				Math.pow(p.x-w.x,2) +
+				Math.pow(p.y -w.y,2)
 			)
-			console.log(d,w.minimum_distance)
 			if ( d < w.minimum_distance ){
-				console.log('WaypointReached')
 				C('WaypointReached', {}, id)
 				delete C.components.Waypoint[id]
+				w.speed = 0
+				v.x = 0
+				v.y = 0
+
 			} else {
-				var angle = Math.atan2( w.y-p.y, w.x-p.x )
+				var angle = Math.atan2( w.y-p.y, w.x-p.x ) - Math.PI
 				v.x = Math.cos(angle) * w.speed
 				v.y = Math.sin(angle) * w.speed
 
@@ -340,23 +342,45 @@ systems = {
 			for( var bitsSoFar = 0; bitsSoFar < bits; bitsSoFar++ ){
 
 				var angle = (2 * Math.PI / bits) * bitsSoFar + _.random(-0.3, 0.3);
-
+				var velocity =  { x: Math.cos(angle) * _.random(10,15), y: Math.sin(angle) * _.random(10,15)}
 				var splat = C({
 					Location: { x: start.x , y: start.y },
 					Sprite: { image: s_splat },
 					Dimensions: { width: 16, height: 16 },
 					Angle: { value: angle },
-					Velocity: { x: Math.cos(angle) * _.random(10,15), y: Math.sin(angle) * _.random(10,15)},
+					Velocity: {x: velocity.x , y: velocity.y },
 					GarbageCollected: {},
 					Friction: { value : 0.963 },
 					Reform: { to: start, after: 10, count: 0 },
-					On: {
-						Reformed: {
-							Remove: {}
-						}
-					}
+					Unsplat: { initial_velocity:  { x: velocity.x, y: velocity.y } }
 				})
 
+			}
+		})
+	},
+
+	Unsplat: function(){
+		_.each(C('Unsplat'), function(splatted,id){
+		  var angle = C('Angle',id).value
+
+
+		  var v = C('Velocity',id)
+		  if( Math.abs(v.x) + Math.abs(v.y) < 0.1 ){
+		  	v.x = -splatted.initial_velocity.x * 0.98
+		  	v.y = -splatted.initial_velocity.y * 0.98
+		  	delete C.components.Unsplat[id]
+		  }
+		})
+	},
+
+	Stopped: function() {
+		_.each( C('Velocity'), function(v,id){
+			if( (v.x + v.y) < 0.5 ){
+				C('Stopped',{},id)
+			} else {
+				if(C.components.Stopped) {
+					delete C.components.Stopped[id]
+				}
 			}
 		})
 	},
