@@ -351,7 +351,6 @@ systems = {
 					Velocity: {x: velocity.x , y: velocity.y },
 					GarbageCollected: {},
 					Friction: { value : 0.963 },
-					Reform: { to: start, after: 10, count: 0 },
 					Unsplat: { initial_velocity:  { x: velocity.x, y: velocity.y } }
 				})
 
@@ -365,9 +364,11 @@ systems = {
 
 
 		  var v = C('Velocity',id)
-		  if( Math.abs(v.x) + Math.abs(v.y) < 0.1 ){
-		  	v.x = -splatted.initial_velocity.x * 0.98
-		  	v.y = -splatted.initial_velocity.y * 0.98
+		  if( Math.abs(v.x) + Math.abs(v.y) < 0.32 ){
+		  	var f = C('Friction',id)
+		  	v.x = -splatted.initial_velocity.x * 2
+		  	v.y = -splatted.initial_velocity.y * 2
+		  	f.value =0.923
 		  	delete C.components.Unsplat[id]
 		  }
 		})
