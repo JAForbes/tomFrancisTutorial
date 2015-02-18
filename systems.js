@@ -336,8 +336,9 @@ systems = {
 	},
 
 	Splat: function(){
+
 		_.each( C('Splat') , function(splat, id){
-			var bits = 10;
+			var bits = 100;
 			var start = C('Location',id)
 			for( var bitsSoFar = 0; bitsSoFar < bits; bitsSoFar++ ){
 
@@ -349,7 +350,6 @@ systems = {
 					Dimensions: { width: 16, height: 16 },
 					Angle: { value: angle },
 					Velocity: {x: velocity.x , y: velocity.y },
-					GarbageCollected: {},
 					Friction: { value : 0.963 },
 					Unsplat: { initial_location: {x: start.x , y: start.y}, initial_velocity:  { x: velocity.x, y: velocity.y } }
 				})
@@ -359,7 +359,12 @@ systems = {
 	},
 
 	Unsplat: function(){
+		var splats_at_start_of_loop = 0;
+		var splats_remaining = 0;
+		var splatted_persist;
 		_.each(C('Unsplat'), function(splatted,id){
+			splats_remaining++
+			splats_at_start_of_loop++
 		  var angle = C('Angle',id).value
 
 
@@ -381,17 +386,19 @@ systems = {
 		  )
 		  var back_at_start = (d < (Math.abs(v.x) + Math.abs(v.y)) )
 
-		  if(splatted.returning && back_at_start){
+		  if(splatted.returning && back_at_start ){
 		  	C('Remove',{},id)
-		  	var player = C(Player)
-		  	var p = C('Location',player)
-		  	p.x = splatted.initial_location.x
-		  	p.y = splatted.initial_location.y
-		  	C('Camera',1).tracking = player
-		  	console.log( id, C(id))
-		  	delete C(id,null)
+		  	splats_remaining--
+		  	splatted_persist = splatted
 		  }
 		})
+		if( splats_at_start_of_loop > 0 && splats_remaining == 0){
+			var player = C(Player)
+		  	var p = C('Location',player)
+		  	p.x = splatted_persist.initial_location.x
+		  	p.y = splatted_persist.initial_location.y
+		  	C('Camera',1).tracking = player
+		}
 	},
 
 	Stopped: function() {
@@ -458,7 +465,6 @@ systems = {
 
 	Delete: function(){
 		_.each( C('Delete'), function( deleted, id){
-			console.log('Delete')
 			C(id,null)
 		})
 	},

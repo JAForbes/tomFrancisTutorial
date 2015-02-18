@@ -93,7 +93,7 @@ room01 = function(){
 		Angle: { value: 0},
 		Facing: { entity: player},
 		Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
-		Velocity: { x:_.random(-0.5,0.5), y:_.random(-0.5,0.5) },
+		Velocity: { x:_.random(-1,1), y:_.random(-1,1) },
 
 		Dimensions: { width: 64, height: 64 },
 		Sprite: { image: s_enemy },
