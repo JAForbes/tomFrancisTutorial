@@ -91,9 +91,9 @@ room01 = function(){
 
 	enemy = C({
 		Angle: { value: 0},
-		Facing: { entity: player},
+		Facing: { entity: mouse},
 		Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
-		Velocity: { x:_.random(-1,1), y:_.random(-1,1) },
+		Velocity: { x:_.random(2,4), y:_.random(2,4) },
 
 		Dimensions: { width: 64, height: 64 },
 		Sprite: { image: s_enemy },
