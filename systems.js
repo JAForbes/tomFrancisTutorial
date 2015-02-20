@@ -154,7 +154,8 @@ systems = {
 			var angle = C('Angle',id).value
 			con.save()
 			con.translate(p.x,p.y)
-			con.rotate(angle)
+			//TODO check typeof if angles start going weird
+			con.rotate(sprite.angle || angle)
 			con.drawImage(
 				sprite.image,
 				0-d.width/2,
@@ -442,7 +443,6 @@ systems = {
 				delete C.components.Backup[restore.entity]
 				delete C.components.Delete[restore.entity]
 
-				console.log(restore.entity, iteration, _.keys(C(restore.entity*1)));
 			}
 		})
 		C.components.Restore && C('RemoveCategory', {name: 'Restore'})
@@ -487,8 +487,7 @@ systems = {
 	Splat: function(){
 
 		_.each( C('Splat') , function(splat, id){
-			console.log('splat',id)
-			var bits = 1;
+			var bits = 8;
 			var start = C('Location',id)
 			var dimensions = C('Dimensions',id)
 
@@ -523,7 +522,12 @@ systems = {
 					}
 				})
 				wave_entities.push(spawned_splat)
-				splat.components && C(splat.components,spawned_splat)
+				if(splat.components){
+					if(splat.components.Sprite){
+						splat.components.Sprite.angle = angle
+					}
+					C(splat.components,spawned_splat)
+				}
 
 			}
 		})
@@ -572,7 +576,6 @@ systems = {
 
 	RemoveEntity: function(){
 		_.each(C('Remove'), function(remove,id){
-			id == 3 && console.log('removed player')
 			var removed = {}
 			removed.Is = C('Is',id)
 			removed.Delete = {}
