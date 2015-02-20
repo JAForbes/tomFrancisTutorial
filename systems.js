@@ -150,7 +150,6 @@ systems = {
 			var p = C('Location',id)
 			var d = C('Dimensions',id)
 			var angle = C('Angle',id).value
-
 			con.save()
 			con.translate(p.x,p.y)
 			con.rotate(angle)
@@ -254,7 +253,6 @@ systems = {
 
 	Spawn: function(){
 		_.each(C('Spawn'), function(spawn,id){
-
 			var spawned = C(spawn.components)
 			var spawn_point = _.sample(spawn.points)
 			spawn_point.x += _.random(-spawn.variation,spawn.variation)
@@ -277,18 +275,44 @@ systems = {
 		})
 	},
 
-	Age: function(){
-		if( !C.components.Age ){
-			C.components.Age = {}
+	ComponentAge: function(){
+		if (!C.ComponentAge) {
+			C.ComponentAge = {}
+		}
+		for( var category in C.components ){
+			C.ComponentAge[category] = C.ComponentAge[category] || {}
+			for(var entity in C.components[category]){
+				C.ComponentAge[category][entity] = C.ComponentAge[category][entity] || 0
+				C.ComponentAge[category][entity]++
+			}
+		}
+		for (var category in C.ComponentAge ){
+			for( var entity in C.ComponentAge[category]) {
+				if( !C.components[category]  || !C.components[category][entity] ) {
+					if (C.ComponentAge[category][entity] > -1){
+						C.ComponentAge[category][entity] = 0
+					}
+					C.ComponentAge[category][entity]--
+					if( C.ComponentAge[category][entity] < -100){
+						delete C.ComponentAge[category][entity]
+					}
+				}
+			}
+		}
+	},
+
+	CategoryAge: function(){
+		if( !C.CategoryAge ){
+			C.CategoryAge = {}
 		}
 
-		for( var key in C.components ){
-			C.components.Age[key] = C.components.Age[key] || 0
-			C.components.Age[key]++
+		for( var category in C.components ){
+			C.CategoryAge[category] = C.CategoryAge[category] || 0
+			C.CategoryAge[category]++
 		}
-		for( var key in C.components.Age ){
-			if( !C.components[key]) {
-				delete C.components.Age[key]
+		for( var category in C.CategoryAge ){
+			if( !C.components[category]) {
+				delete C.CategoryAge[category]
 			}
 		}
 	},
@@ -298,7 +322,7 @@ systems = {
 
 	// If something exists globally add some components to your self
 	Is: function(){
-		var Age = C.components.Age
+		var CategoryAge = C.CategoryAge
 		var initial = 1
 
 		_.each( C('Is') , function(is, id){
@@ -314,7 +338,7 @@ systems = {
 					var onAnyone = !!(category)
 					if( onSelf || !self && onAnyone ){
 
-						var age = Age[isName]
+						var age = CategoryAge[isName]
 
 						_.each( components, function(settings, componentName){
 
@@ -340,18 +364,27 @@ systems = {
 		_.each( C('Splat') , function(splat, id){
 			var bits = 100;
 			var start = C('Location',id)
+			var backup = C(id*1)
+
+			//todo, but the deletes in the splat settings
+			//infact, don't assume splat respawns, give it a hash to create
+			//so one enemy type can create another enemy type for example
+			//or an explosion could spawn smoke...
+			delete backup.Splat
+			delete backup.Remove
+			var sprite =  { image: splat.sprite }
 			for( var bitsSoFar = 0; bitsSoFar < bits; bitsSoFar++ ){
 
 				var angle = (2 * Math.PI / bits) * bitsSoFar + _.random(-0.3, 0.3);
 				var velocity =  { x: Math.cos(angle) * _.random(10,15), y: Math.sin(angle) * _.random(10,15)}
 				var splat = C({
 					Location: { x: start.x , y: start.y },
-					Sprite: { image: s_splat },
-					Dimensions: { width: 16, height: 16 },
+					Sprite: sprite,
+					Dimensions: backup.Dimensions,
 					Angle: { value: angle },
 					Velocity: {x: velocity.x , y: velocity.y },
 					Friction: { value : 0.963 },
-					Unsplat: { initial_location: {x: start.x , y: start.y}, initial_velocity:  { x: velocity.x, y: velocity.y } }
+					Unsplat: { respawn: backup, respawn_id: id, initial_location: {x: start.x , y: start.y}, initial_velocity:  { x: velocity.x, y: velocity.y } }
 				})
 
 			}
@@ -393,11 +426,10 @@ systems = {
 		  }
 		})
 		if( splats_at_start_of_loop > 0 && splats_remaining == 0){
-			var player = C(Player)
+			var player = C(splatted_persist.respawn, splatted_persist.respawn_id*1 )
 		  	var p = C('Location',player)
 		  	p.x = splatted_persist.initial_location.x
 		  	p.y = splatted_persist.initial_location.y
-		  	C('Camera',1).tracking = player
 		}
 	},
 
@@ -429,7 +461,7 @@ systems = {
 		_.each(C('ShrinkVulnerable'),function(vulnerable,id){
 
 			_.each(C('Collided',id).collisions, function(collision,against){
-				if( C.components.Shrinker[against] ) {
+				if( C.components.Shrinker && C.components.Shrinker[against] ) {
 					C('Shrink',vulnerable.settings,id)
 				}
 
@@ -525,6 +557,7 @@ systems = {
 				Velocity: { x: 0, y: 0 },
 				VelocitySyncedWithAngle: {},
 				Speed: { value: _.random(shoot.speed_range[0],shoot.speed_range[1]) },
+				Splatter: {}
 			})
 
 			systems.VelocitySyncedWithAngle()

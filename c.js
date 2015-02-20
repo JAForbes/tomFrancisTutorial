@@ -43,7 +43,7 @@
 	}
 
 	var getEntityComponents = function(entity){
-		return Object.keys(C.components)
+		var result = Object.keys(C.components)
 		.reduce(function(entityComponents,componentName){
 			var component = C.components[componentName][entity]
 			if(component){
@@ -51,6 +51,8 @@
 			}
 			return entityComponents
 		},{})
+
+		return result;
 	}
 
 	var getAllComponents = function(){
@@ -78,10 +80,14 @@
 		"StrObj": addComponent,
 		"Obj": addComponents,
 		"ObjNum": addComponents,
+		"ObjStr": addComponents,
+
+		//todo could be confusing maybe id:4?
 		"Str": getComponentsOfType,
+		"Num": getEntityComponents,
+
 		"StrNum": getEntitityComponentsOfType,
 		"StrStr": getEntitityComponentsOfType,
-		"Num": getEntityComponents,
 		"": getAllComponents,
 		"NumNul": deleteEntity,
 		"StrNul": deleteEntity

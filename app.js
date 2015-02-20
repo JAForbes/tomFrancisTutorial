@@ -78,7 +78,7 @@ room01 = function(){
 				AddVelocity: { component: {y: -3}, every: 1 }
 			},
 			'@Collided': {
-				SplatVulnerable: { component: { settings:{} }, every: 1 },
+				SplatVulnerable: { component: { settings:{ sprite: s_splat } }, every: 1 },
 				Remove: { component: { settings:{} }, every: 1 }
 			}
 		},
@@ -122,7 +122,27 @@ room01 = function(){
 	Enemy.Is['@Delete'].Spawn.component.components = Enemy
 	Enemy.Is['@Delete'].Spawn.component.components = Enemy
 
-	C('Is',Enemy.Is,enemy)
+	C.components.Is[enemy]['@Delete'].Spawn.component.components = Enemy
+	exploding_enemy = C({
+		Angle: { value: 0},
+		Facing: { entity: mouse},
+		Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
+		Velocity: { x:_.random(1,2), y:_.random(1,2) },
+
+		Dimensions: { width: 64, height: 64 },
+		Sprite: { image: s_exploding_enemy },
+		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+		SAT: {},
+		CollidesWith: { types: ['Splatter'] } ,
+		Is: {
+			'@Collided': {
+				SplatVulnerable: { component: { settings:{ sprite: s_exploding_enemy_splat } }, every: 1 },
+				Remove: { component: {} ,every: 1}
+			}
+		},
+		Remover: {},
+		Splatter: {}
+	})
 
 	use = [
 		'Screen',
@@ -133,7 +153,8 @@ room01 = function(){
 		'SAT_sync',
 		'SAT',
 		'Waypoint',
-		'Age',
+		'CategoryAge',
+		'ComponentAge',
 		'Is',
 		'Shoot',
 		'KickBack',
