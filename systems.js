@@ -6,6 +6,7 @@ window.onmouseup = function(e){
 	delete C.components.Click
 }
 
+var iteration = 0;
 //Keyboard keys
 ;(function(){
 
@@ -210,7 +211,9 @@ systems = {
 			}
 		})
 		})
-		C('RemoveCategory',{name: 'Collided'})
+		if( C.components.Collided ) {
+			C('RemoveCategory',{name: 'Collided'})
+		}
 	},
 
 	Waypoint: function(){
@@ -244,7 +247,7 @@ systems = {
 				C('Angle',id).value = angle
 			}
 		})
-		C('RemoveCategory', {name: 'WaypointReached'})
+		C.components.WaypointReached && C('RemoveCategory', {name: 'WaypointReached'})
 	},
 
 	Camera: function(){
@@ -276,7 +279,10 @@ systems = {
 
 	SplatVulnerable: function(){
 
+		v = C('SplatVulnerable')
+
 		_.each( C('SplatVulnerable'), function(vulnerable,id){
+
 			_.each(C('Collided',id).collisions, function(collision,against){
 
 				if( C.components.Splatter[against] ) {
@@ -284,7 +290,7 @@ systems = {
 				}
 			})
 		})
-		C('RemoveCategory',{ name: 'SplatVulnerable'})
+		C.components.SplatVulnerable && C('RemoveCategory',{ name: 'SplatVulnerable'})
 	},
 
 	ComponentAge: function(){
@@ -432,10 +438,16 @@ systems = {
 				// We need to manually delete the backup, as it is likely omitted
 				// from removal
 
+
 				delete C.components.Backup[restore.entity]
 				delete C.components.Delete[restore.entity]
+
+				console.log(restore.entity, iteration, _.keys(C(restore.entity*1)));
 			}
 		})
+		C.components.Restore && C('RemoveCategory', {name: 'Restore'})
+
+
 	},
 
 	Backup: function(){
@@ -475,6 +487,7 @@ systems = {
 	Splat: function(){
 
 		_.each( C('Splat') , function(splat, id){
+			console.log('splat',id)
 			var bits = 1;
 			var start = C('Location',id)
 			var dimensions = C('Dimensions',id)
@@ -514,20 +527,9 @@ systems = {
 
 			}
 		})
-		C('RemoveCategory',{ name: 'Splat'})
-	},
 
 
-	Stopped: function() {
-		_.each( C('Velocity'), function(v,id){
-			if( (v.x + v.y) < 0.5 ){
-				C('Stopped',{},id)
-			} else {
-				if(C.components.Stopped) {
-					C('RemoveComponent',{ name: 'Stopped'}, id)
-				}
-			}
-		})
+		C.components.Splat && C('RemoveCategory',{ name: 'Splat'})
 	},
 
 	RemoveVulnerable: function(){
@@ -540,7 +542,7 @@ systems = {
 
 			})
 		})
-		C('RemoveCategory',{ name: 'ShrinkVulnerable'})
+		C.components.RemoveCategory && C('RemoveCategory',{ name: 'ShrinkVulnerable'})
 	},
 
 	ShrinkVulnerable: function(){
@@ -553,7 +555,7 @@ systems = {
 
 			})
 		})
-		C('RemoveCategory',{ name: 'ShrinkVulnerable'})
+		C.components.ShrinkVulnerable && C('RemoveCategory',{ name: 'ShrinkVulnerable'})
 	},
 
 	Shrink: function(){
@@ -565,7 +567,7 @@ systems = {
 				C('Remove',{},id)
 			}
 		})
-		C('RemoveCategory',{ name: 'Shrink'})
+		C.components.Shrink && C('RemoveCategory',{ name: 'Shrink'})
 	},
 
 	RemoveEntity: function(){
@@ -632,7 +634,7 @@ systems = {
 		_.each(C('QuickSave'), function(qSave,id){
 			C('Save',id).state = _(C()).cloneDeep()
 		})
-		C('RemoveCategory',{name:'QuickSave'})
+		C.components.QuickSave && C('RemoveCategory',{name:'QuickSave'})
 	},
 
 	QuickLoad: function(){
@@ -645,7 +647,7 @@ systems = {
 			}
 
 		})
-		C('RemoveCategory',{name:'QuickLoad'})
+		C.components.QuickLoad && C('RemoveCategory',{name:'QuickLoad'})
 	},
 
 	GarbageCollection: function(){

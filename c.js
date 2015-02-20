@@ -23,6 +23,7 @@
 	}
 
 	var addComponent = function(componentName, componentData, entity_id){
+
 		entity_id = entity_id || uid++
 		var category = (C.components[componentName] = C.components[componentName] || {})
 		var current_component = category[entity_id] = category[entity_id] || {}

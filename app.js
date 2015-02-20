@@ -178,7 +178,6 @@ room01 = function(){
 		'AddVelocity',
 		'VelocitySyncedWithAngle',
 		'BounceBox',
-		'Stopped',
 		'Facing',
 		'Move',
 		'Friction',
@@ -189,7 +188,6 @@ room01 = function(){
 		'Shrink',
 		'SplatVulnerable',
 		'Splat',
-		'Unsplat',
 		'RemoveVulnerable',
 		'Spawn',
 		'Sounds',
@@ -214,6 +212,7 @@ loop = function(){
 	use.map(function(system){
 		systems[system]()
 	})
+	iteration++
 	requestAnimationFrame(loop)
 }
 
