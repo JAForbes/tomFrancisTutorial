@@ -176,11 +176,12 @@ room01 = function(){
 		'RemoveVulnerable',
 		'Spawn',
 		'Sounds',
-		'Delete',
-		'Remove',
+		'DeleteEntity',
+		'RemoveEntity',
+		'RemoveComponent',
 		'QuickSave',
 		'QuickLoad',
-		'CleanUp'
+		'RemoveCategory',
 	]
 
 }

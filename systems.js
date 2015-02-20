@@ -106,6 +106,7 @@ systems = {
 			v.x += add.x || 0
 			v.y += add.y || 0
 		})
+		C.components.AddVelocity && C('RemoveCategory', {name: 'AddVelocity'})
 	},
 
 	VelocitySyncedWithAngle: function(){
@@ -209,6 +210,7 @@ systems = {
 			}
 		})
 		})
+		C('RemoveCategory',{name: 'Collided'})
 	},
 
 	Waypoint: function(){
@@ -222,7 +224,7 @@ systems = {
 			)
 			if ( d < w.minimum_distance ){
 				C('WaypointReached', {}, id)
-				delete C.components.Waypoint[id]
+				C('RemoveComponent', { name: 'Waypoint'},id)
 				w.speed = 0
 				v.x = 0
 				v.y = 0
@@ -235,6 +237,7 @@ systems = {
 				C('Angle',id).value = angle
 			}
 		})
+		C('RemoveCategory', {name: 'WaypointReached'})
 	},
 
 	Camera: function(){
@@ -261,6 +264,7 @@ systems = {
 				Location: { x: spawn_point.x, y: spawn_point.y }
 			},spawned)
 		})
+		C.components.Spawn && C('RemoveCategory',{name: 'Spawn'})
 	},
 
 	SplatVulnerable: function(){
@@ -273,6 +277,7 @@ systems = {
 				}
 			})
 		})
+		C('RemoveCategory',{ name: 'SplatVulnerable'})
 	},
 
 	ComponentAge: function(){
@@ -389,6 +394,7 @@ systems = {
 
 			}
 		})
+		C('RemoveCategory',{ name: 'Splat'})
 	},
 
 	Unsplat: function(){
@@ -439,7 +445,7 @@ systems = {
 				C('Stopped',{},id)
 			} else {
 				if(C.components.Stopped) {
-					delete C.components.Stopped[id]
+					C('RemoveComponent',{ name: 'Stopped'}, id)
 				}
 			}
 		})
@@ -455,6 +461,7 @@ systems = {
 
 			})
 		})
+		C('RemoveCategory',{ name: 'ShrinkVulnerable'})
 	},
 
 	ShrinkVulnerable: function(){
@@ -467,6 +474,7 @@ systems = {
 
 			})
 		})
+		C('RemoveCategory',{ name: 'ShrinkVulnerable'})
 	},
 
 	Shrink: function(){
@@ -478,9 +486,10 @@ systems = {
 				C('Remove',{},id)
 			}
 		})
+		C('RemoveCategory',{ name: 'Shrink'})
 	},
 
-	Remove: function(){
+	RemoveEntity: function(){
 		_.each(C('Remove'), function(remove,id){
 
 			var removed = {}
@@ -495,7 +504,22 @@ systems = {
 		})
 	},
 
-	Delete: function(){
+
+	RemoveComponent: function(){
+		_.each( C('RemoveComponent'), function(removeComponent,id){
+			delete C.components[removeComponent.name][id]
+		})
+		delete C.components.RemoveComponent
+	},
+
+	RemoveCategory: function(){
+		_.each( C('RemoveCategory'), function(RemoveCategory){
+			delete C.components[RemoveCategory.name]
+		})
+		delete C.components.RemoveCategory
+	},
+
+	DeleteEntity: function(){
 		_.each( C('Delete'), function( deleted, id){
 			C(id,null)
 		})
@@ -514,13 +538,15 @@ systems = {
 
 	QuickSave: function(){
 		_.each(C('QuickSave'), function(qSave,id){
-
+			console.log('QuickSave')
 			C('Save',id).state = _(C()).cloneDeep()
 		})
+		C('RemoveCategory',{name:'QuickSave'})
 	},
 
 	QuickLoad: function(){
 		_.each(C('QuickLoad'), function(qLoad,id){
+			console.log('QuickLoad')
 			var save = C('Save',id).state
 
 			if( !_.isEmpty(save) ){
@@ -529,6 +555,7 @@ systems = {
 			}
 
 		})
+		C('RemoveCategory',{name:'QuickLoad'})
 	},
 
 	GarbageCollection: function(){
@@ -569,6 +596,7 @@ systems = {
 			p.x += v.x * shoot.spawn_radius
 			p.y += v.y * shoot.spawn_radius
 		})
+		C.components.Shoot && C('RemoveCategory', {name: 'Shoot'})
 	},
 
 	KickBack: function(){
@@ -633,20 +661,5 @@ systems = {
 				}
 			})
 		})
-	},
-
-	CleanUp: function(){
-		delete C.components.Spawn
-		delete C.components.AddVelocity
-		delete C.components.Shoot
-		delete C.components.Collided
-		delete C.components.ShrinkVulnerable
-		delete C.components.RemoveVulnerable
-		delete C.components.Shrink
-		delete C.components.Splat
-		delete C.components.SplatVulnerable
-		delete C.components.QuickSave
-		delete C.components.QuickLoad
-		delete C.components.WaypointReached
 	}
 }
