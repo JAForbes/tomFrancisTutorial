@@ -365,7 +365,6 @@ systems = {
 		})
 	},
 
-	// Todo currently patrol only has two waypoints, in future could be an array HOW COOL WOULD THAT BE!
 	Patrol: function(){
 		_.each(C('Patrol'), function(patrol,id){
 			var p = C('Location',id)
@@ -374,7 +373,6 @@ systems = {
 
 			var patrol_is_new = !patrol.start
 			var patrol_is_not_new = !patrol_is_new
-
 			var waypoint_exists = !!(C.components.Waypoint && C.components.Waypoint[id])
 
 
@@ -382,27 +380,44 @@ systems = {
 			if( patrol_is_new ) {
 
 				patrol.start = { x: p.x , y: p.y }
-				C('Waypoint', { x: patrol.x , y: patrol.y }, id )
+				patrol.waypoints.push(patrol.start)
+				console.log( JSON.stringify( patrol.waypoints))
+
+				var waypoint = patrol.waypoints.shift()
+				C('Waypoint', waypoint, id )
 			} else if( patrol_is_not_new ){
 
-				//reached first waypoint
+				//reached a waypoint
 				if( !waypoint_exists ){
 
 					var backAtStart = p.x == patrol.start.x && p.y == patrol.start.y
-					var reached_first_waypoint = !backAtStart
+					var reachedActiveWaypoint = !backAtStart
 
 					//could either have reached home, or reached the first waypoint
 					if(backAtStart){
 						C('PatrolComplete', {}, id)
-
 						C('RemoveComponent', {name: 'PatrolComplete'}, id)
 						C('RemoveComponent', {name: 'Patrol'}, id)
-					} else if (reached_first_waypoint) {
-						//TODO is it safe to just reference patrol.start? probably...
-						C('Waypoint', {x: patrol.start.x, y: patrol.start.y }, id)
+					} else if (reachedActiveWaypoint) {
+						C('Waypoint', patrol.waypoints.shift(), id)
 					}
 				}
 			}
+		})
+	},
+
+	Repeat: function(){
+		_.each(C('Repeat'), function(repeat, id){
+			_.each(repeat, function(settings, componentName){
+
+				if( settings.remaining >= 1){
+					var removed = !(C.components[componentName] && C.components[componentName][id])
+					if(removed){
+						settings.remaining--
+						C(componentName, _.cloneDeep(settings.component), id)
+					}
+				}
+			})
 		})
 	},
 
@@ -432,14 +447,17 @@ systems = {
 			for( var bitsSoFar = 0; bitsSoFar < bits; bitsSoFar++ ){
 
 				var angle = (2 * Math.PI / bits) * bitsSoFar + _.random(-0.3, 0.3);
-				var velocity =  { x: Math.cos(angle) * _.random(10,15), y: Math.sin(angle) * _.random(10,15)}
+				var v =  { x: Math.cos(angle) * 10, y: Math.sin(angle) * 10}
+
 				var spawned_splat = C({
 					Location: { x: start.x , y: start.y },
 					Sprite: sprite,
 					Dimensions: backup.Dimensions,
 					Angle: { value: angle },
-					Velocity: {x: velocity.x , y: velocity.y },
-					Friction: { value : 0.963 }
+					Velocity: {x: 0 , y: 0 },
+					Friction: { value : 0.963 },
+					Patrol: { x: start.x + Math.cos(angle) * 200, y: start.y + Math.sin(angle) * 200 },
+					Speed: { value: 5}
 					//Unsplat: { respawn: backup, respawn_id: id, initial_location: {x: start.x , y: start.y}, initial_velocity:  { x: velocity.x, y: velocity.y } }
 				})
 

@@ -92,19 +92,30 @@ room01 = function(){
 	enemy = C({
 		Angle: { value: 0},
 		Facing: { entity: player},
-		Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
+		Location: { x: -200, y: 200},
 		//Velocity: { x:_.random(2,4), y:_.random(2,4) },
 		Velocity: { x:0, y:0 },
-		Speed: {value: 2},
+		Speed: {value: 5},
 		Dimensions: { width: 64, height: 64 },
 		Sprite: { image: s_enemy },
 		// BounceBox: { x:-300, y:-300, width: 600, height: 600 },
 		SAT: {},
-		CollidesWith: { types: ['Shrinker'] } ,
+		CollidesWith: { types: ['Shrinker'] },
+		Repeat: {
+			Patrol: {
+				component: {
+					waypoints: [
+						{x:-200, y: -200},
+						{x: 200 , y: -200 },
+						{x: 200 , y: -200 },
+						{x: 200 , y: 200 },
+					]
+				},
+				remaining: Infinity
+			}
+		},
+
 		Is: {
-			'@Is': {
-				Patrol: { component: {x: _.random(-300, 300), y: _.random(-300, 300) }},
-			},
 			'@Collided': {
 				ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }} },
 			},
@@ -187,6 +198,7 @@ room01 = function(){
 		'QuickSave',
 		'QuickLoad',
 		'RemoveCategory',
+		'Repeat'
 	]
 
 }
