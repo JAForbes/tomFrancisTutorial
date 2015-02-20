@@ -491,6 +491,8 @@ systems = {
 			var start = C('Location',id)
 			var dimensions = C('Dimensions',id)
 
+			var reform = true;
+
 			var wave_entities = []
 			var wave_id = C({
 				Wave: { entities: wave_entities },
@@ -512,7 +514,7 @@ systems = {
 					Angle: { value: angle },
 					Velocity: {x: 0 , y: 0 },
 					//todo control with a flag on splat, like `reform`
-					Patrol: { waypoints: [{x: start.x + Math.cos(angle) * 200, y: start.y + Math.sin(angle) * 200}] },
+					Waypoint: { x: start.x + Math.cos(angle) * 200, y: start.y + Math.sin(angle) * 200 },
 					//todo use acceleration inside waypoint, accelerate toward a waypoint, affected by friction, velocity etc
 					Speed: { value: 5},
 					WaveEntity: { wave_id: wave_id },
@@ -524,6 +526,10 @@ systems = {
 					}
 				})
 				wave_entities.push(spawned_splat)
+				if(reform){
+					splat.components.Patrol = { waypoints: [ splat.components.Waypoint ] }
+					delete splat.components.Waypoint
+				}
 				if(splat.components){
 					//todo have a flag for locking image_angle to initial angle
 					if(splat.components.Sprite){
