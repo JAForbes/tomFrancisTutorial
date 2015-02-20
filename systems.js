@@ -346,8 +346,8 @@ systems = {
 						var age = CategoryAge[isName]
 
 						_.each( components, function(settings, componentName){
-
-							if( (age-initial) % settings.every == 0){
+							var every = settings.every || 1
+							if( (age-initial) % every == 0){
 								C(componentName, settings.component, id)
 							}
 						})

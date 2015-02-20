@@ -57,7 +57,7 @@ room01 = function(){
 							CollidesWith: { types: ['Remover'] },
 							Is: {
 								'@Collided': {
-									RemoveVulnerable: { component: {}, every: 1}
+									RemoveVulnerable: { component: {}}
 								}
 							}
 						}
@@ -66,20 +66,20 @@ room01 = function(){
 				}
 			},
 			'Key_A|Key_LEFT': {
-				AddVelocity: { component: {x: -3}, every: 1 }
+				AddVelocity: { component: {x: -3} }
 			},
 			'Key_D|Key_RIGHT': {
-				AddVelocity: { component: {x: 3}, every: 1 }
+				AddVelocity: { component: {x: 3} }
 			},
 			'Key_S|Key_DOWN': {
-				AddVelocity: { component: {y: 3}, every: 1 }
+				AddVelocity: { component: {y: 3} }
 			},
 			'Key_W|Key_UP': {
-				AddVelocity: { component: {y: -3}, every: 1 }
+				AddVelocity: { component: {y: -3} }
 			},
 			'@Collided': {
-				SplatVulnerable: { component: { settings:{ sprite: s_splat } }, every: 1 },
-				Remove: { component: { settings:{} }, every: 1 }
+				SplatVulnerable: { component: { settings:{ sprite: s_splat } } },
+				Remove: { component: { settings:{} } }
 			}
 		},
 		CollidesWith: { types: ['Splatter','Remover'] } ,
@@ -102,15 +102,14 @@ room01 = function(){
 		CollidesWith: { types: ['Shrinker'] } ,
 		Is: {
 			'@Collided': {
-				ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }}, every: 1 },
+				ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }} },
 			},
 			'@Delete' : {
 				Spawn: {
 					component: {
 						points: [{x:0,y:0}],
 						variation: 300
-					},
-					every: 1
+					}
 				}
 			}
 		},
@@ -136,8 +135,8 @@ room01 = function(){
 		CollidesWith: { types: ['Splatter'] } ,
 		Is: {
 			'@Collided': {
-				SplatVulnerable: { component: { settings:{ sprite: s_exploding_enemy_splat } }, every: 1 },
-				Remove: { component: {} ,every: 1}
+				SplatVulnerable: { component: { settings:{ sprite: s_exploding_enemy_splat } } },
+				Remove: { component: {}}
 			}
 		},
 		Remover: {},
