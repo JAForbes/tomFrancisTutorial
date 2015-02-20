@@ -25,7 +25,7 @@ room01 = function(){
 		Facing: { entity: mouse },
 		Location: {x:10,y:14},
 		Velocity: {x:0,y:0},
-		Friction: { value: 0.4 },
+		Friction: { value: 0.9 },
 		Dimensions: { width: 32, height: 32},
 		Sprite: { image: s_player },
 
@@ -66,16 +66,16 @@ room01 = function(){
 				}
 			},
 			'Key_A|Key_LEFT': {
-				AddVelocity: { component: {x: -3} }
+				Accelerate: { component: {x: -1} }
 			},
 			'Key_D|Key_RIGHT': {
-				AddVelocity: { component: {x: 3} }
+				Accelerate: { component: {x: 1} }
 			},
 			'Key_S|Key_DOWN': {
-				AddVelocity: { component: {y: 3} }
+				Accelerate: { component: {y: 1} }
 			},
 			'Key_W|Key_UP': {
-				AddVelocity: { component: {y: -3} }
+				Accelerate: { component: {y: -1} }
 			},
 			'@Collided': {
 				SplatVulnerable: { component: { settings:{ components: {Sprite: { image: s_splat }}  } } },
@@ -175,7 +175,7 @@ room01 = function(){
 		'Is',
 		'Shoot',
 		'KickBack',
-		'AddVelocity',
+		'Accelerate',
 		'VelocitySyncedWithAngle',
 		'BounceBox',
 		'Facing',

@@ -101,15 +101,6 @@ systems = {
 		})
 	},
 
-	AddVelocity: function(){
-		_.each(C('AddVelocity'),function(add,id){
-			var v = C('Velocity',id)
-			v.x += add.x || 0
-			v.y += add.y || 0
-		})
-		C.components.AddVelocity && C('RemoveCategory', {name: 'AddVelocity'})
-	},
-
 	VelocitySyncedWithAngle: function(){
 		_.each( C('VelocitySyncedWithAngle'), function(synced, id){
 			var v = C('Velocity',id)
@@ -118,6 +109,16 @@ systems = {
 			v.x = Math.cos(a) * speed
 			v.y = Math.sin(a) * speed
 		})
+	},
+
+	Accelerate: function(){
+		_.each( C('Accelerate'), function(a, id){
+			var v = C('Velocity',id)
+
+			a.x && (v.x += a.x)
+			a.y && (v.y += a.y)
+		})
+		C('RemoveCategory', {name: 'Accelerate'})
 	},
 
 	Move: function(){
