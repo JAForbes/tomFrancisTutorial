@@ -91,16 +91,20 @@ room01 = function(){
 
 	enemy = C({
 		Angle: { value: 0},
-		Facing: { entity: mouse},
+		Facing: { entity: player},
 		Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
-		Velocity: { x:_.random(2,4), y:_.random(2,4) },
-
+		//Velocity: { x:_.random(2,4), y:_.random(2,4) },
+		Velocity: { x:0, y:0 },
+		Speed: {value: 2},
 		Dimensions: { width: 64, height: 64 },
 		Sprite: { image: s_enemy },
-		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+		// BounceBox: { x:-300, y:-300, width: 600, height: 600 },
 		SAT: {},
 		CollidesWith: { types: ['Shrinker'] } ,
 		Is: {
+			'@Is': {
+				Patrol: { component: {x: _.random(-300, 300), y: _.random(-300, 300) }},
+			},
 			'@Collided': {
 				ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }} },
 			},
@@ -122,26 +126,27 @@ room01 = function(){
 	Enemy.Is['@Delete'].Spawn.component.components = Enemy
 
 	C.components.Is[enemy]['@Delete'].Spawn.component.components = Enemy
-	exploding_enemy = C({
-		Angle: { value: 0},
-		Facing: { entity: mouse},
-		Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
-		Velocity: { x:_.random(1,2), y:_.random(1,2) },
 
-		Dimensions: { width: 64, height: 64 },
-		Sprite: { image: s_exploding_enemy },
-		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
-		SAT: {},
-		CollidesWith: { types: ['Splatter'] } ,
-		Is: {
-			'@Collided': {
-				SplatVulnerable: { component: { settings:{ sprite: s_exploding_enemy_splat } } },
-				Remove: { component: {}}
-			}
-		},
-		Remover: {},
-		Splatter: {}
-	})
+	// exploding_enemy = C({
+	// 	Angle: { value: 0},
+	// 	Facing: { entity: mouse},
+	// 	Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
+	// 	Velocity: { x:_.random(1,2), y:_.random(1,2) },
+
+	// 	Dimensions: { width: 64, height: 64 },
+	// 	Sprite: { image: s_exploding_enemy },
+	// 	BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+	// 	SAT: {},
+	// 	CollidesWith: { types: ['Splatter'] } ,
+	// 	Is: {
+	// 		'@Collided': {
+	// 			SplatVulnerable: { component: { settings:{ sprite: s_exploding_enemy_splat } } },
+	// 			Remove: { component: {}}
+	// 		}
+	// 	},
+	// 	Remover: {},
+	// 	Splatter: {}
+	// })
 
 	use = [
 		'Screen',
@@ -151,9 +156,10 @@ room01 = function(){
 		'CollidesWith',
 		'SAT_sync',
 		'SAT',
-		'Waypoint',
 		'CategoryAge',
 		'ComponentAge',
+		'Patrol',
+		'Waypoint',
 		'Is',
 		'Shoot',
 		'KickBack',

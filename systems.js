@@ -215,24 +215,31 @@ systems = {
 
 	Waypoint: function(){
 		_.each( C('Waypoint'), function(w, id){
+
+
 			var p = C('Location',id)
 			var v = C('Velocity',id)
+			var s = C('Speed', id)
 
 			var d = Math.sqrt(
 				Math.pow(p.x-w.x,2) +
 				Math.pow(p.y -w.y,2)
 			)
-			if ( d < w.minimum_distance ){
+
+			var min_distance = s.value;
+			if ( d < min_distance ){
 				C('WaypointReached', {}, id)
 				C('RemoveComponent', { name: 'Waypoint'},id)
 				w.speed = 0
 				v.x = 0
 				v.y = 0
+				p.x = w.x
+				p.y = w.y
 
 			} else {
 				var angle = Math.atan2( w.y-p.y, w.x-p.x ) - Math.PI
-				v.x = Math.cos(angle) * w.speed
-				v.y = Math.sin(angle) * w.speed
+				v.x = Math.cos(angle) * s.value * -1
+				v.y = Math.sin(angle) * s.value * -1
 
 				C('Angle',id).value = angle
 			}
@@ -358,10 +365,50 @@ systems = {
 		})
 	},
 
+	// Todo currently patrol only has two waypoints, in future could be an array HOW COOL WOULD THAT BE!
+	Patrol: function(){
+		_.each(C('Patrol'), function(patrol,id){
+			var p = C('Location',id)
+			var w = C('Waypoint',id)
 
-	// Add some components to yourself after a designated number of cycles
+
+			var patrol_is_new = !patrol.start
+			var patrol_is_not_new = !patrol_is_new
+
+			var waypoint_exists = !!(C.components.Waypoint && C.components.Waypoint[id])
+
+
+
+			if( patrol_is_new ) {
+
+				patrol.start = { x: p.x , y: p.y }
+				C('Waypoint', { x: patrol.x , y: patrol.y }, id )
+			} else if( patrol_is_not_new ){
+
+				//reached first waypoint
+				if( !waypoint_exists ){
+
+					var backAtStart = p.x == patrol.start.x && p.y == patrol.start.y
+					var reached_first_waypoint = !backAtStart
+
+					//could either have reached home, or reached the first waypoint
+					if(backAtStart){
+						C('PatrolComplete', {}, id)
+
+						C('RemoveComponent', {name: 'PatrolComplete'}, id)
+						C('RemoveComponent', {name: 'Patrol'}, id)
+					} else if (reached_first_waypoint) {
+						//TODO is it safe to just reference patrol.start? probably...
+						C('Waypoint', {x: patrol.start.x, y: patrol.start.y }, id)
+					}
+				}
+			}
+		})
+	},
+
+	// TODO: Add some components to yourself after a designated number of cycles
 	After: function(){
-
+		throw "Not Yet Implemented"
 	},
 
 	Splat: function(){
@@ -371,7 +418,11 @@ systems = {
 			var start = C('Location',id)
 			var backup = C(id*1)
 
-			//todo, but the deletes in the splat settings
+			//backup system/component
+			//unsplat just move back to original position
+			//Signal when waypoint of unsplat is reached, trigger respawn from backup
+
+			//todo, put the deletes in the splat settings
 			//infact, don't assume splat respawns, give it a hash to create
 			//so one enemy type can create another enemy type for example
 			//or an explosion could spawn smoke...
@@ -382,16 +433,17 @@ systems = {
 
 				var angle = (2 * Math.PI / bits) * bitsSoFar + _.random(-0.3, 0.3);
 				var velocity =  { x: Math.cos(angle) * _.random(10,15), y: Math.sin(angle) * _.random(10,15)}
-				var splat = C({
+				var spawned_splat = C({
 					Location: { x: start.x , y: start.y },
 					Sprite: sprite,
 					Dimensions: backup.Dimensions,
 					Angle: { value: angle },
 					Velocity: {x: velocity.x , y: velocity.y },
-					Friction: { value : 0.963 },
-					Unsplat: { respawn: backup, respawn_id: id, initial_location: {x: start.x , y: start.y}, initial_velocity:  { x: velocity.x, y: velocity.y } }
+					Friction: { value : 0.963 }
+					//Unsplat: { respawn: backup, respawn_id: id, initial_location: {x: start.x , y: start.y}, initial_velocity:  { x: velocity.x, y: velocity.y } }
 				})
 
+				splat.components && C(splat.components,spawned_splat)
 			}
 		})
 		C('RemoveCategory',{ name: 'Splat'})
