@@ -43,7 +43,7 @@ room01 = function(){
 			'Click|Key_SPACE': {
 				Shoot: {
 					component : {
-						spawn_radius: 0,
+						spawn_radius: 1.05,
 						jitter: 0,
 						size: 15,
 						size_variation: 5,
@@ -78,8 +78,9 @@ room01 = function(){
 				AddVelocity: { component: {y: -3} }
 			},
 			'@Collided': {
-				SplatVulnerable: { component: { settings:{ sprite: s_splat } } },
-				Remove: { component: { settings:{} } }
+				SplatVulnerable: { component: { settings:{ components: {Sprite: { image: s_splat }}  } } },
+				Backup: { component: { omit: ['Splat', 'SplatVulnerable', 'Remove', 'Collided']} },
+				Remove: { component: {  omit: ['Backup'] } }
 			}
 		},
 		CollidesWith: { types: ['Splatter','Remover'] } ,
@@ -192,13 +193,17 @@ room01 = function(){
 		'RemoveVulnerable',
 		'Spawn',
 		'Sounds',
+		'Wave',
+		'Backup',
 		'DeleteEntity',
 		'RemoveEntity',
 		'RemoveComponent',
 		'QuickSave',
 		'QuickLoad',
 		'RemoveCategory',
-		'Repeat'
+		'Repeat',
+		'Restore',
+
 	]
 
 }

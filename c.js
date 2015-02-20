@@ -95,7 +95,11 @@
 
 	C = function(){
 		var sig = signature.apply(null,arguments)
+		if( sig == 'Str' && arguments[0].length == 1 ){
+			sig = 'Num'
+		}
 		var route = routes[sig]
+
 		if(route){
 			return route.apply(null,arguments)
 		} else if (arguments.length > 1) {

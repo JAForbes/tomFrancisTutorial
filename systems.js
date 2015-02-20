@@ -381,7 +381,6 @@ systems = {
 
 				patrol.start = { x: p.x , y: p.y }
 				patrol.waypoints.push(patrol.start)
-				console.log( JSON.stringify( patrol.waypoints))
 
 				var waypoint = patrol.waypoints.shift()
 				C('Waypoint', waypoint, id )
@@ -421,6 +420,53 @@ systems = {
 		})
 	},
 
+	Restore: function(){
+		_.each(C('Restore'), function(restore, restore_id){
+			var backup = C('Backup',restore.entity).components
+
+
+			if(backup){
+				C(backup,restore.entity)
+				C('Remove',{},restore_id)
+
+				// We need to manually delete the backup, as it is likely omitted
+				// from removal
+
+				delete C.components.Backup[restore.entity]
+				delete C.components.Delete[restore.entity]
+			}
+		})
+	},
+
+	Backup: function(){
+
+		_.each(C('Backup'), function(backup, id){
+
+			if(!backup.components){
+				backup.components = _.cloneDeep(
+					_.omit(C(id*1), backup.omit)
+				)
+			}
+		})
+	},
+
+	//Triggers a WaveRemoved when the wave entities no longer exist
+	Wave: function(){
+		_.each(C('Wave'), function(wave,wave_id){
+			var getWaveEntityById = C.bind('WaveEntity');
+			var notEmpty = _.negate(_.isEmpty)
+		    var remaining = wave.entities
+		    	.map(getWaveEntityById)
+		    	.filter(notEmpty)
+
+		    //todo maybe store remaining, could be useful for UI stuff?
+		    //10 enemies remaing, or 10 items to collect
+			if(remaining.length == 0){
+				C('WaveEmpty', {}, wave_id)
+			}
+		})
+	},
+
 	// TODO: Add some components to yourself after a designated number of cycles
 	After: function(){
 		throw "Not Yet Implemented"
@@ -429,21 +475,20 @@ systems = {
 	Splat: function(){
 
 		_.each( C('Splat') , function(splat, id){
-			var bits = 100;
+			var bits = 1;
 			var start = C('Location',id)
-			var backup = C(id*1)
+			var dimensions = C('Dimensions',id)
 
-			//backup system/component
-			//unsplat just move back to original position
-			//Signal when waypoint of unsplat is reached, trigger respawn from backup
-
-			//todo, put the deletes in the splat settings
-			//infact, don't assume splat respawns, give it a hash to create
-			//so one enemy type can create another enemy type for example
-			//or an explosion could spawn smoke...
-			delete backup.Splat
-			delete backup.Remove
-			var sprite =  { image: splat.sprite }
+			var wave_entities = []
+			var wave_id = C({
+				Wave: { entities: wave_entities },
+				Is: {
+					'@WaveEmpty': {
+						Restore: { component: {entity: id} },
+						Remove: { component: { omit: ['Restore']} }
+					}
+				}
+			})
 			for( var bitsSoFar = 0; bitsSoFar < bits; bitsSoFar++ ){
 
 				var angle = (2 * Math.PI / bits) * bitsSoFar + _.random(-0.3, 0.3);
@@ -451,63 +496,27 @@ systems = {
 
 				var spawned_splat = C({
 					Location: { x: start.x , y: start.y },
-					Sprite: sprite,
-					Dimensions: backup.Dimensions,
+					Dimensions: dimensions,
 					Angle: { value: angle },
 					Velocity: {x: 0 , y: 0 },
 					Friction: { value : 0.963 },
 					Patrol: { waypoints: [{x: start.x + Math.cos(angle) * 200, y: start.y + Math.sin(angle) * 200}] },
-					Speed: { value: 5}
-					//Unsplat: { respawn: backup, respawn_id: id, initial_location: {x: start.x , y: start.y}, initial_velocity:  { x: velocity.x, y: velocity.y } }
+					Speed: { value: 5},
+					WaveEntity: { wave_id: wave_id },
+					Is: {
+						'@PatrolComplete': {
+							Remove: { component: {} }
+						},
+					}
 				})
-
+				wave_entities.push(spawned_splat)
 				splat.components && C(splat.components,spawned_splat)
+
 			}
 		})
 		C('RemoveCategory',{ name: 'Splat'})
 	},
 
-	Unsplat: function(){
-		var splats_at_start_of_loop = 0;
-		var splats_remaining = 0;
-		var splatted_persist;
-		_.each(C('Unsplat'), function(splatted,id){
-			splats_remaining++
-			splats_at_start_of_loop++
-		  var angle = C('Angle',id).value
-
-
-		  var v = C('Velocity',id)
-		  var p = C('Location',id)
-		  var w = splatted.initial_location
-		  if( Math.abs(v.x) + Math.abs(v.y) < 0.32 ){
-
-		  	v.x = -splatted.initial_velocity.x
-		  	v.y = -splatted.initial_velocity.y
-		  	splatted.returning = true
-
-
-		  }
-
-		  var d = Math.sqrt(
-			Math.pow(p.x-w.x,2) +
-			Math.pow(p.y -w.y,2)
-		  )
-		  var back_at_start = (d < (Math.abs(v.x) + Math.abs(v.y)) )
-
-		  if(splatted.returning && back_at_start ){
-		  	C('Remove',{},id)
-		  	splats_remaining--
-		  	splatted_persist = splatted
-		  }
-		})
-		if( splats_at_start_of_loop > 0 && splats_remaining == 0){
-			var player = C(splatted_persist.respawn, splatted_persist.respawn_id*1 )
-		  	var p = C('Location',player)
-		  	p.x = splatted_persist.initial_location.x
-		  	p.y = splatted_persist.initial_location.y
-		}
-	},
 
 	Stopped: function() {
 		_.each( C('Velocity'), function(v,id){
@@ -561,16 +570,25 @@ systems = {
 
 	RemoveEntity: function(){
 		_.each(C('Remove'), function(remove,id){
-
+			id == 3 && console.log('removed player')
 			var removed = {}
 			removed.Is = C('Is',id)
 			removed.Delete = {}
-			C(id,null)
+			//todo should this be a part of C(id,null)?
+			//like C(id,null,omit)
+			if( remove.omit ){
+				_.each( _.omit( C(id*1), remove.omit ) , function(component, key){
+					delete C.components[key][id]
+				})
+			} else {
+				C(id,null)
+			}
+			//Move this Is thing into omit?
 			C.components['Is'] = C.components['Is'] || {}
 			C.components['Is'][id] = removed.Is
 
 			C.components['Delete'] = C.components['Delete'] || {}
-			C.components['Delete'][id] = {}
+			C.components['Delete'][id] = { omit: remove.omit || [] }
 		})
 	},
 
@@ -590,8 +608,12 @@ systems = {
 	},
 
 	DeleteEntity: function(){
-		_.each( C('Delete'), function( deleted, id){
-			C(id,null)
+		_.each( C('Delete'), function( remove, id){
+
+			_.each( _.omit( C(id*1) , remove.omit ) , function(component, key){
+				delete C.components[key][id]
+			})
+
 		})
 	},
 
@@ -608,7 +630,6 @@ systems = {
 
 	QuickSave: function(){
 		_.each(C('QuickSave'), function(qSave,id){
-			console.log('QuickSave')
 			C('Save',id).state = _(C()).cloneDeep()
 		})
 		C('RemoveCategory',{name:'QuickSave'})
@@ -616,7 +637,6 @@ systems = {
 
 	QuickLoad: function(){
 		_.each(C('QuickLoad'), function(qLoad,id){
-			console.log('QuickLoad')
 			var save = C('Save',id).state
 
 			if( !_.isEmpty(save) ){
