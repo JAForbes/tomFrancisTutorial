@@ -456,7 +456,7 @@ systems = {
 					Angle: { value: angle },
 					Velocity: {x: 0 , y: 0 },
 					Friction: { value : 0.963 },
-					Patrol: { x: start.x + Math.cos(angle) * 200, y: start.y + Math.sin(angle) * 200 },
+					Patrol: { waypoints: [{x: start.x + Math.cos(angle) * 200, y: start.y + Math.sin(angle) * 200}] },
 					Speed: { value: 5}
 					//Unsplat: { respawn: backup, respawn_id: id, initial_location: {x: start.x , y: start.y}, initial_velocity:  { x: velocity.x, y: velocity.y } }
 				})
