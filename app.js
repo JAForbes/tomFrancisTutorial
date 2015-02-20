@@ -25,6 +25,7 @@ room01 = function(){
 		Facing: { entity: mouse },
 		Location: {x:10,y:14},
 		Velocity: {x:0,y:0},
+		Acceleration: { x:0 , y:0 },
 		Friction: { value: 0.9 },
 		Dimensions: { width: 32, height: 32},
 		Sprite: { image: s_player },
@@ -78,7 +79,7 @@ room01 = function(){
 				Accelerate: { component: {y: -1} }
 			},
 			'@Collided': {
-				SplatVulnerable: { component: { settings:{ components: {Sprite: { image: s_splat }}  } } },
+				SplatVulnerable: { component: { settings:{  speed: 20, components: {Sprite: { image: s_splat }}  } } },
 				Backup: { component: { omit: ['Splat', 'SplatVulnerable', 'Remove', 'Collided']} },
 				Remove: { component: {  omit: ['Backup'] } }
 			}
@@ -96,12 +97,14 @@ room01 = function(){
 		Location: { x: -200, y: 200},
 		//Velocity: { x:_.random(2,4), y:_.random(2,4) },
 		Velocity: { x:0, y:0 },
+		Acceleration: { x:0 , y:0 },
 		Speed: {value: 5},
 		Dimensions: { width: 64, height: 64 },
 		Sprite: { image: s_enemy },
 		// BounceBox: { x:-300, y:-300, width: 600, height: 600 },
 		SAT: {},
 		CollidesWith: { types: ['Shrinker'] },
+		Friction: { value: 0.01 },
 		Repeat: {
 			Patrol: {
 				component: {
@@ -179,8 +182,8 @@ room01 = function(){
 		'VelocitySyncedWithAngle',
 		'BounceBox',
 		'Facing',
-		'Move',
 		'Friction',
+		'Move',
 		'Camera',
 		'Draw',
 		'GarbageCollection',
@@ -193,6 +196,7 @@ room01 = function(){
 		'Sounds',
 		'Wave',
 		'Backup',
+		'Log',
 		'DeleteEntity',
 		'RemoveEntity',
 		'RemoveComponent',
@@ -212,7 +216,6 @@ loop = function(){
 	use.map(function(system){
 		systems[system]()
 	})
-	iteration++
 	requestAnimationFrame(loop)
 }
 

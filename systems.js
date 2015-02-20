@@ -6,7 +6,6 @@ window.onmouseup = function(e){
 	delete C.components.Click
 }
 
-var iteration = 0;
 //Keyboard keys
 ;(function(){
 
@@ -113,10 +112,10 @@ systems = {
 
 	Accelerate: function(){
 		_.each( C('Accelerate'), function(a, id){
-			var v = C('Velocity',id)
+			var A = C('Acceleration',id)
 
-			a.x && (v.x += a.x)
-			a.y && (v.y += a.y)
+			a.x && (A.x += a.x)
+			a.y && (A.y += a.y)
 		})
 		C('RemoveCategory', {name: 'Accelerate'})
 	},
@@ -124,9 +123,18 @@ systems = {
 	Move: function(){
 		_.each(C('Velocity'),function(v,id){
 			var p = C('Location',id);
+			var a = C('Acceleration',id);
+
+			v.x += a.x || 0
+			v.y += a.y || 0
+
 			p.x += v.x || 0
 			p.y += v.y || 0
+
+			a.x = 0
+			a.y = 0
 		})
+
 	},
 
 	Friction: function(){
@@ -223,16 +231,25 @@ systems = {
 
 
 			var p = C('Location',id)
+			w.start = w.start || { x: p.x, y: p.y }
 			var v = C('Velocity',id)
-			var s = C('Speed', id)
-
+			var A = C('Acceleration',id)
+			var f = C('Friction',id)
 			var d = Math.sqrt(
 				Math.pow(p.x-w.x,2) +
 				Math.pow(p.y -w.y,2)
 			)
 
-			var min_distance = s.value;
-			if ( d < min_distance ){
+
+			var s = Math.sqrt(
+				Math.pow(v.x,2) +
+				Math.pow(v.y,2)
+			)
+
+			var min_distance = s;
+
+			if ( d <= min_distance ){
+
 				C('WaypointComplete', {}, id)
 				C('RemoveComponent', { name: 'Waypoint'},id)
 				w.speed = 0
@@ -243,8 +260,9 @@ systems = {
 
 			} else {
 				var angle = Math.atan2( w.y-p.y, w.x-p.x ) - Math.PI
-				v.x = Math.cos(angle) * s.value * -1
-				v.y = Math.sin(angle) * s.value * -1
+
+				A.x += Math.cos(angle) * -1
+				A.y += Math.sin(angle) * -1
 
 				C('Angle',id).value = angle
 			}
@@ -402,10 +420,12 @@ systems = {
 
 					//could either have reached home, or reached the first waypoint
 					if(backAtStart){
+						console.log('Back at start!')
 						C('PatrolComplete', {}, id)
 						C('RemoveComponent', {name: 'PatrolComplete'}, id)
 						C('RemoveComponent', {name: 'Patrol'}, id)
 					} else if (reachedActiveWaypoint) {
+
 						C('Waypoint', patrol.waypoints.shift(), id)
 					}
 				}
@@ -491,6 +511,7 @@ systems = {
 			var bits = 8;
 			var start = C('Location',id)
 			var dimensions = C('Dimensions',id)
+			var speed = splat.speed || 5
 
 			var reform = true;
 
@@ -514,15 +535,18 @@ systems = {
 					Dimensions: dimensions,
 					Angle: { value: angle },
 					Velocity: {x: 0 , y: 0 },
+					Acceleration: {x: 0, y: 0},
+					Speed: { value: speed },
 					//todo control with a flag on splat, like `reform`
 					Waypoint: { x: start.x + Math.cos(angle) * 200, y: start.y + Math.sin(angle) * 200 },
 					//todo use acceleration inside waypoint, accelerate toward a waypoint, affected by friction, velocity etc
-					Speed: { value: 5},
 					WaveEntity: { wave_id: wave_id },
+					Friction: { value: 0.5 },
 					Is: {
 						//todo use a different listener if this is just a Waypoint, e.g. WaypointComplete
 						'@PatrolComplete': {
-							Remove: { component: {} }
+							Remove: { component: {} },
+							Log: { message: "PatrolComplete fired"}
 						},
 					}
 				})
@@ -544,6 +568,13 @@ systems = {
 
 
 		C.components.Splat && C('RemoveCategory',{ name: 'Splat'})
+	},
+
+	Log: function(){
+		_.each(C('Log'), function(log, id){
+			console.log(log.message)
+		})
+		C('RemoveCategory',{ name: 'Log'})
 	},
 
 	RemoveVulnerable: function(){
@@ -708,10 +739,10 @@ systems = {
 		_.each(C('Shoot'),function(shoot,id){
 			var kickBack = C('KickBack',id)
 			if(kickBack.strength){
-				var v = C('Velocity',id)
+				var a = C('Acceleration',id)
 				var angle = -C('Angle',id).value
-				v.x += -Math.cos(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
-				v.y += Math.sin(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
+				a.x += -Math.cos(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
+				a.y += Math.sin(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
 			}
 		})
 	},
