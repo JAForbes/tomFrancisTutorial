@@ -232,7 +232,7 @@ systems = {
 
 			var min_distance = s.value;
 			if ( d < min_distance ){
-				C('WaypointReached', {}, id)
+				C('WaypointComplete', {}, id)
 				C('RemoveComponent', { name: 'Waypoint'},id)
 				w.speed = 0
 				v.x = 0
@@ -248,7 +248,7 @@ systems = {
 				C('Angle',id).value = angle
 			}
 		})
-		C.components.WaypointReached && C('RemoveCategory', {name: 'WaypointReached'})
+		C.components.WaypointComplete && C('RemoveCategory', {name: 'WaypointComplete'})
 	},
 
 	Camera: function(){
@@ -511,11 +511,13 @@ systems = {
 					Dimensions: dimensions,
 					Angle: { value: angle },
 					Velocity: {x: 0 , y: 0 },
-					Friction: { value : 0.963 },
+					//todo control with a flag on splat, like `reform`
 					Patrol: { waypoints: [{x: start.x + Math.cos(angle) * 200, y: start.y + Math.sin(angle) * 200}] },
+					//todo use acceleration inside waypoint, accelerate toward a waypoint, affected by friction, velocity etc
 					Speed: { value: 5},
 					WaveEntity: { wave_id: wave_id },
 					Is: {
+						//todo use a different listener if this is just a Waypoint, e.g. WaypointComplete
 						'@PatrolComplete': {
 							Remove: { component: {} }
 						},
@@ -523,6 +525,7 @@ systems = {
 				})
 				wave_entities.push(spawned_splat)
 				if(splat.components){
+					//todo have a flag for locking image_angle to initial angle
 					if(splat.components.Sprite){
 						splat.components.Sprite.angle = angle
 					}
