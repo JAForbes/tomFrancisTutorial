@@ -1,11 +1,4 @@
-# Entity Component System Port of Tom Francis' Amazing Game Design Tutorial
-
-This project is a way for me to prove a programming methodology known as an Entity Component System.
-To do so, I'm following along with a Beginner game development tutorial that makes use of Game Maker.
-
-I'm following along and implementing all the systems that this tutorial makes use of.  So I know that
-this process would be useful generally.  But also to allow me to learn a lot of the second nature game dev skills
-that I have never picked up while doing game jams.
+# ECS JS port of Tom Francis' Amazing Game Design Tutorial
 
 What is this?
 -------------
