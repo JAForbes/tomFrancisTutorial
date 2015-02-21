@@ -534,40 +534,22 @@ systems = {
 					Location: { x: start.x , y: start.y },
 					Dimensions: dimensions,
 					Angle: { value: angle },
-					Velocity: {x: 0 , y: 0 },
+					Velocity: v,
 					Acceleration: {x: 0, y: 0},
 					Speed: { value: speed },
-					//todo control with a flag on splat, like `reform`
-					Waypoint: { x: start.x + Math.cos(angle) * 200, y: start.y + Math.sin(angle) * 200 },
-					//todo use acceleration inside waypoint, accelerate toward a waypoint, affected by friction, velocity etc
 					WaveEntity: { wave_id: wave_id },
-					Friction: { value: 0.5 },
-					Is: {
-						//todo use a different listener if this is just a Waypoint, e.g. WaypointComplete
-						'@PatrolComplete': {
-							Remove: { component: {} },
-							Log: { message: "PatrolComplete fired"}
-						},
-					}
+					Friction: { value: 1 },
 				})
 				wave_entities.push(spawned_splat)
-				if(reform){
-					splat.components.Patrol = { waypoints: [ splat.components.Waypoint ] }
-					delete splat.components.Waypoint
+				//todo have a flag for locking image_angle to initial angle
+				if(splat.components.Sprite){
+					splat.components.Sprite.angle = angle
 				}
-				if(splat.components){
-					//todo have a flag for locking image_angle to initial angle
-					if(splat.components.Sprite){
-						splat.components.Sprite.angle = angle
-					}
-					C(splat.components,spawned_splat)
-				}
+				C(splat.components,spawned_splat)
+
 
 			}
 		})
-
-
-		C.components.Splat && C('RemoveCategory',{ name: 'Splat'})
 	},
 
 	Log: function(){
