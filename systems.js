@@ -508,45 +508,54 @@ systems = {
 	Splat: function(){
 
 		_.each( C('Splat') , function(splat, id){
+			var wave = C.components.Wave && C.components.Wave[splat.wave_id]
+			initialized = !!wave
+			if(initialized){
 
-			var p = _.clone(C('Location',id))
-			var d = C('Dimensions',id)
+			} else {
 
-			var wave_entities = []
-			var wave_id = C({
-				Wave: { entities: wave_entities },
-				Location: p,
-			})
+				var p = _.clone(C('Location',id))
+				var d = C('Dimensions',id)
 
-			splat.bits = splat.bits || 8
-			splat.spread = splat.spread || 0.3
-			splat.friction = splat.friction || 0.9
-
-			var angle_segment = (2 * Math.PI / splat.bits);
-			var velocity = 20
-			for( var bitsSoFar = 0; bitsSoFar < splat.bits; bitsSoFar++ ){
-
-				var angle = angle_segment * bitsSoFar + _.random(-splat.spread,splat.spread);
-				var v =  { x: Math.cos(angle) * velocity, y: Math.sin(angle) * velocity}
-					v.initial = { x: v.x, y: v.y }
-					p.initial = { x: p.x, y: p.y }
-
-				var spawned_splat = C({
-					Location: {x: p.x, y: p.y},
-					Dimensions:d,
-					Angle: { value: angle },
-					Velocity: v,
-					Acceleration: {x: 0, y: 0},
-					WaveEntity: { wave_id: wave_id },
-					Friction: { value: splat.friction },
+				var wave_entities = []
+				splat.wave_id = C({
+					Wave: { entities: wave_entities },
+					Location: p,
 				})
-				wave_entities.push(spawned_splat)
-				//todo have a flag for locking image_angle to initial angle
-				if(splat.components.Sprite){
-					splat.components.Sprite.angle = angle
-				}
-				C(splat.components,spawned_splat)
 
+				splat.bits = splat.bits || 8
+				splat.spread = splat.spread || 0.3
+				splat.friction = splat.friction || 0.9
+
+				var angle_segment = (2 * Math.PI / splat.bits);
+				var velocity = 20
+				for( var bitsSoFar = 0; bitsSoFar < splat.bits; bitsSoFar++ ){
+
+					var angle = angle_segment * bitsSoFar + _.random(-splat.spread,splat.spread);
+					var v =  { x: Math.cos(angle) * velocity, y: Math.sin(angle) * velocity}
+						v.initial = { x: v.x, y: v.y }
+						p.initial = { x: p.x, y: p.y }
+
+					var spawned_splat = C({
+						Location: {x: p.x, y: p.y},
+						Dimensions:d,
+						Angle: { value: angle },
+						Velocity: v,
+						Acceleration: {x: 0, y: 0},
+						WaveEntity: { wave_id: splat.wave_id },
+						Friction: { value: splat.friction },
+					})
+					wave_entities.push(spawned_splat)
+					//todo have a flag for locking image_angle to initial angle
+					if(splat.components.Sprite){
+						splat.components.Sprite.angle = angle
+					}
+					C(splat.components,spawned_splat)
+
+
+
+
+				}
 
 			}
 		})
