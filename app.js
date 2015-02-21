@@ -184,6 +184,7 @@ room01 = function(){
 		'Facing',
 		'Friction',
 		'Move',
+		'Stopped',
 		'Camera',
 		'Draw',
 		'GarbageCollection',

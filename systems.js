@@ -251,7 +251,7 @@ systems = {
 			if ( d <= min_distance ){
 
 				C('WaypointComplete', {}, id)
-				C('RemoveComponent', { name: 'Waypoint'},id)
+				C('RemoveComponent', { name: 'Waypoint', entity: id})
 				w.speed = 0
 				v.x = 0
 				v.y = 0
@@ -422,8 +422,8 @@ systems = {
 					if(backAtStart){
 						console.log('Back at start!')
 						C('PatrolComplete', {}, id)
-						C('RemoveComponent', {name: 'PatrolComplete'}, id)
-						C('RemoveComponent', {name: 'Patrol'}, id)
+						C('RemoveComponent', {name: 'PatrolComplete', entity: id})
+						C('RemoveComponent', {name: 'Patrol', entity: id})
 					} else if (reachedActiveWaypoint) {
 
 						C('Waypoint', patrol.waypoints.shift(), id)
@@ -505,12 +505,54 @@ systems = {
 		throw "Not Yet Implemented"
 	},
 
+	Stopped: function(){
+		_.each(C('Velocity'), function(v,id){
+			var speed = Math.sqrt( v.x*v.x + v.y*v.y)
+			if(speed < 1e-3 ){
+				C('Stopped', {stopped: true}, id)
+			} else {
+				C('RemoveComponent', {name: 'Stopped', entity: id})
+			}
+
+		})
+	},
+
 	Splat: function(){
 
 		_.each( C('Splat') , function(splat, id){
 			var wave = C.components.Wave && C.components.Wave[splat.wave_id]
 			initialized = !!wave
+
+			var get = function(type){ return C.bind(C,type) }
+
 			if(initialized){
+				wave.reforming = wave.reforming || []
+
+				var reformed = wave.entities
+
+					.map(get('Stopped'))
+
+					.map(function(stopped,i){
+						var isReforming = wave.reforming[i]
+						var notReforming = !isReforming
+						var hasStopped = stopped.stopped
+
+						if(hasStopped){
+							if( notReforming ){
+								var entity = wave.entities[i]
+								var v = C('Velocity', entity)
+								v.x = v.initial.x *= -1
+								v.y = v.initial.y *= -1
+								wave.reforming[i] = true
+							}
+						}
+						return hasStopped && isReforming
+					})
+					.filter(Boolean)
+
+				if(reformed.length == wave.entities.length){
+					console.log('Reform complete')
+				}
 
 			} else {
 
@@ -525,16 +567,16 @@ systems = {
 
 				splat.bits = splat.bits || 8
 				splat.spread = splat.spread || 0.3
-				splat.friction = splat.friction || 0.9
-
+				splat.friction = splat.friction || 0.95
+				splat.velocity_range = splat.velocity_range || [10,20]
 				var angle_segment = (2 * Math.PI / splat.bits);
-				var velocity = 20
-				for( var bitsSoFar = 0; bitsSoFar < splat.bits; bitsSoFar++ ){
 
+
+				for( var bitsSoFar = 0; bitsSoFar < splat.bits; bitsSoFar++ ){
+					var velocity = _.random.apply(_,splat.velocity_range)
 					var angle = angle_segment * bitsSoFar + _.random(-splat.spread,splat.spread);
 					var v =  { x: Math.cos(angle) * velocity, y: Math.sin(angle) * velocity}
 						v.initial = { x: v.x, y: v.y }
-						p.initial = { x: p.x, y: p.y }
 
 					var spawned_splat = C({
 						Location: {x: p.x, y: p.y},
@@ -632,7 +674,7 @@ systems = {
 
 	RemoveComponent: function(){
 		_.each( C('RemoveComponent'), function(removeComponent,id){
-			delete C.components[removeComponent.name][id]
+			delete C.components[removeComponent.name][removeComponent.entity]
 		})
 		delete C.components.RemoveComponent
 	},
