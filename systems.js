@@ -481,23 +481,6 @@ systems = {
 		})
 	},
 
-	//Triggers a WaveRemoved when the wave entities no longer exist
-	Wave: function(){
-		_.each(C('Wave'), function(wave,wave_id){
-			var getWaveEntityById = C.bind('WaveEntity');
-			var notEmpty = _.negate(_.isEmpty)
-		    var remaining = wave.entities
-		    	.map(getWaveEntityById)
-		    	.filter(notEmpty)
-
-		    //todo maybe store remaining, could be useful for UI stuff?
-		    //10 enemies remaing, or 10 items to collect
-			if(remaining.length == 0){
-				C('WaveEmpty', {}, wave_id)
-			}
-		})
-	},
-
 	// TODO: Add some components to yourself after a designated number of cycles
 	After: function(){
 		throw "Not Yet Implemented"

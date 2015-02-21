@@ -222,7 +222,6 @@ room01 = function(){
 		'RemoveVulnerable',
 		'Spawn',
 		'Sounds',
-		'Wave',
 		'Backup',
 		'Log',
 		'DeleteEntity',
