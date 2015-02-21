@@ -80,7 +80,7 @@ room01 = function(){
 			},
 			'@Collided': {
 				SplatReformVulnerable: { component: { settings:{  components: {Sprite: { image: s_splat }}  } } },
-				Backup: { component: { omit: ['Splat', 'SplatReformVulnerable', 'Remove', 'Collided']} },
+				Backup: { component: { omit: ['SplatReform', 'SplatReformVulnerable', 'Remove', 'Collided']} },
 				Remove: { component: {  omit: ['Backup','SplatReform'] } }
 			}
 		},
