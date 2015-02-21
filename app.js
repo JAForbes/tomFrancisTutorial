@@ -214,6 +214,7 @@ room01 = function(){
 		'Shrink',
 		'SplatReformVulnerable',
 		'SplatReform',
+		'Reform',
 		'SplatVulnerable',
 		'Splat',
 		'RemoveVulnerable',

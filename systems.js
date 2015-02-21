@@ -464,6 +464,7 @@ systems = {
 		_.each(C('Restore'), function(restore, restore_id){
 			var backup = C('Backup',restore.entity).components
 
+			console.log('Restore',restore,backup)
 
 			if(backup){
 				C(backup,restore.entity)
@@ -529,6 +530,45 @@ systems = {
 		})
 	},
 
+	Reform: function(){
+		_.each(C('Reform'), function(reform, id){
+			var wave = C('Wave',id)
+			var get = function(type){ return C.bind(C,type) }
+
+			wave.reforming = wave.reforming || []
+
+			var reformed = wave.entities
+
+				.map(get('Stopped'))
+
+				.map(function(stopped,i){
+					var isReforming = wave.reforming[i]
+					var notReforming = !isReforming
+					var hasStopped = stopped.stopped
+
+					if(hasStopped){
+						if( notReforming ){
+							var entity = wave.entities[i]
+							var v = C('Velocity', entity)
+							v.x = v.initial.x *= -1
+							v.y = v.initial.y *= -1
+							wave.reforming[i] = true
+						}
+					}
+					return hasStopped && isReforming
+				})
+				.filter(Boolean)
+
+			if(reformed.length == wave.entities.length){
+				C('Restore',{entity: reform.entity})
+				//Removes Reform and Wave
+				C('Remove',{},id)
+				//Remove all the entities in the wave
+				wave.entities.forEach( C.bind(C,'Remove',{}))
+			}
+		})
+	},
+
 	SplatReform: function(){
 
 		_.each( C('SplatReform') , function(splat, id){
@@ -538,35 +578,8 @@ systems = {
 			var get = function(type){ return C.bind(C,type) }
 
 			if(initialized){
-				wave.reforming = wave.reforming || []
-
-				var reformed = wave.entities
-
-					.map(get('Stopped'))
-
-					.map(function(stopped,i){
-						var isReforming = wave.reforming[i]
-						var notReforming = !isReforming
-						var hasStopped = stopped.stopped
-
-						if(hasStopped){
-							if( notReforming ){
-								var entity = wave.entities[i]
-								var v = C('Velocity', entity)
-								v.x = v.initial.x *= -1
-								v.y = v.initial.y *= -1
-								wave.reforming[i] = true
-							}
-						}
-						return hasStopped && isReforming
-					})
-					.filter(Boolean)
-
-				if(reformed.length == wave.entities.length){
-					C('RemoveComponent',{name:'SplatReform', entity: id})
-					C('Restore',{entity: id})
-					wave.entities.forEach( C.bind(C,'Remove',{}))
-				}
+				C('Reform',{ entity: id },splat.wave_id)
+				C('RemoveComponent', {name: 'SplatReform', entity: id })
 
 			} else {
 
@@ -575,6 +588,7 @@ systems = {
 
 				var wave_entities = []
 				splat.wave_id = C({
+					Reform: {},
 					Wave: { entities: wave_entities },
 					Location: p,
 				})
