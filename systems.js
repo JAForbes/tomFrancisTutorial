@@ -552,6 +552,9 @@ systems = {
 
 				if(reformed.length == wave.entities.length){
 					console.log('Reform complete')
+					C('RemoveComponent',{name:'Splat', entity: id})
+					C('Restore',{entity: id})
+					wave.entities.forEach( C.bind(C,'Remove',{}))
 				}
 
 			} else {
