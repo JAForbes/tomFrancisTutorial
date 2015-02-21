@@ -79,9 +79,9 @@ room01 = function(){
 				Accelerate: { component: {y: -1} }
 			},
 			'@Collided': {
-				SplatReformVulnerable: { component: { settings:{  components: {Sprite: { image: s_splat }}  } } },
-				Backup: { component: { omit: ['SplatReform', 'SplatReformVulnerable', 'Remove', 'Collided']} },
-				Remove: { component: {  omit: ['Backup','SplatReform'] } }
+				SplatVulnerable: { component: { settings:{  wave: { Reform: {} }, components: {Sprite: { image: s_splat }}  } } },
+				Backup: { component: { omit: ['Splat', 'SplatVulnerable', 'Remove', 'Collided']} },
+				Remove: { component: {  omit: ['Backup','Splat'] } }
 			}
 		},
 		CollidesWith: { types: ['Splatter','Remover'] } ,
@@ -216,8 +216,6 @@ room01 = function(){
 		'GarbageCollection',
 		'ShrinkVulnerable',
 		'Shrink',
-		'SplatReformVulnerable',
-		'SplatReform',
 		'Reform',
 		'SplatVulnerable',
 		'Splat',
