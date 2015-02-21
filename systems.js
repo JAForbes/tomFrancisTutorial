@@ -653,7 +653,7 @@ systems = {
 				splat.bits = splat.bits || 8
 				splat.spread = splat.spread || 0.3
 				splat.friction = splat.friction || 0.95
-				splat.velocity_range = splat.velocity_range || [10,20]
+				splat.velocity_range = splat.velocity_range || [20,40]
 				var angle_segment = (2 * Math.PI / splat.bits);
 
 
@@ -673,7 +673,7 @@ systems = {
 						Friction: { value: splat.friction },
 						Is: {
 							'@Is': {
-								Shrink: { component: { min_size: 4, ratio: 0.95 }}
+								Shrink: { component: { min_size: 4, ratio: 0.96 }}
 							}
 						}
 					})
