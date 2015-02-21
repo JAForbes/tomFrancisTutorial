@@ -601,7 +601,7 @@ systems = {
 						Velocity: v,
 						Acceleration: {x: 0, y: 0},
 						WaveEntity: { wave_id: splat.wave_id },
-						Friction: { value: splat.friction },
+						Friction: { value: splat.friction }
 					})
 					wave_entities.push(spawned_splat)
 					//todo have a flag for locking image_angle to initial angle
@@ -671,6 +671,11 @@ systems = {
 						Acceleration: {x: 0, y: 0},
 						WaveEntity: { wave_id: splat.wave_id },
 						Friction: { value: splat.friction },
+						Is: {
+							'@Is': {
+								Shrink: { component: { min_size: 4, ratio: 0.95 }}
+							}
+						}
 					})
 					wave_entities.push(spawned_splat)
 					//todo have a flag for locking image_angle to initial angle
