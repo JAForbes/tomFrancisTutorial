@@ -79,9 +79,9 @@ room01 = function(){
 				Accelerate: { component: {y: -1} }
 			},
 			'@Collided': {
-				SplatVulnerable: { component: { settings:{  speed: 20, components: {Sprite: { image: s_splat }}  } } },
-				Backup: { component: { omit: ['Splat', 'SplatVulnerable', 'Remove', 'Collided']} },
-				Remove: { component: {  omit: ['Backup','Splat'] } }
+				SplatReformVulnerable: { component: { settings:{  components: {Sprite: { image: s_splat }}  } } },
+				Backup: { component: { omit: ['Splat', 'SplatReformVulnerable', 'Remove', 'Collided']} },
+				Remove: { component: {  omit: ['Backup','SplatReform'] } }
 			}
 		},
 		CollidesWith: { types: ['Splatter','Remover'] } ,
@@ -118,7 +118,6 @@ room01 = function(){
 				remaining: Infinity
 			}
 		},
-
 		Is: {
 			'@Collided': {
 				ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }} },
@@ -142,26 +141,39 @@ room01 = function(){
 
 	C.components.Is[enemy]['@Delete'].Spawn.component.components = Enemy
 
-	// exploding_enemy = C({
-	// 	Angle: { value: 0},
-	// 	Facing: { entity: mouse},
-	// 	Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
-	// 	Velocity: { x:_.random(1,2), y:_.random(1,2) },
+	exploding_enemy = C({
+		Angle: { value: 0},
+		Facing: { entity: mouse},
+		Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
+		Velocity: { x:_.random(1,2), y:_.random(1,2) },
 
-	// 	Dimensions: { width: 64, height: 64 },
-	// 	Sprite: { image: s_exploding_enemy },
-	// 	BounceBox: { x:-300, y:-300, width: 600, height: 600 },
-	// 	SAT: {},
-	// 	CollidesWith: { types: ['Splatter'] } ,
-	// 	Is: {
-	// 		'@Collided': {
-	// 			SplatVulnerable: { component: { settings:{ sprite: s_exploding_enemy_splat } } },
-	// 			Remove: { component: {}}
-	// 		}
-	// 	},
-	// 	Remover: {},
-	// 	Splatter: {}
-	// })
+		Dimensions: { width: 64, height: 64 },
+		Sprite: { image: s_exploding_enemy },
+		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+		SAT: {},
+		CollidesWith: { types: ['Splatter'] } ,
+		Is: {
+			'@Collided': {
+				//Create SplatVulnerable when you have collided
+				SplatVulnerable: {
+					//the component data for SplatVulnerable
+					component: {
+						//The future instance variables for splat, in this case just `settings`
+						settings:{
+							//Some components to add to the splat part
+							components: {
+								Sprite: { image: s_exploding_enemy_splat },
+								Shrink: {min_size: 32, ratio: 0.9 }
+							}
+						}
+					}
+				},
+				Remove: { component: {  omit: ['Splat'] } }
+			}
+		},
+		Remover: {},
+		Splatter: {}
+	})
 
 	use = [
 		'Screen',
@@ -190,6 +202,8 @@ room01 = function(){
 		'GarbageCollection',
 		'ShrinkVulnerable',
 		'Shrink',
+		'SplatReformVulnerable',
+		'SplatReform',
 		'SplatVulnerable',
 		'Splat',
 		'RemoveVulnerable',

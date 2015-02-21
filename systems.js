@@ -297,9 +297,22 @@ systems = {
 		C.components.Spawn && C('RemoveCategory',{name: 'Spawn'})
 	},
 
-	SplatVulnerable: function(){
+	SplatReformVulnerable: function(){
 
-		v = C('SplatVulnerable')
+
+		_.each( C('SplatReformVulnerable'), function(vulnerable,id){
+
+			_.each(C('Collided',id).collisions, function(collision,against){
+
+				if( C.components.Splatter[against] ) {
+					C('SplatReform',vulnerable.settings,id)
+				}
+			})
+		})
+		C.components.SplatVulnerable && C('RemoveCategory',{ name: 'SplatReformVulnerable'})
+	},
+
+	SplatVulnerable: function(){
 
 		_.each( C('SplatVulnerable'), function(vulnerable,id){
 
@@ -517,9 +530,9 @@ systems = {
 		})
 	},
 
-	Splat: function(){
+	SplatReform: function(){
 
-		_.each( C('Splat') , function(splat, id){
+		_.each( C('SplatReform') , function(splat, id){
 			var wave = C.components.Wave && C.components.Wave[splat.wave_id]
 			initialized = !!wave
 
@@ -552,8 +565,77 @@ systems = {
 
 				if(reformed.length == wave.entities.length){
 					console.log('Reform complete')
-					C('RemoveComponent',{name:'Splat', entity: id})
+					C('RemoveComponent',{name:'SplatReform', entity: id})
 					C('Restore',{entity: id})
+					wave.entities.forEach( C.bind(C,'Remove',{}))
+				}
+
+			} else {
+
+				var p = _.clone(C('Location',id))
+				var d = C('Dimensions',id)
+
+				var wave_entities = []
+				splat.wave_id = C({
+					Wave: { entities: wave_entities },
+					Location: p,
+				})
+
+				splat.bits = splat.bits || 8
+				splat.spread = splat.spread || 0.3
+				splat.friction = splat.friction || 0.95
+				splat.velocity_range = splat.velocity_range || [10,20]
+				var angle_segment = (2 * Math.PI / splat.bits);
+
+
+				for( var bitsSoFar = 0; bitsSoFar < splat.bits; bitsSoFar++ ){
+					var velocity = _.random.apply(_,splat.velocity_range)
+					var angle = angle_segment * bitsSoFar + _.random(-splat.spread,splat.spread);
+					var v =  { x: Math.cos(angle) * velocity, y: Math.sin(angle) * velocity}
+						v.initial = { x: v.x, y: v.y }
+
+					var spawned_splat = C({
+						Location: {x: p.x, y: p.y},
+						Dimensions:d,
+						Angle: { value: angle },
+						Velocity: v,
+						Acceleration: {x: 0, y: 0},
+						WaveEntity: { wave_id: splat.wave_id },
+						Friction: { value: splat.friction },
+					})
+					wave_entities.push(spawned_splat)
+					//todo have a flag for locking image_angle to initial angle
+					if(splat.components.Sprite){
+						splat.components.Sprite.angle = angle
+					}
+					C(splat.components,spawned_splat)
+
+
+
+
+				}
+
+			}
+		})
+	},
+
+	Splat: function(){
+
+		_.each( C('Splat') , function(splat, id){
+			var wave = C.components.Wave && C.components.Wave[splat.wave_id]
+			initialized = !!wave
+
+			var get = function(type){ return C.bind(C,type) }
+
+			if(initialized){
+
+				var stopped = wave.entities
+					.map(get('Stopped'))
+					.filter(_.property('stopped'))
+
+				if(stopped.length == wave.entities.length){
+
+					C('RemoveComponent',{name:'Splat', entity: id})
 					wave.entities.forEach( C.bind(C,'Remove',{}))
 				}
 
@@ -641,6 +723,7 @@ systems = {
 
 	Shrink: function(){
 		_.each(C('Shrink'), function(shrink, id){
+			console.log('Shrink',id,JSON.stringify(shrink))
 			var d = C('Dimensions',id)
 			d.width *= shrink.ratio
 			d.height *= shrink.ratio
@@ -677,6 +760,7 @@ systems = {
 
 	RemoveComponent: function(){
 		_.each( C('RemoveComponent'), function(removeComponent,id){
+			console.log(removeComponent)
 			delete C.components[removeComponent.name][removeComponent.entity]
 		})
 		delete C.components.RemoveComponent
