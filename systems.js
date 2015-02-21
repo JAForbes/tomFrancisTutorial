@@ -509,9 +509,8 @@ systems = {
 
 		_.each( C('Splat') , function(splat, id){
 			var bits = 8;
-			var start = C('Location',id)
-			var dimensions = C('Dimensions',id)
-			var speed = splat.speed || 5
+			var p = _.clone(C('Location',id))
+			var d = C('Dimensions',id)
 
 			var reform = true;
 
@@ -525,20 +524,24 @@ systems = {
 					}
 				}
 			})
+			var angle_segment = (2 * Math.PI / bits);
+			var spread =  0.3;
+			var velocity = 20
 			for( var bitsSoFar = 0; bitsSoFar < bits; bitsSoFar++ ){
 
-				var angle = (2 * Math.PI / bits) * bitsSoFar + _.random(-0.3, 0.3);
-				var v =  { x: Math.cos(angle) * 10, y: Math.sin(angle) * 10}
+				var angle = angle_segment * bitsSoFar + _.random(-spread,spread);
+				var v =  { x: Math.cos(angle) * velocity, y: Math.sin(angle) * velocity}
+					v.initial = { x: v.x, y: v.y }
+					p.initial = { x: p.x, y: p.y }
 
 				var spawned_splat = C({
-					Location: { x: start.x , y: start.y },
-					Dimensions: dimensions,
+					Location: p,
+					Dimensions:d,
 					Angle: { value: angle },
 					Velocity: v,
 					Acceleration: {x: 0, y: 0},
-					Speed: { value: speed },
 					WaveEntity: { wave_id: wave_id },
-					Friction: { value: 1 },
+					Friction: { value: 0.9 },
 				})
 				wave_entities.push(spawned_splat)
 				//todo have a flag for locking image_angle to initial angle
