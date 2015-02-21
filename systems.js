@@ -433,7 +433,6 @@ systems = {
 
 					//could either have reached home, or reached the first waypoint
 					if(backAtStart){
-						console.log('Back at start!')
 						C('PatrolComplete', {}, id)
 						C('RemoveComponent', {name: 'PatrolComplete', entity: id})
 						C('RemoveComponent', {name: 'Patrol', entity: id})
@@ -564,7 +563,6 @@ systems = {
 					.filter(Boolean)
 
 				if(reformed.length == wave.entities.length){
-					console.log('Reform complete')
 					C('RemoveComponent',{name:'SplatReform', entity: id})
 					C('Restore',{entity: id})
 					wave.entities.forEach( C.bind(C,'Remove',{}))
@@ -601,7 +599,12 @@ systems = {
 						Velocity: v,
 						Acceleration: {x: 0, y: 0},
 						WaveEntity: { wave_id: splat.wave_id },
-						Friction: { value: splat.friction }
+						Friction: { value: splat.friction },
+						SAT: {},
+						Remover: {},
+						Shrinker: {},
+						Splatter: {},
+						CollidesWith: { types: [] }
 					})
 					wave_entities.push(spawned_splat)
 					//todo have a flag for locking image_angle to initial angle
@@ -675,7 +678,12 @@ systems = {
 							'@Is': {
 								Shrink: { component: { min_size: 4, ratio: 0.96 }}
 							}
-						}
+						},
+						SAT: {},
+						Remover: {},
+						Shrinker: {},
+						Splatter: {},
+						CollidesWith: { types: [] }
 					})
 					wave_entities.push(spawned_splat)
 					//todo have a flag for locking image_angle to initial angle
@@ -728,7 +736,6 @@ systems = {
 
 	Shrink: function(){
 		_.each(C('Shrink'), function(shrink, id){
-			console.log('Shrink',id,JSON.stringify(shrink))
 			var d = C('Dimensions',id)
 			d.width *= shrink.ratio
 			d.height *= shrink.ratio
@@ -765,7 +772,6 @@ systems = {
 
 	RemoveComponent: function(){
 		_.each( C('RemoveComponent'), function(removeComponent,id){
-			console.log(removeComponent)
 			delete C.components[removeComponent.name][removeComponent.entity]
 		})
 		delete C.components.RemoveComponent
@@ -863,11 +869,11 @@ systems = {
 	KickBack: function(){
 		_.each(C('Shoot'),function(shoot,id){
 			var kickBack = C('KickBack',id)
-			if(kickBack.strength){
+			if(kickBack.ratio){
 				var a = C('Acceleration',id)
 				var angle = -C('Angle',id).value
-				a.x += -Math.cos(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
-				a.y += Math.sin(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
+				a.x += -(Math.cos(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)) * kickBack.ratio
+				a.y += (Math.sin(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)) * kickBack.ratio
 			}
 		})
 	},

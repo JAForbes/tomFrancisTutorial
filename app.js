@@ -30,7 +30,7 @@ room01 = function(){
 		Dimensions: { width: 32, height: 32},
 		Sprite: { image: s_player },
 
-		KickBack: {strength: 5},
+		KickBack: {ratio: 0.5},
 		Sounds: {
 			Shoot: { sounds: [
 
@@ -87,93 +87,103 @@ room01 = function(){
 		CollidesWith: { types: ['Splatter','Remover'] } ,
 		SAT: {},
 	}
+	Enemy = function(){
+		var Enemy = {
+			Angle: { value: 0},
+			Facing: { entity: player},
+			Location: { x: -200, y: 200},
+			//Velocity: { x:_.random(2,4), y:_.random(2,4) },
+			Velocity: { x:0, y:0 },
+			Acceleration: { x:0 , y:0 },
+			Speed: {value: 5},
+			Dimensions: { width: 64, height: 64 },
+			Sprite: { image: s_enemy },
+			// BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+			SAT: {},
+			CollidesWith: { types: ['Shrinker'] },
+			Friction: { value: 0.01 },
+			Repeat: {
+				Patrol: {
+					component: {
+						waypoints: [
+							{x:-200, y: -200},
+							{x: 200 , y: -200 },
+							{x: 200 , y: -200 },
+							{x: 200 , y: 200 },
+						]
+					},
+					remaining: Infinity
+				}
+			},
+			Is: {
+				'@Collided': {
+					ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }} },
+				},
+				'@Delete' : {
+					Spawn: {
+						component: {
+							points: [{x:0,y:0}],
+							variation: 300
+						}
+					}
+				}
+			},
+			Remover: {},
+			Splatter: {}
+		}
+
+		//Spawn itself when it dies
+		Enemy.Is['@Delete'].Spawn.component.components = Enemy
+		//Ensure the spawned Enemy can spawn too
+		Enemy.Is['@Delete'].Spawn.component.components = Enemy
+		return Enemy
+	}
+
+
+	Exploding_Enemy = function(){
+		return {
+			Angle: { value: 0},
+			Facing: { entity: mouse},
+			Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
+			Velocity: { x:_.random(1,2), y:_.random(1,2) },
+
+			Dimensions: { width: 64, height: 64 },
+			Sprite: { image: s_exploding_enemy },
+			BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+			SAT: {},
+			CollidesWith: { types: ['Splatter'] } ,
+			Is: {
+				'@Collided': {
+					//Create SplatVulnerable when you have collided
+					SplatVulnerable: {
+						//the component data for SplatVulnerable
+						component: {
+							//The future instance variables for splat, in this case just `settings`
+							settings:{
+								//Some components to add to the splat part
+								components: {
+									Sprite: { image: s_exploding_enemy_splat },
+									Shrink: {min_size: 32, ratio: 0.9 }
+								}
+							}
+						}
+					},
+					Remove: { component: {  omit: ['Splat'] } }
+				}
+			},
+			Remover: {},
+			Splatter: {}
+		}
+	}
+
 
 	player = C(_.cloneDeep(Player))
 
 
-	enemy = C({
-		Angle: { value: 0},
-		Facing: { entity: player},
-		Location: { x: -200, y: 200},
-		//Velocity: { x:_.random(2,4), y:_.random(2,4) },
-		Velocity: { x:0, y:0 },
-		Acceleration: { x:0 , y:0 },
-		Speed: {value: 5},
-		Dimensions: { width: 64, height: 64 },
-		Sprite: { image: s_enemy },
-		// BounceBox: { x:-300, y:-300, width: 600, height: 600 },
-		SAT: {},
-		CollidesWith: { types: ['Shrinker'] },
-		Friction: { value: 0.01 },
-		Repeat: {
-			Patrol: {
-				component: {
-					waypoints: [
-						{x:-200, y: -200},
-						{x: 200 , y: -200 },
-						{x: 200 , y: -200 },
-						{x: 200 , y: 200 },
-					]
-				},
-				remaining: Infinity
-			}
-		},
-		Is: {
-			'@Collided': {
-				ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }} },
-			},
-			'@Delete' : {
-				Spawn: {
-					component: {
-						points: [{x:0,y:0}],
-						variation: 300
-					}
-				}
-			}
-		},
-		Remover: {},
-		Splatter: {}
-	})
+	enemy = C(Enemy())
+	exploding_enemy = C(Exploding_Enemy())
+	exploding_enemy2 = C(Exploding_Enemy())
 
-	Enemy = _.cloneDeep(C(enemy))
-	Enemy.Is['@Delete'].Spawn.component.components = Enemy
-	Enemy.Is['@Delete'].Spawn.component.components = Enemy
-
-	C.components.Is[enemy]['@Delete'].Spawn.component.components = Enemy
-
-	exploding_enemy = C({
-		Angle: { value: 0},
-		Facing: { entity: mouse},
-		Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
-		Velocity: { x:_.random(1,2), y:_.random(1,2) },
-
-		Dimensions: { width: 64, height: 64 },
-		Sprite: { image: s_exploding_enemy },
-		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
-		SAT: {},
-		CollidesWith: { types: ['Splatter'] } ,
-		Is: {
-			'@Collided': {
-				//Create SplatVulnerable when you have collided
-				SplatVulnerable: {
-					//the component data for SplatVulnerable
-					component: {
-						//The future instance variables for splat, in this case just `settings`
-						settings:{
-							//Some components to add to the splat part
-							components: {
-								Sprite: { image: s_exploding_enemy_splat },
-								Shrink: {min_size: 32, ratio: 0.9 }
-							}
-						}
-					}
-				},
-				Remove: { component: {  omit: ['Splat'] } }
-			}
-		},
-		Remover: {},
-		Splatter: {}
-	})
 
 	use = [
 		'Screen',
