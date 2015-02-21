@@ -163,7 +163,11 @@ room01 = function(){
 								//Some components to add to the splat part
 								components: {
 									Sprite: { image: s_exploding_enemy_splat },
-									Shrink: {min_size: 32, ratio: 0.9 }
+									Is: {
+										'@Is': {
+											Shrink: { component: { min_size: 4, ratio: 0.96 }}
+										},
+									},
 								}
 							}
 						}

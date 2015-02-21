@@ -572,67 +572,57 @@ systems = {
 	SplatReform: function(){
 
 		_.each( C('SplatReform') , function(splat, id){
-			var wave = C.components.Wave && C.components.Wave[splat.wave_id]
-			initialized = !!wave
 
-			var get = function(type){ return C.bind(C,type) }
+			var p = _.clone(C('Location',id))
+			var d = C('Dimensions',id)
 
-			if(initialized){
-				C('Reform',{ entity: id },splat.wave_id)
-				C('RemoveComponent', {name: 'SplatReform', entity: id })
+			var wave_entities = []
+			splat.wave_id = C({
+				Reform: { entity: id },
+				Wave: { entities: wave_entities },
+				Location: p,
+			})
 
-			} else {
+			splat.bits = splat.bits || 8
+			splat.spread = splat.spread || 0.3
+			splat.friction = splat.friction || 0.95
+			splat.velocity_range = splat.velocity_range || [10,20]
+			var angle_segment = (2 * Math.PI / splat.bits);
 
-				var p = _.clone(C('Location',id))
-				var d = C('Dimensions',id)
 
-				var wave_entities = []
-				splat.wave_id = C({
-					Reform: {},
-					Wave: { entities: wave_entities },
-					Location: p,
+			for( var bitsSoFar = 0; bitsSoFar < splat.bits; bitsSoFar++ ){
+				var velocity = _.random.apply(_,splat.velocity_range)
+				var angle = angle_segment * bitsSoFar + _.random(-splat.spread,splat.spread);
+				var v =  { x: Math.cos(angle) * velocity, y: Math.sin(angle) * velocity}
+					v.initial = { x: v.x, y: v.y }
+
+				var spawned_splat = C({
+					Location: {x: p.x, y: p.y},
+					Dimensions:d,
+					Angle: { value: angle },
+					Velocity: v,
+					Acceleration: {x: 0, y: 0},
+					WaveEntity: { wave_id: splat.wave_id },
+					Friction: { value: splat.friction },
+					SAT: {},
+					Remover: {},
+					Shrinker: {},
+					Splatter: {},
+					CollidesWith: { types: [] }
 				})
-
-				splat.bits = splat.bits || 8
-				splat.spread = splat.spread || 0.3
-				splat.friction = splat.friction || 0.95
-				splat.velocity_range = splat.velocity_range || [10,20]
-				var angle_segment = (2 * Math.PI / splat.bits);
-
-
-				for( var bitsSoFar = 0; bitsSoFar < splat.bits; bitsSoFar++ ){
-					var velocity = _.random.apply(_,splat.velocity_range)
-					var angle = angle_segment * bitsSoFar + _.random(-splat.spread,splat.spread);
-					var v =  { x: Math.cos(angle) * velocity, y: Math.sin(angle) * velocity}
-						v.initial = { x: v.x, y: v.y }
-
-					var spawned_splat = C({
-						Location: {x: p.x, y: p.y},
-						Dimensions:d,
-						Angle: { value: angle },
-						Velocity: v,
-						Acceleration: {x: 0, y: 0},
-						WaveEntity: { wave_id: splat.wave_id },
-						Friction: { value: splat.friction },
-						SAT: {},
-						Remover: {},
-						Shrinker: {},
-						Splatter: {},
-						CollidesWith: { types: [] }
-					})
-					wave_entities.push(spawned_splat)
-					//todo have a flag for locking image_angle to initial angle
-					if(splat.components.Sprite){
-						splat.components.Sprite.angle = angle
-					}
-					C(splat.components,spawned_splat)
-
-
-
-
+				wave_entities.push(spawned_splat)
+				//todo have a flag for locking image_angle to initial angle
+				if(splat.components.Sprite){
+					splat.components.Sprite.angle = angle
 				}
+				C(splat.components,spawned_splat)
+
+
+
 
 			}
+
+			C('RemoveComponent', {name: 'SplatReform', entity: id })
 		})
 	},
 
@@ -663,11 +653,6 @@ systems = {
 					Velocity: v,
 					Acceleration: {x: 0, y: 0},
 					Friction: { value: splat.friction },
-					Is: {
-						'@Is': {
-							Shrink: { component: { min_size: 4, ratio: 0.96 }}
-						},
-					},
 					SAT: {},
 					Remover: {},
 					Shrinker: {},
@@ -680,7 +665,7 @@ systems = {
 				}
 				C(splat.components,spawned_splat)
 			}//for
-			C('Remove',{},id)
+			C('RemoveComponent', {name: 'Splat', entity: id })
 		})
 	},
 
