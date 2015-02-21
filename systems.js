@@ -508,40 +508,37 @@ systems = {
 	Splat: function(){
 
 		_.each( C('Splat') , function(splat, id){
-			var bits = 8;
+
 			var p = _.clone(C('Location',id))
 			var d = C('Dimensions',id)
-
-			var reform = true;
 
 			var wave_entities = []
 			var wave_id = C({
 				Wave: { entities: wave_entities },
-				Is: {
-					'@WaveEmpty': {
-						Restore: { component: {entity: id} },
-						Remove: { component: { omit: ['Restore']} }
-					}
-				}
+				Location: p,
 			})
-			var angle_segment = (2 * Math.PI / bits);
-			var spread =  0.3;
-			var velocity = 20
-			for( var bitsSoFar = 0; bitsSoFar < bits; bitsSoFar++ ){
 
-				var angle = angle_segment * bitsSoFar + _.random(-spread,spread);
+			splat.bits = splat.bits || 8
+			splat.spread = splat.spread || 0.3
+			splat.friction = splat.friction || 0.9
+
+			var angle_segment = (2 * Math.PI / splat.bits);
+			var velocity = 20
+			for( var bitsSoFar = 0; bitsSoFar < splat.bits; bitsSoFar++ ){
+
+				var angle = angle_segment * bitsSoFar + _.random(-splat.spread,splat.spread);
 				var v =  { x: Math.cos(angle) * velocity, y: Math.sin(angle) * velocity}
 					v.initial = { x: v.x, y: v.y }
 					p.initial = { x: p.x, y: p.y }
 
 				var spawned_splat = C({
-					Location: p,
+					Location: {x: p.x, y: p.y},
 					Dimensions:d,
 					Angle: { value: angle },
 					Velocity: v,
 					Acceleration: {x: 0, y: 0},
 					WaveEntity: { wave_id: wave_id },
-					Friction: { value: 0.9 },
+					Friction: { value: splat.friction },
 				})
 				wave_entities.push(spawned_splat)
 				//todo have a flag for locking image_angle to initial angle

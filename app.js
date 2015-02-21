@@ -81,7 +81,7 @@ room01 = function(){
 			'@Collided': {
 				SplatVulnerable: { component: { settings:{  speed: 20, components: {Sprite: { image: s_splat }}  } } },
 				Backup: { component: { omit: ['Splat', 'SplatVulnerable', 'Remove', 'Collided']} },
-				Remove: { component: {  omit: ['Backup'] } }
+				Remove: { component: {  omit: ['Backup','Splat'] } }
 			}
 		},
 		CollidesWith: { types: ['Splatter','Remover'] } ,
