@@ -1,39 +1,3 @@
-//Click
-window.onmousedown = function(e){
-	C('Click',{ down: true })
-}
-window.onmouseup = function(e){
-	delete C.components.Click
-}
-
-//Keyboard keys
-;(function(){
-
-	var name = function(e){
-		return ({
-			32: 'SPACE',
-			37: 'LEFT',
-			38: 'UP',
-			39: 'RIGHT',
-			40: 'DOWN'
-		})[e.keyCode] || String.fromCharCode(e.keyCode)
-	}
-
-	window.onkeydown = _.compose(
-		function(name){
-			C.components['Key_'+name] = C.components['Key_'+name] || {}
-			C.components['Key_'+name][1] = C.components['Key_'+name][1] || {}
-		},
-		name
-	)
-	window.onkeyup = _.compose(
-		function(name){
-			delete C.components['Key_'+name]
-		},
-		name
-	)
-}());
-
 systems = {
 	Screen: function(){
 		_.each(C('Screen'),function(screen,id){
@@ -69,25 +33,6 @@ systems = {
 
 		})
 	},
-
-	Mouse: (function(){
-
-		var mouse = {x:0,y:0}
-
-		window.onmousemove = function(e){
-			mouse.x = e.clientX
-			mouse.y = e.clientY
-		}
-		return function(){
-			_.each(C('Mouse'),function(synced,id){
-				var p = C('Location',id)
-				var camera = C('Camera',synced.game).last_position
-
-				p.x = mouse.x + camera.x
-				p.y = mouse.y + camera.y
-			})
-		}
-	}()),
 
 	Translate: function(){
 		var screenDim = C('Screen',1).el
