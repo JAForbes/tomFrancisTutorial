@@ -38,6 +38,19 @@ systems.SAT = function(){
 }
 
 
+systems.SAT_sync = function(){
+	_.each(C('SAT'),function(sat,id){
+
+		sat.box = new SAT.Box()
+
+		var d = C('Dimensions',id)
+
+		sat.box.pos = C('Location',id)
+		sat.box.w = d.width
+		sat.box.h = d.height
+	})
+}
+
 /*
 	Creates a list of entities that are relevant to collision detection.
 

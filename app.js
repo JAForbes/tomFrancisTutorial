@@ -251,7 +251,6 @@ room01 = function(){
 		'Spawn',
 		'Sounds',
 		'Backup',
-		'Log',
 		'DeleteEntity',
 		'RemoveEntity',
 		'RemoveComponent',

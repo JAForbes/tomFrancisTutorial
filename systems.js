@@ -14,26 +14,6 @@ systems = {
 		})
 	},
 
-	InfiniteBackground: function(){
-		_.each(C('InfiniteBackground'), function(bg,id){
-			var screen = C('Screen',id)
-
-			var focus = C('Camera',id).last_position
-
-			screen.con.save()
-			screen.con.translate(-focus.x,-focus.y)
-			var ptrn = screen.con.createPattern(bg.image,'repeat');
-			screen.con.fillStyle = ptrn;
-			var w = screen.el.width
-			var h = screen.el.height
-			var x = focus.x -w/2
-			var y = focus.y -h/2
-			screen.con.fillRect(x,y,w,h);
-			screen.con.restore()
-
-		})
-	},
-
 	Translate: function(){
 		var screenDim = C('Screen',1).el
 
@@ -42,59 +22,6 @@ systems = {
 
 			p.x = p.x + (translate.x || 0) * screenDim.width
 			p.y = p.y + (translate.y || 0) * screenDim.height
-		})
-	},
-
-	VelocitySyncedWithAngle: function(){
-		_.each( C('VelocitySyncedWithAngle'), function(synced, id){
-			var v = C('Velocity',id)
-			var a = C('Angle',id).value
-			var speed = C('Speed',id).value
-			v.x = Math.cos(a) * speed
-			v.y = Math.sin(a) * speed
-		})
-	},
-
-	Accelerate: function(){
-		_.each( C('Accelerate'), function(a, id){
-			var A = C('Acceleration',id)
-
-			a.x && (A.x += a.x)
-			a.y && (A.y += a.y)
-		})
-		C('RemoveCategory', {name: 'Accelerate'})
-	},
-
-	Move: function(){
-		_.each(C('Velocity'),function(v,id){
-			var p = C('Location',id);
-			var a = C('Acceleration',id);
-
-			v.x += a.x || 0
-			v.y += a.y || 0
-
-			p.x += v.x || 0
-			p.y += v.y || 0
-
-			a.x = 0
-			a.y = 0
-		})
-
-	},
-
-	Friction: function(){
-		_.each(C('Friction'),function(friction,id){
-			var v = C('Velocity',id)
-			v.x *= friction.value
-			v.y *= friction.value
-		})
-	},
-
-	Facing: function(){
-		_.each(C('Facing'),function(facing,id){
-			var other = C('Location',facing.entity)
-			var p = C('Location',id)
-			C('Angle',id).value = Math.atan2(other.y-p.y, other.x-p.x)
 		})
 	},
 
@@ -118,6 +45,119 @@ systems = {
 			)
 			con.restore()
 
+		})
+	},
+
+	Camera: function(){
+		_.each( C('Camera'), function(camera, id){
+			var track_position = C('Location',camera.tracking)
+
+			track_position = (track_position.x || track_position.y) && track_position ||
+				camera.last_position || {x:0, y: 0}
+
+			var screen = C('Screen',id)
+
+			screen.con.translate(-track_position.x,-track_position.y)
+			camera.last_position = track_position;
+		})
+	},
+
+
+	InfiniteBackground: function(){
+		_.each(C('InfiniteBackground'), function(bg,id){
+			var screen = C('Screen',id)
+
+			var focus = C('Camera',id).last_position
+
+			screen.con.save()
+			screen.con.translate(-focus.x,-focus.y)
+			var ptrn = screen.con.createPattern(bg.image,'repeat');
+			screen.con.fillStyle = ptrn;
+			var w = screen.el.width
+			var h = screen.el.height
+			var x = focus.x -w/2
+			var y = focus.y -h/2
+			screen.con.fillRect(x,y,w,h);
+			screen.con.restore()
+
+		})
+	},
+
+	GarbageCollection: function(){
+		var screen = C('Screen',1)
+		var canvas = screen.el
+		_.each(C('GarbageCollected'),function(gc, id){
+			var camera = _.sample(C('Camera')).last_position
+
+			var p = C('Location',id)
+			if( Math.abs(p.x-camera.x) > canvas.width *screen.translate[0] || Math.abs(p.y-camera.y) > canvas.height * screen.translate[1]){
+				C('Remove',{},id)
+			}
+		})
+	},
+
+	Move: function(){
+		_.each(C('Velocity'),function(v,id){
+			var p = C('Location',id);
+			var a = C('Acceleration',id);
+
+			v.x += a.x || 0
+			v.y += a.y || 0
+
+			p.x += v.x || 0
+			p.y += v.y || 0
+
+			a.x = 0
+			a.y = 0
+		})
+
+	},
+
+	Accelerate: function(){
+		_.each( C('Accelerate'), function(a, id){
+			var A = C('Acceleration',id)
+
+			a.x && (A.x += a.x)
+			a.y && (A.y += a.y)
+		})
+		C('RemoveCategory', {name: 'Accelerate'})
+	},
+
+	Friction: function(){
+		_.each(C('Friction'),function(friction,id){
+			var v = C('Velocity',id)
+			v.x *= friction.value
+			v.y *= friction.value
+		})
+	},
+
+	VelocitySyncedWithAngle: function(){
+		_.each( C('VelocitySyncedWithAngle'), function(synced, id){
+			var v = C('Velocity',id)
+			var a = C('Angle',id).value
+			var speed = C('Speed',id).value
+			v.x = Math.cos(a) * speed
+			v.y = Math.sin(a) * speed
+		})
+	},
+
+	Stopped: function(){
+		_.each(C('Velocity'), function(v,id){
+			var speed = Math.sqrt( v.x*v.x + v.y*v.y)
+			if(speed < 1e-3 ){
+				C('Stopped', {stopped: true}, id)
+			} else {
+				C('RemoveComponent', {name: 'Stopped', entity: id})
+			}
+
+		})
+	},
+
+	Facing: function(){
+		_.each(C('Facing'),function(facing,id){
+			var other = C('Location',facing.entity)
+			var p = C('Location',id)
+			C('Angle',id).value = Math.atan2(other.y-p.y, other.x-p.x)
 		})
 	},
 
@@ -165,17 +205,44 @@ systems = {
 		C.components.WaypointComplete && C('RemoveCategory', {name: 'WaypointComplete'})
 	},
 
-	Camera: function(){
-		_.each( C('Camera'), function(camera, id){
-			var track_position = C('Location',camera.tracking)
+	Patrol: function(){
+		_.each(C('Patrol'), function(patrol,id){
+			var p = C('Location',id)
+			var w = C('Waypoint',id)
 
-			track_position = (track_position.x || track_position.y) && track_position ||
-				camera.last_position || {x:0, y: 0}
 
-			var screen = C('Screen',id)
+			var patrol_is_new = !patrol.start
+			var patrol_is_not_new = !patrol_is_new
+			var waypoint_exists = !!(C.components.Waypoint && C.components.Waypoint[id])
 
-			screen.con.translate(-track_position.x,-track_position.y)
-			camera.last_position = track_position;
+
+
+			if( patrol_is_new ) {
+
+				patrol.start = { x: p.x , y: p.y }
+				patrol.waypoints.push(patrol.start)
+
+				var waypoint = patrol.waypoints.shift()
+				C('Waypoint', waypoint, id )
+			} else if( patrol_is_not_new ){
+
+				//reached a waypoint
+				if( !waypoint_exists ){
+
+					var backAtStart = p.x == patrol.start.x && p.y == patrol.start.y
+					var reachedActiveWaypoint = !backAtStart
+
+					//could either have reached home, or reached the first waypoint
+					if(backAtStart){
+						C('PatrolComplete', {}, id)
+						C('RemoveComponent', {name: 'PatrolComplete', entity: id})
+						C('RemoveComponent', {name: 'Patrol', entity: id})
+					} else if (reachedActiveWaypoint) {
+
+						C('Waypoint', patrol.waypoints.shift(), id)
+					}
+				}
+			}
 		})
 	},
 
@@ -270,47 +337,6 @@ systems = {
 		})
 	},
 
-	Patrol: function(){
-		_.each(C('Patrol'), function(patrol,id){
-			var p = C('Location',id)
-			var w = C('Waypoint',id)
-
-
-			var patrol_is_new = !patrol.start
-			var patrol_is_not_new = !patrol_is_new
-			var waypoint_exists = !!(C.components.Waypoint && C.components.Waypoint[id])
-
-
-
-			if( patrol_is_new ) {
-
-				patrol.start = { x: p.x , y: p.y }
-				patrol.waypoints.push(patrol.start)
-
-				var waypoint = patrol.waypoints.shift()
-				C('Waypoint', waypoint, id )
-			} else if( patrol_is_not_new ){
-
-				//reached a waypoint
-				if( !waypoint_exists ){
-
-					var backAtStart = p.x == patrol.start.x && p.y == patrol.start.y
-					var reachedActiveWaypoint = !backAtStart
-
-					//could either have reached home, or reached the first waypoint
-					if(backAtStart){
-						C('PatrolComplete', {}, id)
-						C('RemoveComponent', {name: 'PatrolComplete', entity: id})
-						C('RemoveComponent', {name: 'Patrol', entity: id})
-					} else if (reachedActiveWaypoint) {
-
-						C('Waypoint', patrol.waypoints.shift(), id)
-					}
-				}
-			}
-		})
-	},
-
 	Repeat: function(){
 		_.each(C('Repeat'), function(repeat, id){
 			_.each(repeat, function(settings, componentName){
@@ -362,21 +388,24 @@ systems = {
 		})
 	},
 
-	// TODO: Add some components to yourself after a designated number of cycles
-	After: function(){
-		throw "Not Yet Implemented"
+	QuickSave: function(){
+		_.each(C('QuickSave'), function(qSave,id){
+			C('Save',id).state = _(C()).cloneDeep()
+		})
+		C.components.QuickSave && C('RemoveCategory',{name:'QuickSave'})
 	},
 
-	Stopped: function(){
-		_.each(C('Velocity'), function(v,id){
-			var speed = Math.sqrt( v.x*v.x + v.y*v.y)
-			if(speed < 1e-3 ){
-				C('Stopped', {stopped: true}, id)
-			} else {
-				C('RemoveComponent', {name: 'Stopped', entity: id})
+	QuickLoad: function(){
+		_.each(C('QuickLoad'), function(qLoad,id){
+			var save = C('Save',id).state
+
+			if( !_.isEmpty(save) ){
+				C.components = _.cloneDeep(save)
+				C.components['Save'][id].state = save
 			}
 
 		})
+		C.components.QuickLoad && C('RemoveCategory',{name:'QuickLoad'})
 	},
 
 	Reform: function(){
@@ -478,13 +507,6 @@ systems = {
 		})
 	},
 
-	Log: function(){
-		_.each(C('Log'), function(log, id){
-			console.log(log.message)
-		})
-		C('RemoveCategory',{ name: 'Log'})
-	},
-
 	Shrink: function(){
 		_.each(C('Shrink'), function(shrink, id){
 			var d = C('Dimensions',id)
@@ -545,50 +567,6 @@ systems = {
 		})
 	},
 
-	RemoveActivated: function(){
-		_.each(C('Remove'),function(remove,id){
-			var activated = C('RemoveActivated',id)
-			!_.isEmpty(activated) && _.each(activated,function(component,componentName){
-
-				C(componentName,component,id)
-
-			})
-		})
-	},
-
-	QuickSave: function(){
-		_.each(C('QuickSave'), function(qSave,id){
-			C('Save',id).state = _(C()).cloneDeep()
-		})
-		C.components.QuickSave && C('RemoveCategory',{name:'QuickSave'})
-	},
-
-	QuickLoad: function(){
-		_.each(C('QuickLoad'), function(qLoad,id){
-			var save = C('Save',id).state
-
-			if( !_.isEmpty(save) ){
-				C.components = _.cloneDeep(save)
-				C.components['Save'][id].state = save
-			}
-
-		})
-		C.components.QuickLoad && C('RemoveCategory',{name:'QuickLoad'})
-	},
-
-	GarbageCollection: function(){
-		var screen = C('Screen',1)
-		var canvas = screen.el
-		_.each(C('GarbageCollected'),function(gc, id){
-			var camera = _.sample(C('Camera')).last_position
-
-			var p = C('Location',id)
-			if( Math.abs(p.x-camera.x) > canvas.width *screen.translate[0] || Math.abs(p.y-camera.y) > canvas.height * screen.translate[1]){
-				C('Remove',{},id)
-			}
-		})
-	},
-
 	Shoot: function(){
 		_.each(C('Shoot'),function(shoot,id){
 			var p = C('Location',id)
@@ -626,19 +604,6 @@ systems = {
 				a.x += -(Math.cos(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)) * kickBack.ratio
 				a.y += (Math.sin(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)) * kickBack.ratio
 			}
-		})
-	},
-
-	SAT_sync: function(){
-		_.each(C('SAT'),function(sat,id){
-
-			sat.box = new SAT.Box()
-
-			var d = C('Dimensions',id)
-
-			sat.box.pos = C('Location',id)
-			sat.box.w = d.width
-			sat.box.h = d.height
 		})
 	},
 
