@@ -819,7 +819,6 @@ systems = {
 				var category = C.components[componentName]
 				var component = category && category[id]
 				if( component ) {
-					console.log(sound,componentName)
 					var sounds = sound.sounds.filter(function(snd){
 						return snd.paused
 					})
