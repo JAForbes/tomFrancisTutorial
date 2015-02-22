@@ -185,11 +185,11 @@ room01 = function(){
 					Splat: {
 						components: {
 							Sprite: { image: s_exploding_enemy_splat },
-							Is: {
-								//Is Is, means every frame
-								'@Is': {
-									Shrink: { component: { min_size: 4, ratio: 0.96 }}
-								},
+							Repeat: {
+								Shrink: {
+									component: { min_size: 4, ratio: 0.96 },
+									remaining: Infinity
+								}
 							},
 						},
 						velocity_range: [10,20]
