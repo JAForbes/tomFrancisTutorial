@@ -72,10 +72,9 @@ room01 = function(){
 							GarbageCollected: {},
 							SAT: {},
 							Shrinker: {},
-							CollidesWith: { types: ['Remover'] },
-							Is: {
-								'@Collided': {
-									RemoveVulnerable: { component: {}}
+							CollidesWith: {
+								Remover: {
+									Remove: {}
 								}
 							}
 						}
@@ -96,31 +95,15 @@ room01 = function(){
 				Accelerate: { component: {y: -1} }
 			},
 			'@Collided': {
-				SplatVulnerable: {
-					component: {
-						settings:{
-							wave: {
-								Reform: {},
-								Sounds: {
-									Reforming: {
-										sounds: [
-											jsfxlib.createWave(["synth",16.0000,0.5420,0.8450,0.5180,2.6400,0.4900,2353.0000,1843.0000,1962.0000,-0.1740,0.8200,1.0000,42.5771,1.0000,1.0000,-1.0000,0.4490,0.0000,-1.0000,0.0000,0.2300,0.6240,1.0000,1.0000,1.0000,1.0000,1.0000])
-										],
-										every: Infinity
-									}
-								}
-							},
-							components: {
-								Sprite: { image: s_splat }
-							}
-						}
-					}
-				},
-				Backup: { component: { omit: ['Splat', 'SplatVulnerable', 'Remove', 'Collided']} },
+				Backup: { component: { omit: ['Splat','Remove','Collided']} },
 				Remove: { component: {  omit: ['Backup','Splat'] } }
 			}
 		},
-		CollidesWith: { types: ['Splatter','Remover'] } ,
+		CollidesWith: {
+			Splatter: {
+				Splat: { wave: { Reform: {} }, components: { Sprite: { image: s_splat } } }
+			}
+		},
 		SAT: {},
 	}
 	Enemy = function(){
@@ -136,7 +119,11 @@ room01 = function(){
 			Sprite: { image: s_enemy },
 			// BounceBox: { x:-300, y:-300, width: 600, height: 600 },
 			SAT: {},
-			CollidesWith: { types: ['Shrinker'] },
+			CollidesWith: {
+				Shrinker: {
+					Shrink: {min_size: 32, ratio: 0.9 }
+				}
+			},
 			Friction: { value: 0.01 },
 			Repeat: {
 				Patrol: {
@@ -156,9 +143,6 @@ room01 = function(){
 				Shrink: {sounds: sounds.Shrink }
 			},
 			Is: {
-				'@Collided': {
-					ShrinkVulnerable: { component: { settings: {min_size: 32, ratio: 0.9 }} },
-				},
 				'@Delete' : {
 					Spawn: {
 						component: {
@@ -191,29 +175,25 @@ room01 = function(){
 			Sprite: { image: s_exploding_enemy },
 			BounceBox: { x:-300, y:-300, width: 600, height: 600 },
 			SAT: {},
-			CollidesWith: { types: ['Splatter'] } ,
+			CollidesWith: {
+				Splatter: {
+					Splat: {
+						components: {
+							Sprite: { image: s_exploding_enemy_splat },
+							Is: {
+								//Is Is, means every frame
+								'@Is': {
+									Shrink: { component: { min_size: 4, ratio: 0.96 }}
+								},
+							},
+						},
+						velocity_range: [10,20]
+					}
+
+				}
+			},
 			Is: {
 				'@Collided': {
-					//Create SplatVulnerable when you have collided
-					SplatVulnerable: {
-						//the component data for SplatVulnerable
-						component: {
-							//The future instance variables for splat, in this case just `settings`
-							settings:{
-								//Some components to add to the splat part
-								components: {
-									Sprite: { image: s_exploding_enemy_splat },
-									Is: {
-										'@Is': {
-											Shrink: { component: { min_size: 4, ratio: 0.96 }}
-										},
-									},
-
-								},
-								velocity_range: [10,20]
-							}
-						}
-					},
 					Remove: { component: {  omit: ['Splat'] } }
 				}
 			},
@@ -259,12 +239,10 @@ room01 = function(){
 		'Camera',
 		'Draw',
 		'GarbageCollection',
-		'ShrinkVulnerable',
+		'Vulnerable',
 		'Shrink',
 		'Reform',
-		'SplatVulnerable',
 		'Splat',
-		'RemoveVulnerable',
 		'Spawn',
 		'Sounds',
 		'Backup',

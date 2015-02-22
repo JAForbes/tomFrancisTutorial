@@ -176,17 +176,6 @@ systems = {
 		})
 	},
 
-	CollidesWith: function(){
-		_.each(C('CollidesWith'), function(collidesWith, id){
-			collidesWith.types.reduce(function(relevant,componentName){
-				Object.keys(C.components[componentName] || {}).map(function(id){
-					relevant[id] = true
-				})
-				return relevant;
-			},(collidesWith.entities = {}) )
-
-		})
-	},
 
 	SAT: function(){
 		var processed = {}
@@ -295,20 +284,6 @@ systems = {
 			},spawned)
 		})
 		C.components.Spawn && C('RemoveCategory',{name: 'Spawn'})
-	},
-
-	SplatVulnerable: function(){
-
-		_.each( C('SplatVulnerable'), function(vulnerable,id){
-
-			_.each(C('Collided',id).collisions, function(collision,against){
-
-				if( C.components.Splatter[against] ) {
-					C('Splat',vulnerable.settings,id)
-				}
-			})
-		})
-		C.components.SplatVulnerable && C('RemoveCategory',{ name: 'SplatVulnerable'})
 	},
 
 	ComponentAge: function(){
@@ -543,7 +518,7 @@ systems = {
 	Splat: function(){
 
 		_.each( C('Splat') , function(splat, id){
-
+			console.log('splat',splat,id)
 			var p = _.clone(C('Location',id))
 			var d = C('Dimensions',id)
 
@@ -581,7 +556,7 @@ systems = {
 					Remover: {},
 					Shrinker: {},
 					Splatter: {},
-					CollidesWith: { types: [] }
+					CollidesWith: {}
 				})
 				if(splat.wave){
 					C('WaveEntity', { wave_id: wave_id }, spawned_splat)
@@ -605,30 +580,65 @@ systems = {
 		C('RemoveCategory',{ name: 'Log'})
 	},
 
-	RemoveVulnerable: function(){
-		_.each(C('RemoveVulnerable'),function(vulnerable,id){
 
-			_.each(C('Collided',id).collisions, function(collision,against){
-				if( C.components.Remover[against] ) {
-					C('Remove',{},id)
-				}
+	/*
+		Creates a list of entityies that are relevant to collision detection.
 
+		Based on the types specified in the CollidesWith component
+	*/
+	CollidesWith: function(){
+		var appendEr = function(word){
+		  return word
+		    .replace(/e$/,'')
+		    .replace(/t$/,'tt')
+		    +'er'
+		}
+
+		_.each(C('CollidesWith'), function(collidesWith, id){
+
+			collidesWith.entities = {}
+			relevant = collidesWith.entities
+
+			_.each(collidesWith, function(componentsToAdd,threatName){
+
+				_.each(componentsToAdd, function(component,componentName){
+
+					_.each( C( appendEr(componentName)), function( component, against_id ){
+						relevant[against_id] = true
+					})
+				})
+				return relevant;
 			})
 		})
-		C.components.RemoveCategory && C('RemoveCategory',{ name: 'ShrinkVulnerable'})
 	},
 
-	ShrinkVulnerable: function(){
-		_.each(C('ShrinkVulnerable'),function(vulnerable,id){
+	Vulnerable: function(){
+		var appendEr = function(word){
+		  return word
+		    .replace(/e$/,'')
+		    .replace(/t$/,'tt')
+		    +'er'
+		}
 
-			_.each(C('Collided',id).collisions, function(collision,against){
-				if( C.components.Shrinker && C.components.Shrinker[against] ) {
-					C('Shrink',vulnerable.settings,id)
-				}
+		var triggerCollisionComponents = function(entity_id, against_id, componentsToAdd, against_type){
+			if(against_type == 'entities') return;
 
+			var collidedWithThreat = C.components[against_type] && C.components[against_type][against_id]
+			console.log(entity_id,against_id,componentsToAdd,against_type)
+		 	if(collidedWithThreat){
+		 		_.each(componentsToAdd, function(component, componentName){
+					C(componentName,component,entity_id)
+				})
+		 	}
+		}
+
+
+		_.each(C('Collided'), function(collided,id){
+			_.each(collided.collisions, function(collision, against){
+				var trigger = triggerCollisionComponents.bind(null, id, against)
+				 _.each(C('CollidesWith',id), trigger )
 			})
 		})
-		C.components.ShrinkVulnerable && C('RemoveCategory',{ name: 'ShrinkVulnerable'})
 	},
 
 	Shrink: function(){
