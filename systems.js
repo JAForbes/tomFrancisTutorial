@@ -457,11 +457,11 @@ systems = {
 
 				// We need to manually delete the backup, as it is likely omitted
 				// from removal
-
+				sounds.Restore[0].play()
 
 				delete C.components.Backup[restore.entity]
 				delete C.components.Delete[restore.entity]
-
+				C('Restored', {}, restore_id)
 			}
 		})
 		C.components.Restore && C('RemoveCategory', {name: 'Restore'})
@@ -526,6 +526,10 @@ systems = {
 				})
 				.filter(Boolean)
 
+			if(reformed.length && !reform.reforming){
+				reform.reforming = true
+				sounds.Reforming[0].play()
+			}
 			if(reformed.length == wave.entities.length){
 				C('Restore',{entity: wave.spawner })
 				//Removes Reform and Wave
@@ -803,9 +807,11 @@ systems = {
 	Sounds: function(){
 		_.each(C('Sounds'),function(sounds,id){
 			_.each(sounds, function(sound, componentName){
+
 				var category = C.components[componentName]
 				var component = category && category[id]
 				if( component ) {
+					console.log(sound,componentName)
 					var sounds = sound.sounds.filter(function(snd){
 						return snd.paused
 					})
