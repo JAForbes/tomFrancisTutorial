@@ -518,7 +518,6 @@ systems = {
 	Splat: function(){
 
 		_.each( C('Splat') , function(splat, id){
-			console.log('splat',splat,id)
 			var p = _.clone(C('Location',id))
 			var d = C('Dimensions',id)
 
@@ -624,7 +623,6 @@ systems = {
 			if(against_type == 'entities') return;
 
 			var collidedWithThreat = C.components[against_type] && C.components[against_type][against_id]
-			console.log(entity_id,against_id,componentsToAdd,against_type)
 		 	if(collidedWithThreat){
 		 		_.each(componentsToAdd, function(component, componentName){
 					C(componentName,component,entity_id)
