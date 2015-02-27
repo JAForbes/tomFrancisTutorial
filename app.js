@@ -57,7 +57,7 @@ room01 = function(){
 		Dimensions: { width: 32, height: 32},
 		Sprite: { image: s_player },
 
-		KickBack: {ratio: 0.5},
+		KickBack: {ratio: 0.2},
 		Sounds: {
 			Shoot: { sounds: sounds.Shoot },
 			Splat: { sounds: sounds.Splat },
@@ -111,115 +111,131 @@ room01 = function(){
 		},
 		SAT: {},
 	}
-	Enemy = function(){
-		var Enemy = {
-			Angle: { value: 0},
-			Facing: { entity: player},
-			Location: { x: -200, y: 200},
-			//Velocity: { x:_.random(2,4), y:_.random(2,4) },
-			Velocity: { x:0, y:0 },
-			Acceleration: { x:0 , y:0 },
-			Speed: {value: 5},
-			Dimensions: { width: 64, height: 64 },
-			Sprite: { image: s_enemy },
-			// BounceBox: { x:-300, y:-300, width: 600, height: 600 },
-			SAT: {},
-			CollidesWith: {
-				Shrinker: {
-					Shrink: {min_size: 32, ratio: 0.9 }
-				}
-			},
-			Friction: { value: 0.01 },
-			Repeat: {
-				Patrol: {
+	Enemy = {
+		Angle: { value: 0},
+		Facing: { entity: mouse},
+		Location: { x: -200, y: 200},
+		//Velocity: { x:_.random(2,4), y:_.random(2,4) },
+		Velocity: { x:0, y:0 },
+		Acceleration: { x:0 , y:0 },
+		Speed: {value: 5},
+		Dimensions: { width: 64, height: 64 },
+		Sprite: { image: s_enemy },
+		// BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+		SAT: {},
+		CollidesWith: {
+			Shrinker: {
+				Shrink: {min_size: 32, ratio: 0.9 }
+			}
+		},
+		Friction: { value: 0.01 },
+		Repeat: {
+			Patrol: {
+				component: {
+					waypoints: [
+						{x:-200, y: -200},
+						{x: 200 , y: -200 },
+						{x: 200 , y: -200 },
+						{x: 200 , y: 200 },
+					]
+				},
+				remaining: Infinity
+			}
+		},
+		Sounds: {
+			Splat: { sounds: sounds.Splat },
+			Shrink: {sounds: sounds.Shrink }
+		},
+		Is: {
+			'@Delete' : {
+				Spawn: {
 					component: {
-						waypoints: [
-							{x:-200, y: -200},
-							{x: 200 , y: -200 },
-							{x: 200 , y: -200 },
-							{x: 200 , y: 200 },
-						]
-					},
-					remaining: Infinity
-				}
-			},
-			Sounds: {
-				Splat: { sounds: sounds.Splat },
-				Shrink: {sounds: sounds.Shrink }
-			},
-			Is: {
-				'@Delete' : {
-					Spawn: {
-						component: {
-							points: [{x:0,y:0}],
-							variation: 300
-						}
+						points: [{x:0,y:0}],
+						variation: 300
 					}
 				}
-			},
-			Remover: {},
-			Splatter: {}
-		}
-
-		//Spawn itself when it dies
-		Enemy.Is['@Delete'].Spawn.component.components = Enemy
-		//Ensure the spawned Enemy can spawn too
-		Enemy.Is['@Delete'].Spawn.component.components = Enemy
-		return Enemy
+			}
+		},
+		Remover: {},
+		Splatter: {}
 	}
 
+	//Spawn itself when it dies
+	Enemy.Is['@Delete'].Spawn.component.components = Enemy
+	//Ensure the spawned Enemy can spawn too
+	Enemy.Is['@Delete'].Spawn.component.components = Enemy
 
-	Exploding_Enemy = function(){
-		return {
-			Angle: { value: 0},
-			Facing: { entity: mouse},
-			Location: { x: _.random(-300, 300), y: _.random(-300, 300)},
-			Velocity: { x:_.random(1,2), y:_.random(1,2) },
 
-			Dimensions: { width: 64, height: 64 },
-			Sprite: { image: s_exploding_enemy },
-			BounceBox: { x:-300, y:-300, width: 600, height: 600 },
-			SAT: {},
-			CollidesWith: {
-				Splatter: {
-					Splat: {
-						components: {
-							Sprite: { image: s_exploding_enemy_splat },
-							Repeat: {
-								Shrink: {
-									component: { min_size: 4, ratio: 0.96 },
-									remaining: Infinity
-								}
-							},
+	Exploding_Enemy = {
+		Angle: { value: 0},
+		Facing: { entity: mouse},
+		Randomise: {
+			Location: {
+				x: [-300, 300],
+				y: [-300, 300]
+			},
+			Velocity: {
+				x: [2,4],
+				y: [2,4]
+			}
+		},
+		Dimensions: { width: 64, height: 64 },
+		Sprite: { image: s_exploding_enemy },
+		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+		SAT: {},
+		CollidesWith: {
+			Splatter: {
+				Splat: {
+					components: {
+						Sprite: { image: s_exploding_enemy_splat },
+						Repeat: {
+							Shrink: {
+								component: { min_size: 4, ratio: 0.96 },
+								remaining: Infinity
+							}
 						},
-						velocity_range: [10,20]
-					}
+					},
+					velocity_range: [10,20]
+				}
 
-				}
-			},
-			Is: {
-				'@Collided': {
-					Remove: { component: {  omit: ['Splat'] } }
-				}
-			},
-			Sounds: {
-				Splat: { sounds: sounds.Splat }
-			},
-			Remover: {},
-			Splatter: {}
-		}
+			}
+		},
+		Is: {
+			'@Collided': {
+				Remove: { component: {  omit: ['Splat'] } }
+			}
+		},
+		Sounds: {
+			Splat: { sounds: sounds.Splat }
+		},
+		Remover: {},
+		Splatter: {}
 	}
 
 
 	player = C(_.cloneDeep(Player))
 
 
-	enemy = C(Enemy())
-	exploding_enemy = C(Exploding_Enemy())
-	exploding_enemy2 = C(Exploding_Enemy())
+	enemy = C(_.cloneDeep(Enemy))
+	exploding_enemy = C(_.cloneDeep(Exploding_Enemy))
+	//todo may need to clone deep
+	exploding_enemy2 = C(_.cloneDeep(Exploding_Enemy))
 
+
+	spawner = C({
+		Every: {
+			//loops
+			100: {
+				Choose: {
+					enemy: { Create: { components: Enemy } } ,
+					exploding_enemy: { Create: {components: Exploding_Enemy }}
+				}
+			}
+		}
+	})
 
 	use = [
+		'Randomise',
 		'Screen',
 		'InfiniteBackground',
 		'Mouse',
@@ -229,6 +245,9 @@ room01 = function(){
 		'SAT',
 		'CategoryAge',
 		'ComponentAge',
+		'Every',
+		'Choose',
+		'Create',
 		'Patrol',
 		'Waypoint',
 		'Is',

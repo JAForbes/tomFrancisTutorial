@@ -301,6 +301,48 @@ systems = {
 		}
 	},
 
+	Create: function(){
+		_.each( C('Create'), function(create, id){
+			console.log(create.components.Randomise,id)
+			C(_.cloneDeep(create.components))
+		})
+		C('RemoveCategory',{name: 'Create'})
+	},
+
+	Every: function(){
+		_.each( C('Every'), function(everys, id){
+		_.each(everys, function(components, every){
+			var age = C.ComponentAge['Every'][id]
+			if( age % every == 0){
+				_.each(components, function(component, componentName){
+					C(componentName, component, id)
+				})
+			}
+		})
+		})
+	},
+
+	Choose: function(){
+		_.each( C('Choose'), function(choose, id){
+			var components = _.sample(choose)
+			C(components,id)
+		})
+		C('RemoveCategory',{name: 'Choose'})
+	},
+
+	Randomise: function(){
+		_.each( C('Randomise'), function(randomise, id){
+			_.each(randomise, function(random_component, componentName){
+				var component = {}
+				_.each(random_component, function(range, name){
+					component[name] = _.random.apply(_,range)
+				})
+				C(componentName, component, id)
+				C('RemoveComponent',{ name: 'Randomise', entity: id})
+			})
+		})
+	},
+
 	//TODO, need a more generic Spawn to create new components maybe Create
 	//essentially a call to C({})
 
@@ -523,6 +565,7 @@ systems = {
 		_.each(C('Remove'), function(remove,id){
 			var removed = {}
 			removed.Is = C('Is',id)
+			removed.After = C('After',id)
 			removed.Delete = {}
 			//todo should this be a part of C(id,null)?
 			//like C(id,null,omit)
