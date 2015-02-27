@@ -73,47 +73,52 @@ systems = {
 				x: track_position.x || camera.last_position.x,
 				y: track_position.y || camera.last_position.y
 			}
-			var velocity = C('Velocity',camera.tracking)
-
+			var bb = C('BounceBox',camera.tracking)
 			//Does the focus have boundary it cannot exceed?
 			//If so, we don't want the camera to pan past it
-			var bb = C('BounceBox',camera.tracking)
-			var atEdge = { x: false, y: false }
+			var friction = { x: 1, y: 1}
 			if(bb.width){
 				//todo, move this into a invisible component that the camera can track
 				//then the camera logic is tied to this specific style of tracking
 				//the invisible object can just have a waypoint that is always the player
 				//which is something we'll need _anyway_
-				//atEdge.x = screen.el.width/2 + position.x - (bb.width - bb.x - screen.el.width)/10  > bb.x + bb.width
-				//console.log(atEdge.x)
 
-				// atEdge.y = position.y + screen.el.height/8 > bb.y + bb.height ||
-				// 	position.y - screen.el.height/8 < bb.y
+				var far_right_edge = bb.x + bb.width
+				var far_left_edge = bb.x
+				var far_top_edge = bb.y
+				var far_bottom_edge = bb.y + bb.height
+
+				var cam = camera.last_position
+				var right_half_of_camera = camera.last_position.x + screen.el.width/2
+				var left_half_of_camera = camera.last_position.x - screen.el.width/2
+				var top_half_of_camera = camera.last_position.y - screen.el.height/2
+				var bottom_half_of_camera = camera.last_position.y + screen.el.height/2
+
+				//far right edge, and player, contained in camera right half of camera
+				//stop tracking the player, by setting last camera position to last camera position
+				if(right_half_of_camera > far_right_edge && position.x > camera.last_position.x){
+					position.x = camera.last_position.x
+				}
+				if(left_half_of_camera < far_left_edge && position.x < camera.last_position.x){
+					position.x = camera.last_position.x
+				}
+				if(top_half_of_camera < far_top_edge && position.y < camera.last_position.y){
+					position.y = camera.last_position.y
+				}
+				if(bottom_half_of_camera > far_bottom_edge && position.y > camera.last_position.y){
+					position.y = camera.last_position.y
+				}
+
 			}
+
 			var offset = { x: 0, y: 0 };
 			var dx = position.x - camera.last_position.x
 			var dy = position.y - camera.last_position.y
-			//console.log(atEdge.x, atEdge.y)
-			if(atEdge.x){
-				offset.x = camera.last_position.x
-			} else {
-				offset.x = camera.last_position.x + dx/camera.lag
-			}
-
-			if(atEdge.y){
-				offset.y = camera.last_position.y
-			} else {
-				offset.y = camera.last_position.y + dy/camera.lag
-			}
+			offset.x = camera.last_position.x + (dx/camera.lag) * friction.x * 1.5
+			offset.y = camera.last_position.y + dy/camera.lag
 
 			screen.con.translate(-offset.x,-offset.y)
 			camera.last_position = offset;
-
-
-
-
-
-
 
 		})
 	},
