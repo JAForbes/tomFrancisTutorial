@@ -48,7 +48,7 @@ room01 = function(){
 	})
 
 	Player = {
-		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
+		BounceBox: { x:-300, y:-300, width: 1200, height: 1200 },
 		Angle: { value: 0 },
 		Facing: { entity: mouse },
 		Location: {x:10,y:14},
@@ -202,10 +202,10 @@ room01 = function(){
 	player = C(_.cloneDeep(Player))
 
 
-	enemy = C(_.cloneDeep(Enemy))
-	exploding_enemy = C(_.cloneDeep(Exploding_Enemy))
-	//todo may need to clone deep
-	exploding_enemy2 = C(_.cloneDeep(Exploding_Enemy))
+	// enemy = C(_.cloneDeep(Enemy))
+	// exploding_enemy = C(_.cloneDeep(Exploding_Enemy))
+	// //todo may need to clone deep
+	// exploding_enemy2 = C(_.cloneDeep(Exploding_Enemy))
 
 
 	C({

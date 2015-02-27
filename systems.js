@@ -63,6 +63,54 @@ systems = {
 	},
 
 
+	Camera: function(){
+		_.each( C('Camera'), function(camera, id){
+			var screen = C('Screen',id)
+			camera.lag = camera.lag || 25
+			camera.last_position = camera.last_position || {x:0,y:0}
+			var track_position = C('Location',camera.tracking)
+			var position = {
+				x: track_position.x || camera.last_position.x,
+				y: track_position.y || camera.last_position.y
+			}
+
+			//Does the focus have boundary it cannot exceed?
+			//If so, we don't want the camera to pan past it
+			var bb = C('BounceBox',camera.tracking)
+			if(bb.width){
+
+				//todo, move this into a invisible component that the camera can track
+				//then the camera logic is tied to this specific style of tracking
+				//the invisible object can just have a waypoint that is always the player
+				//which is something we'll need _anyway_
+
+				//todo use screen translate instead of assuming /2
+				if(camera.last_position.x - screen.el.width/2 < bb.x){
+					camera.last_position.x = screen.el.width/2 + bb.x
+				} else if (camera.last_position.x + screen.el.width/2 > (bb.x + bb.width) ){
+					camera.last_position.x = bb.x + bb.width - screen.el.width/2
+				}
+				if(camera.last_position.y - screen.el.height/2 < bb.y){
+					camera.last_position.y = screen.el.height/2 + bb.y
+				} else if (camera.last_position.y + screen.el.height/2 > (bb.y + bb.height) ){
+					camera.last_position.y = bb.y + bb.height - screen.el.height/2
+				}
+
+			}
+			var offset = {};
+			var dx = position.x - camera.last_position.x || 0
+			var dy = position.y - camera.last_position.y || 0
+			offset.x = camera.last_position.x + dx/camera.lag
+			offset.y = camera.last_position.y + dy/camera.lag
+			screen.con.translate(-offset.x,-offset.y)
+			camera.last_position = offset;
+
+
+
+
+		})
+	},
+
 	InfiniteBackground: function(){
 		_.each(C('InfiniteBackground'), function(bg,id){
 			var screen = C('Screen',id)
