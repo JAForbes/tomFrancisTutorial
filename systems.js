@@ -73,37 +73,44 @@ systems = {
 				x: track_position.x || camera.last_position.x,
 				y: track_position.y || camera.last_position.y
 			}
+			var velocity = C('Velocity',camera.tracking)
 
 			//Does the focus have boundary it cannot exceed?
 			//If so, we don't want the camera to pan past it
 			var bb = C('BounceBox',camera.tracking)
+			var atEdge = { x: false, y: false }
 			if(bb.width){
-
 				//todo, move this into a invisible component that the camera can track
 				//then the camera logic is tied to this specific style of tracking
 				//the invisible object can just have a waypoint that is always the player
 				//which is something we'll need _anyway_
+				//atEdge.x = screen.el.width/2 + position.x - (bb.width - bb.x - screen.el.width)/10  > bb.x + bb.width
+				//console.log(atEdge.x)
 
-				//todo use screen translate instead of assuming /2
-				if(camera.last_position.x - screen.el.width/2 < bb.x){
-					camera.last_position.x = screen.el.width/2 + bb.x
-				} else if (camera.last_position.x + screen.el.width/2 > (bb.x + bb.width) ){
-					camera.last_position.x = bb.x + bb.width - screen.el.width/2
-				}
-				if(camera.last_position.y - screen.el.height/2 < bb.y){
-					camera.last_position.y = screen.el.height/2 + bb.y
-				} else if (camera.last_position.y + screen.el.height/2 > (bb.y + bb.height) ){
-					camera.last_position.y = bb.y + bb.height - screen.el.height/2
-				}
-
+				// atEdge.y = position.y + screen.el.height/8 > bb.y + bb.height ||
+				// 	position.y - screen.el.height/8 < bb.y
 			}
-			var offset = {};
-			var dx = position.x - camera.last_position.x || 0
-			var dy = position.y - camera.last_position.y || 0
-			offset.x = camera.last_position.x + dx/camera.lag
-			offset.y = camera.last_position.y + dy/camera.lag
+			var offset = { x: 0, y: 0 };
+			var dx = position.x - camera.last_position.x
+			var dy = position.y - camera.last_position.y
+			//console.log(atEdge.x, atEdge.y)
+			if(atEdge.x){
+				offset.x = camera.last_position.x
+			} else {
+				offset.x = camera.last_position.x + dx/camera.lag
+			}
+
+			if(atEdge.y){
+				offset.y = camera.last_position.y
+			} else {
+				offset.y = camera.last_position.y + dy/camera.lag
+			}
+
 			screen.con.translate(-offset.x,-offset.y)
 			camera.last_position = offset;
+
+
+
 
 
 

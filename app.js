@@ -48,7 +48,7 @@ room01 = function(){
 	})
 
 	Player = {
-		BounceBox: { x:-300, y:-300, width: 1200, height: 1200 },
+		BounceBox: { x:-1200, y:-1200, width: 2400, height: 2400 },
 		Angle: { value: 0 },
 		Facing: { entity: mouse },
 		Location: {x:10,y:14},
@@ -208,17 +208,17 @@ room01 = function(){
 	// exploding_enemy2 = C(_.cloneDeep(Exploding_Enemy))
 
 
-	C({
-		Every: {
-			//loops
-			300: {
-				Choose: {
-					enemy: { Create: { components: Enemy } } ,
-					exploding_enemy: { Create: {components: Exploding_Enemy }}
-				}
-			}
-		}
-	},game)
+	// C({
+	// 	Every: {
+	// 		//loops
+	// 		300: {
+	// 			Choose: {
+	// 				enemy: { Create: { components: Enemy } } ,
+	// 				exploding_enemy: { Create: {components: Exploding_Enemy }}
+	// 			}
+	// 		}
+	// 	}
+	// },game)
 
 	use = [
 		'Randomise',
