@@ -347,11 +347,11 @@ systems = {
 	//essentially a call to C({})
 
 	// If something exists globally add some components to your self
-	Is: function(){
+	Has: function(){
 		var CategoryAge = C.CategoryAge
 		var initial = 1
 
-		_.each( C('Is') , function(is, id){
+		_.each( C('Has') , function(is, id){
 
 			_.each(is, function(components, isNames){
 				isNames.split('|').forEach(function(isName){
@@ -564,7 +564,7 @@ systems = {
 	RemoveEntity: function(){
 		_.each(C('Remove'), function(remove,id){
 			var removed = {}
-			removed.Is = C('Is',id)
+			removed.Has = C('Has',id)
 			removed.After = C('After',id)
 			removed.Delete = {}
 			//todo should this be a part of C(id,null)?
@@ -576,9 +576,9 @@ systems = {
 			} else {
 				C(id,null)
 			}
-			//Move this Is thing into omit?
-			C.components['Is'] = C.components['Is'] || {}
-			C.components['Is'][id] = removed.Is
+			//Move this Has thing into omit?
+			C.components['Has'] = C.components['Has'] || {}
+			C.components['Has'][id] = removed.Has
 
 			C.components['Delete'] = C.components['Delete'] || {}
 			C.components['Delete'][id] = { omit: remove.omit || [] }
@@ -656,12 +656,13 @@ systems = {
 			var d = C('Dimensions',id)
 			var v = C('Velocity',id)
 
-
 			if(	p.x + d.width/2 > bb.x + bb.width || p.x - d.width/2 < bb.x ){
 				v.x *= -1
+				p.x += v.x
 			}
 			if(p.y + d.height/2 > bb.y + bb.height || p.y - d.height/2 < bb.y ) {
 				v.y *= -1
+				p.y += v.y
 			}
 		})
 	},

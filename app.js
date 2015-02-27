@@ -30,7 +30,7 @@ game = C({
 	Camera: { tracking: 3 , last_position: {x:0, y:0 }},
 	Save: { state: {} },
 	QuickSave: {},
-	Is: {
+	Has: {
 		'Key_Q': { QuickSave: { component: {} , every: Infinity }},
 		'Key_R': { QuickLoad: { component: {} , every: Infinity }}
 	},
@@ -48,6 +48,7 @@ room01 = function(){
 	})
 
 	Player = {
+		BounceBox: { x:-300, y:-300, width: 600, height: 600 },
 		Angle: { value: 0 },
 		Facing: { entity: mouse },
 		Location: {x:10,y:14},
@@ -62,7 +63,7 @@ room01 = function(){
 			Shoot: { sounds: sounds.Shoot },
 			Splat: { sounds: sounds.Splat },
 		},
-		Is: {
+		Has: {
 			'Click|Key_SPACE': {
 				Shoot: {
 					component : {
@@ -146,24 +147,9 @@ room01 = function(){
 			Splat: { sounds: sounds.Splat },
 			Shrink: {sounds: sounds.Shrink }
 		},
-		Is: {
-			'@Delete' : {
-				Spawn: {
-					component: {
-						points: [{x:0,y:0}],
-						variation: 300
-					}
-				}
-			}
-		},
 		Remover: {},
 		Splatter: {}
 	}
-
-	//Spawn itself when it dies
-	Enemy.Is['@Delete'].Spawn.component.components = Enemy
-	//Ensure the spawned Enemy can spawn too
-	Enemy.Is['@Delete'].Spawn.component.components = Enemy
 
 
 	Exploding_Enemy = {
@@ -171,8 +157,8 @@ room01 = function(){
 		Facing: { entity: mouse},
 		Randomise: {
 			Location: {
-				x: [-300, 300],
-				y: [-300, 300]
+				x: [-250, 250],
+				y: [-250, 250]
 			},
 			Velocity: {
 				x: [2,4],
@@ -200,7 +186,7 @@ room01 = function(){
 
 			}
 		},
-		Is: {
+		Has: {
 			'@Collided': {
 				Remove: { component: {  omit: ['Splat'] } }
 			}
@@ -222,17 +208,17 @@ room01 = function(){
 	exploding_enemy2 = C(_.cloneDeep(Exploding_Enemy))
 
 
-	spawner = C({
+	C({
 		Every: {
 			//loops
-			100: {
+			300: {
 				Choose: {
 					enemy: { Create: { components: Enemy } } ,
 					exploding_enemy: { Create: {components: Exploding_Enemy }}
 				}
 			}
 		}
-	})
+	},game)
 
 	use = [
 		'Randomise',
@@ -250,7 +236,7 @@ room01 = function(){
 		'Create',
 		'Patrol',
 		'Waypoint',
-		'Is',
+		'Has',
 		'Shoot',
 		'KickBack',
 		'Accelerate',
