@@ -346,9 +346,23 @@ systems = {
 		}
 	},
 
+	Pickup: function(){
+		_.each(C('MixinPickup'), function(mixin, id){
+			_.each(C('Collided',id).collisions, function(collision, against){
+				var pickup = C('Pickup',against)
+				var hasPickup = !_.isEmpty(pickup)
+				if(hasPickup){
+					//todo: probably don't need to cloneDeep
+					C(pickup, id)
+				}
+				console.log(collision,against)
+			})
+
+		})
+	},
+
 	Create: function(){
 		_.each( C('Create'), function(create, id){
-			console.log(create.components.Randomise,id)
 			C(_.cloneDeep(create.components))
 		})
 		C('RemoveCategory',{name: 'Create'})
@@ -442,8 +456,6 @@ systems = {
 	Restore: function(){
 		_.each(C('Restore'), function(restore, restore_id){
 			var backup = C('Backup',restore.entity).components
-
-			console.log('Restore',restore,backup)
 
 			if(backup){
 				C(backup,restore.entity)

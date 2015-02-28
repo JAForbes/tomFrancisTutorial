@@ -149,15 +149,23 @@ room01 = function(){
 				Velocity: { component: { x:0, y:0 }},
 				Acceleration: { component: { x:0, y:0 }},
 				Accelerate: { component: {x:0, y:0 }},
-				Backup: { component: { omit: ['Splat','Remove','Collided']} },
-				Remove: { component: {  omit: ['Backup','Splat'] } }
+
 			}
 		},
 		CollidesWith: {
 			Splatter: {
 				Splat: { wave: { Reform: {} }, components: { Sprite: { image: s_splat } } }
+			},
+			Pickup: {
+				//Mix  collided Pickup components with yourself
+				MixinPickup: {}
+			},
+			Remover: {
+				Backup: {  omit: ['Splat','Remove','Collided']},
+				Remove: {  omit: ['Backup','Splat'] }
 			}
 		},
+		Pickuper: {},
 		SAT: {},
 	}
 	Enemy = {
@@ -251,7 +259,7 @@ room01 = function(){
 		Velocity: { x:0, y: 0},
 		Dimensions: { width: 32, height: 32},
 		Angle: { angle: 0},
-		Sprite: { image: s_bullet },
+		//Sprite: { image: s_bullet },
 		Acceleration: { x:0 , y:0 },
 		//Stability of camera: Screenshake
 		Friction: { value: 0.9 },
@@ -266,6 +274,46 @@ room01 = function(){
 	})
 
 
+	PistolPickup = {
+		Location: { x: 200, y: 100},
+		Velocity: { x:0, y:0 },
+		Acceleration: { x: 0, y: 0},
+		Friction: { value: 1 },
+		Sprite: { image: s_bullet },
+		Angle: { angle: 0 },
+		Dimensions: { height: 32, width: 32},
+		//todo have Pickups bob up and down, or rotate
+		//with a PickupAnimate system
+		Pickup : Pistol,
+		SAT: {},
+		CollidesWith: {
+			Pickuper: {
+				Remove: {}
+			}
+		}
+	}
+
+	GaussPickup = {
+		Location: { x: -200, y: -100},
+		Velocity: { x:0, y:0 },
+		Acceleration: { x: 0, y: 0},
+		Friction: { value: 1 },
+		Sprite: { image: s_bullet },
+		Angle: { angle: 0 },
+		Dimensions: { height: 32, width: 32},
+		//todo have Pickups bob up and down, or rotate
+		//with a PickupAnimate system
+		Pickup : GaussGun,
+		SAT: {},
+		CollidesWith: {
+			Pickuper: {
+				Remove: {}
+			}
+		}
+	}
+
+	C(_.cloneDeep(PistolPickup))
+	C(_.cloneDeep(GaussPickup))
 	player = C(_.cloneDeep(Player))
 	C(GaussGun,player)
 
@@ -288,6 +336,8 @@ room01 = function(){
 			}
 		}
 	},game)
+
+
 
 	use = [
 		'Randomise',
@@ -322,6 +372,7 @@ room01 = function(){
 		'Draw',
 		'GarbageCollection',
 		'Vulnerable',
+		'Pickup',
 		'Shrink',
 		'Reform',
 		'Splat',

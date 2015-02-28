@@ -57,12 +57,6 @@ systems.SAT_sync = function(){
 	Based on the types specified in the CollidesWith component
 */
 systems.CollidesWith = function(){
-	var appendEr = function(word){
-	  return word
-	    .replace(/e$/,'')
-	    .replace(/t$/,'tt')
-	    +'er'
-	}
 
 	_.each(C('CollidesWith'), function(collidesWith, id){
 
@@ -70,12 +64,8 @@ systems.CollidesWith = function(){
 		relevant = collidesWith.entities
 
 		_.each(collidesWith, function(componentsToAdd,threatName){
-
-			_.each(componentsToAdd, function(component,componentName){
-
-				_.each( C( appendEr(componentName)), function( component, against_id ){
-					relevant[against_id] = true
-				})
+			_.each(C(threatName), function( component, against_id){
+				relevant[against_id] = true
 			})
 			return relevant;
 		})
@@ -86,12 +76,6 @@ systems.CollidesWith = function(){
 //The types are specified in CollidesWith
 
 systems.Vulnerable = function(){
-	var appendEr = function(word){
-	  return word
-	    .replace(/e$/,'')
-	    .replace(/t$/,'tt')
-	    +'er'
-	}
 
 	var triggerCollisionComponents = function(entity_id, against_id, componentsToAdd, against_type){
 		if(against_type == 'entities') return;
