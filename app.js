@@ -210,7 +210,7 @@ room01 = function(){
 		Acceleration: { x:0 , y:0 },
 
 		//Stability of camera: Screenshake
-		Friction: { value: 0.95 },
+		Friction: { value: 0.9 },
 		//Don't see past the boundary
 		PanBoundary: { x:-1200, y:-1200, width: 2400, height: 2400 },
 		Has:  {

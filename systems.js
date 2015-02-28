@@ -715,16 +715,16 @@ systems = {
 			//far right edge, and player, contained in viewport right half of viewport
 			//stop tracking the player, by setting last viewport position to last viewport position
 			if(right_half_of_viewport > far_right_edge && acceleration.x > 0){
-				acceleration.x = 0
+				velocity.x = acceleration.x = 0
 			}
 			if(left_half_of_viewport < far_left_edge && acceleration.x < 0){
-				acceleration.x = 0
+				velocity.x = acceleration.x = 0
 			}
 			if(top_half_of_viewport < far_top_edge && acceleration.y < 0){
-				acceleration.y = 0
+				velocity.y = acceleration.y = 0
 			}
 			if(bottom_half_of_viewport > far_bottom_edge && acceleration.y > 0){
-				acceleration.y = 0
+				velocity.y = acceleration.y = 0
 			}
 		})
 
