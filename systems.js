@@ -689,8 +689,8 @@ systems = {
 			var p = C('Location',bullet)
 			var v = C('Velocity', bullet)
 
-			p.x += v.x * shoot.spawn_radius
-			p.y += v.y * shoot.spawn_radius
+			p.x += Math.cos(angle) * size+v.x
+			p.y += Math.sin(angle) * size+v.y
 		})
 		C.components.Shoot && C('RemoveCategory', {name: 'Shoot'})
 	},
@@ -700,9 +700,10 @@ systems = {
 			var kickBack = C('KickBack',id)
 			if(kickBack.ratio){
 				var a = C('Acceleration',id)
+				var d = C('Damage',id).value
 				var angle = -C('Angle',id).value
-				a.x += -(Math.cos(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)) * kickBack.ratio
-				a.y += (Math.sin(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)) * kickBack.ratio
+				a.x += -(Math.cos(angle) * d + _.random(-shoot.size_variation,shoot.size_variation)) * kickBack.ratio
+				a.y += (Math.sin(angle) * d + _.random(-shoot.size_variation,shoot.size_variation)) * kickBack.ratio
 			}
 		})
 	},
