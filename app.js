@@ -198,32 +198,54 @@ room01 = function(){
 		Splatter: {}
 	}
 
+	cameraBot = C({
+		Location: { x:0, y:0 },
+		Velocity: { x:0, y: 0},
+		Dimensions: { width: 32, height: 32},
+		Angle: { angle: 0},
+		Sprite: { image: s_bullet },
+		Acceleration: { x:0 , y:0 },
+		Friction: { value: 0.95 },
+		//Don't see past the boundary
+		PanBoundary: { x:-1200, y:-1200, width: 2400, height: 2400 },
+		Has:  {
+			'Collided|Shoot': {
+				//Screen Shake
+				Velocity: { component: {x:10, y: 10} },
+			}
+		}
+	})
+
 
 	player = C(_.cloneDeep(Player))
 
 
-	// enemy = C(_.cloneDeep(Enemy))
+	C('Follows',{ entity: player , elasticity: 0.5 },cameraBot)
+	C('Camera',game).tracking = cameraBot
+	 enemy = C(_.cloneDeep(Enemy))
 	// exploding_enemy = C(_.cloneDeep(Exploding_Enemy))
 	// //todo may need to clone deep
 	// exploding_enemy2 = C(_.cloneDeep(Exploding_Enemy))
 
 
-	// C({
-	// 	Every: {
-	// 		//loops
-	// 		300: {
-	// 			Choose: {
-	// 				enemy: { Create: { components: Enemy } } ,
-	// 				exploding_enemy: { Create: {components: Exploding_Enemy }}
-	// 			}
-	// 		}
-	// 	}
-	// },game)
+	C({
+		Every: {
+			//loops
+			300: {
+				Choose: {
+					enemy: { Create: { components: Enemy } } ,
+					exploding_enemy: { Create: {components: Exploding_Enemy }}
+				}
+			}
+		}
+	},game)
 
 	use = [
 		'Randomise',
 		'Screen',
+
 		'InfiniteBackground',
+		'Camera',
 		'Mouse',
 		'Translate',
 		'CollidesWith',
@@ -243,10 +265,11 @@ room01 = function(){
 		'VelocitySyncedWithAngle',
 		'BounceBox',
 		'Facing',
+		'Follows',
+		'PanBoundary',
 		'Friction',
 		'Move',
 		'Stopped',
-		'Camera',
 		'Draw',
 		'GarbageCollection',
 		'Vulnerable',

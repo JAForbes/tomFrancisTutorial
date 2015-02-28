@@ -36,7 +36,7 @@ systems = {
 			con.save()
 			con.translate(p.x,p.y)
 			//TODO check typeof if angles start going weird
-			con.rotate(sprite.angle || angle)
+			con.rotate(sprite.angle || angle || 0)
 			con.drawImage(
 				sprite.image,
 				0-d.width/2,
@@ -73,49 +73,15 @@ systems = {
 				x: track_position.x || camera.last_position.x,
 				y: track_position.y || camera.last_position.y
 			}
-			var bb = C('BounceBox',camera.tracking)
-			//Does the focus have boundary it cannot exceed?
-			//If so, we don't want the camera to pan past it
-			var friction = { x: 1, y: 1}
-			if(bb.width){
-				//todo, move this into a invisible component that the camera can track
-				//then the camera logic is tied to this specific style of tracking
-				//the invisible object can just have a waypoint that is always the player
-				//which is something we'll need _anyway_
-
-				var far_right_edge = bb.x + bb.width
-				var far_left_edge = bb.x
-				var far_top_edge = bb.y
-				var far_bottom_edge = bb.y + bb.height
-
-				var cam = camera.last_position
-				var right_half_of_camera = camera.last_position.x + screen.el.width/2
-				var left_half_of_camera = camera.last_position.x - screen.el.width/2
-				var top_half_of_camera = camera.last_position.y - screen.el.height/2
-				var bottom_half_of_camera = camera.last_position.y + screen.el.height/2
-
-				//far right edge, and player, contained in camera right half of camera
-				//stop tracking the player, by setting last camera position to last camera position
-				if(right_half_of_camera > far_right_edge && position.x > camera.last_position.x){
-					position.x = camera.last_position.x
-				}
-				if(left_half_of_camera < far_left_edge && position.x < camera.last_position.x){
-					position.x = camera.last_position.x
-				}
-				if(top_half_of_camera < far_top_edge && position.y < camera.last_position.y){
-					position.y = camera.last_position.y
-				}
-				if(bottom_half_of_camera > far_bottom_edge && position.y > camera.last_position.y){
-					position.y = camera.last_position.y
-				}
-
-			}
 
 			var offset = { x: 0, y: 0 };
 			var dx = position.x - camera.last_position.x
 			var dy = position.y - camera.last_position.y
-			offset.x = camera.last_position.x + (dx/camera.lag) * friction.x * 1.5
-			offset.y = camera.last_position.y + dy/camera.lag
+
+			offset.x = camera.last_position.x + dx//(dx/camera.lag) * 0.5
+			offset.y = camera.last_position.y + dy//(dy/camera.lag) * 0.5
+
+
 
 			screen.con.translate(-offset.x,-offset.y)
 			camera.last_position = offset;
@@ -209,6 +175,25 @@ systems = {
 			} else {
 				C('RemoveComponent', {name: 'Stopped', entity: id})
 			}
+
+		})
+	},
+
+	Follows: function(){
+		_.each(C('Follows'),function(follows,id){
+			var other = C('Location',follows.entity)
+			if( _.isEmpty(other) ){
+				other = follows.last_position || {x:0,y:0}
+			}
+			var p = C('Location',id)
+			var dx = Math.abs(p.x - other.x)
+			var dy = Math.abs(p.y - other.y)
+			var angle = C('Angle',id).value = Math.atan2(other.y-p.y, other.x-p.x)
+
+			var acceleration = C('Acceleration', id)
+			acceleration.x += Math.cos(angle) * dx * follows.elasticity
+			acceleration.y += Math.sin(angle) * dy * follows.elasticity
+			follows.last_position = { x: other.x, y: other.y}
 
 		})
 	},
@@ -708,6 +693,42 @@ systems = {
 				a.y += (Math.sin(angle) * shoot.size + _.random(-shoot.size_variation,shoot.size_variation)) * kickBack.ratio
 			}
 		})
+	},
+
+	PanBoundary: function(){
+		var screen = C('Screen',1)
+		_.each(C('PanBoundary'), function(pan,id){
+			var position = C('Location',id)
+			var velocity = C('Velocity',id)
+			var acceleration = C('Acceleration',id)
+
+			var far_right_edge = pan.x + pan.width
+			var far_left_edge = pan.x
+			var far_top_edge = pan.y
+			var far_bottom_edge = pan.y + pan.height
+
+			var right_half_of_viewport = position.x + screen.el.width/2
+			var left_half_of_viewport = position.x - screen.el.width/2
+			var top_half_of_viewport = position.y - screen.el.height/2
+			var bottom_half_of_viewport = position.y + screen.el.height/2
+
+			//far right edge, and player, contained in viewport right half of viewport
+			//stop tracking the player, by setting last viewport position to last viewport position
+			if(right_half_of_viewport > far_right_edge && acceleration.x > 0){
+				acceleration.x = 0
+			}
+			if(left_half_of_viewport < far_left_edge && acceleration.x < 0){
+				acceleration.x = 0
+			}
+			if(top_half_of_viewport < far_top_edge && acceleration.y < 0){
+				acceleration.y = 0
+			}
+			if(bottom_half_of_viewport > far_bottom_edge && acceleration.y > 0){
+				acceleration.y = 0
+			}
+		})
+
+
 	},
 
 	BounceBox: function(){
