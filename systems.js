@@ -179,11 +179,11 @@ systems = {
 		})
 	},
 
-	Follows: function(){
-		_.each(C('Follows'),function(follows,id){
-			var other = C('Location',follows.entity)
+	Tether: function(){
+		_.each(C('Tether'),function(tether,id){
+			var other = C('Location',tether.entity)
 			if( _.isEmpty(other) ){
-				other = follows.last_position || {x:0,y:0}
+				other = tether.last_position || {x:0,y:0}
 			}
 			var p = C('Location',id)
 			var dx = Math.abs(p.x - other.x)
@@ -191,9 +191,9 @@ systems = {
 			var angle = C('Angle',id).value = Math.atan2(other.y-p.y, other.x-p.x)
 
 			var acceleration = C('Acceleration', id)
-			acceleration.x += Math.cos(angle) * dx * follows.elasticity
-			acceleration.y += Math.sin(angle) * dy * follows.elasticity
-			follows.last_position = { x: other.x, y: other.y}
+			acceleration.x += Math.cos(angle) * dx * tether.elasticity
+			acceleration.y += Math.sin(angle) * dy * tether.elasticity
+			tether.last_position = { x: other.x, y: other.y}
 
 		})
 	},

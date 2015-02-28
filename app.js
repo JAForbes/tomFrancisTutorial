@@ -101,6 +101,9 @@ room01 = function(){
 				Accelerate: { component: {y: -1} }
 			},
 			'@Collided': {
+				Velocity: { component: { x:0, y:0 }},
+				Acceleration: { component: { x:0, y:0 }},
+				Accelerate: { component: {x:0, y:0 }},
 				Backup: { component: { omit: ['Splat','Remove','Collided']} },
 				Remove: { component: {  omit: ['Backup','Splat'] } }
 			}
@@ -222,7 +225,7 @@ room01 = function(){
 	player = C(_.cloneDeep(Player))
 
 
-	C('Follows',{ entity: player , elasticity: 0.5 },cameraBot)
+	C('Tether',{ entity: player , elasticity: 0.5 },cameraBot)
 	C('Camera',game).tracking = cameraBot
 	 enemy = C(_.cloneDeep(Enemy))
 	// exploding_enemy = C(_.cloneDeep(Exploding_Enemy))
@@ -267,7 +270,7 @@ room01 = function(){
 		'VelocitySyncedWithAngle',
 		'BounceBox',
 		'Facing',
-		'Follows',
+		'Tether',
 		'PanBoundary',
 		'Friction',
 		'Move',
