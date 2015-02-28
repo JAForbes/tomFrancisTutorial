@@ -14,6 +14,11 @@ sounds = {
 		["noise",0.0000,0.4000,0.0110,1.3740,1.4400,0.0280,1067.0000,2034.0000,1153.0000,-0.6000,-0.5940,0.1450,38.8819,0.4137,0.1980,0.2020,0.2840,0.0870,0.0020,0.2624,-0.6940,-0.3000,0.3290,-0.7060,0.5310,0.3300,-0.4480],
 		["noise",0.0000,0.4000,0.0110,1.3740,1.4400,0.0280,1067.0000,2034.0000,1153.0000,-0.6000,-0.5940,0.1450,38.8819,0.4137,0.1980,0.2020,0.2840,0.0870,0.0020,0.2624,-0.6940,-0.3000,0.3290,-0.7060,0.5310,0.3300,-0.4480]
 	],
+	Pistol: [
+		["saw",16.0000,0.9030,0.0000,0.0000,0.2970,0.3060,882.0000,1855.0000,2301.0000,-0.3600,-0.6060,0.2320,29.8118,0.5515,0.6940,-0.1220,0.8220,0.2325,0.1200,0.6056,0.3660,0.1040,0.5080,-0.5240,0.1020,0.0150,0.6320],
+		["saw",16.0000,0.9030,0.0000,0.0000,0.2970,0.3060,882.0000,1855.0000,2301.0000,-0.3600,-0.6060,0.2320,29.8118,0.5515,0.6940,-0.1220,0.8220,0.2325,0.1200,0.6056,0.3660,0.1040,0.5080,-0.5240,0.1020,0.0150,0.6320],
+["saw",16.0000,0.9030,0.0000,0.0000,0.2970,0.3060,882.0000,1855.0000,2301.0000,-0.3600,-0.6060,0.2320,29.8118,0.5515,0.6940,-0.1220,0.8220,0.2325,0.1200,0.6056,0.3660,0.1040,0.5080,-0.5240,0.1020,0.0150,0.6320]
+	],
 	Shrink: [
 		["saw",1.0000,1.0000,0.2790,1.2060,0.9330,0.6520,766.0000,254.0000,756.0000,-0.6960,0.4760,0.8990,47.1842,0.7322,0.9640,-0.6320,0.1470,0.4095,-0.5640,0.6040,-0.9600,-0.1740,0.9710,0.4420,0.0470,0.6300,-0.9020]
 	]
@@ -39,6 +44,7 @@ game = C({
 })
 
 
+
 room01 = function(){
 
 	mouse = C({
@@ -47,25 +53,13 @@ room01 = function(){
 		Mouse: { game: game },
 	})
 
-	Player = {
-		BounceBox: { x:-1200, y:-1200, width: 2400, height: 2400 },
-		Angle: { value: 0 },
-		Facing: { entity: mouse },
-		Location: {x:10,y:14},
-		Velocity: {x:0,y:0},
-		Acceleration: { x:0 , y:0 },
-		Friction: { value: 0.9 },
-		Dimensions: { width: 32, height: 32},
-		Sprite: { image: s_player },
-
-		KickBack: {ratio: 0.2},
+	GaussGun = {
 		Sounds: {
-			Shoot: { sounds: sounds.Shoot },
-			Splat: { sounds: sounds.Splat },
+			Shoot: { sounds: sounds.Shoot }
 		},
 		Has: {
-			'Click|Key_SPACE': {
-				Shoot: {
+			'Click|Key_SPACE' : {
+				Shoot:{
 					component : {
 						spawn_radius: 1.05,
 						jitter: 0,
@@ -87,7 +81,58 @@ room01 = function(){
 					},
 					every: 5
 				}
-			},
+			}
+		}
+	}
+
+	Pistol = {
+		Has: {
+			'Click|Key_SPACE': {
+				Shoot: {
+					component : {
+						spawn_radius: 1.05,
+						jitter: 0,
+						size: 5,
+						size_variation: 1,
+						spread: 0,
+						speed_range: [30,30],
+						image: s_bullet,
+						components: {
+							GarbageCollected: {},
+							SAT: {},
+							Shrinker: {},
+							CollidesWith: {
+								Remover: {
+									Remove: {}
+								}
+							}
+						}
+					},
+					every: Infinity
+				}
+			}
+		},
+		Sounds: {
+			Shoot: { sounds: sounds.Pistol }
+		},
+	}
+
+	Player = {
+		BounceBox: { x:-1200, y:-1200, width: 2400, height: 2400 },
+		Angle: { value: 0 },
+		Facing: { entity: mouse },
+		Location: {x:10,y:14},
+		Velocity: {x:0,y:0},
+		Acceleration: { x:0 , y:0 },
+		Friction: { value: 0.9 },
+		Dimensions: { width: 32, height: 32},
+		Sprite: { image: s_player },
+
+		KickBack: {ratio: 0.2},
+		Sounds: {
+			Splat: { sounds: sounds.Splat },
+		},
+		Has: {
 			'Key_A|Key_LEFT': {
 				Accelerate: { component: {x: -1} }
 			},
@@ -208,7 +253,6 @@ room01 = function(){
 		Angle: { angle: 0},
 		Sprite: { image: s_bullet },
 		Acceleration: { x:0 , y:0 },
-
 		//Stability of camera: Screenshake
 		Friction: { value: 0.9 },
 		//Don't see past the boundary
@@ -223,7 +267,7 @@ room01 = function(){
 
 
 	player = C(_.cloneDeep(Player))
-
+	C(GaussGun,player)
 
 	C('Tether',{ entity: player , elasticity: 0.5 },cameraBot)
 	C('Camera',game).tracking = cameraBot
