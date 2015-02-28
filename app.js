@@ -199,17 +199,19 @@ room01 = function(){
 	}
 
 	cameraBot = C({
-		Location: { x:0, y:0 },
+		Location: { x:10, y:14 },
 		Velocity: { x:0, y: 0},
 		Dimensions: { width: 32, height: 32},
 		Angle: { angle: 0},
 		Sprite: { image: s_bullet },
 		Acceleration: { x:0 , y:0 },
+
+		//Stability of camera: Screenshake
 		Friction: { value: 0.95 },
 		//Don't see past the boundary
 		PanBoundary: { x:-1200, y:-1200, width: 2400, height: 2400 },
 		Has:  {
-			'Collided|Shoot': {
+			'Collided': {
 				//Screen Shake
 				Velocity: { component: {x:10, y: 10} },
 			}
