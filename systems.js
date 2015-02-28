@@ -146,7 +146,7 @@ systems = {
 			a.x && (A.x += a.x)
 			a.y && (A.y += a.y)
 		})
-		C('RemoveCategory', {name: 'Accelerate'})
+		C.components.Accelerate &&C('RemoveCategory', {name: 'Accelerate'})
 	},
 
 	Friction: function(){
@@ -365,7 +365,7 @@ systems = {
 		_.each( C('Create'), function(create, id){
 			C(_.cloneDeep(create.components))
 		})
-		C('RemoveCategory',{name: 'Create'})
+		C.components.Create && C('RemoveCategory',{name: 'Create'})
 	},
 
 	Every: function(){
@@ -386,7 +386,7 @@ systems = {
 			var components = _.sample(choose)
 			C(components,id)
 		})
-		C('RemoveCategory',{name: 'Choose'})
+		C.components.Choose && C('RemoveCategory',{name: 'Choose'})
 	},
 
 	Randomise: function(){
