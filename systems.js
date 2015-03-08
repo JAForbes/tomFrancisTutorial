@@ -440,17 +440,29 @@ systems = {
 	},
 
 	OwnerOffset: function(){
-		_.each(C('OwnerOffset'), function(offsets, id){
+		_.each(C('OwnerOffset'), function(offset, id){
 			var owner = C('Owner', id).owner
 
-			owner && _.each(offsets, function( attributes, category){
-				var ownerComponent = C(category,owner)
-				var childComponent = _.cloneDeep(ownerComponent)
-				_.each(attributes, function(value, attr){
-					childComponent[attr] += value
-				})
-				C(category, childComponent, id)
-			})
+			if(owner){
+				var parent_location = C('Location',owner)
+				var parent_angle = C('Angle',owner).value
+
+				var offset_length = Math.sqrt(
+					offset.x*offset.x +
+					offset.y*offset.y
+				)
+				var offset_angle = Math.atan2(
+					offset.y, offset.x
+				)
+
+				var location = {
+					x: parent_location.x + Math.cos(parent_angle+offset_angle) * offset_length,
+					y: parent_location.y + Math.sin(parent_angle+offset_angle) * offset_length
+				}
+
+				C('Location',location,id)
+				C('Angle',{value: parent_angle+offset.angle },id)
+			}
 
 		})
 	},

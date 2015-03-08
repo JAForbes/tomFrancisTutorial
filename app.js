@@ -311,10 +311,7 @@ room01 = function(){
 					Weapon: {},
 					Dimensions: { width: 32, height: 32 },
 					Sprite: { image: s_pistol_pickup },
-					OwnerOffset: {
-						Location : { x:0 , y:0 },
-						Angle: { value: 0 }
-					},
+					OwnerOffset: { x:15 , y:-8, angle: 0 },
 					// If there is already a Pistol owned by this entity
 					// Merge into the current id for that Pistol
 					InventoryItem: { type: 'Pistol', replace: true }
@@ -345,10 +342,7 @@ room01 = function(){
 					Weapon: {},
 					Dimensions: { width: 64, height: 64 },
 					Sprite: { image: s_laser_rifle_pickup },
-					OwnerOffset: {
-						Location : { x:0, y:0 },
-						Angle: { value: 0}
-					},
+					OwnerOffset: { x:15, y:-5 , angle: 0 },
 					InventoryItem: { type: 'Laser', replace: true }
 				}, LaserGun)
 			}
