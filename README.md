@@ -6,6 +6,25 @@ What is this?
 An Entity Component System port of Tom Francis' Excellent Tutorial: _Make a game with no experience_
 [Youtube](https://www.youtube.com/playlist?list=PLUtKzyIe0aB2HjpmBhnsHpK7ig0z7ohWw)
 
+Tagged Releases
+---------------
+
+I've made sure to create a tagged release for every episode of Tom's tutorial.
+
+You can view the tags here: https://github.com/JAForbes/tomFrancisTutorial/tags
+
+You can download a zip there, or if you know how to use git, you can just:
+
+```
+git checkout part9
+```
+
+How do I run it?
+----------------
+
+Simply download this repo and open `index.html` in your favourite web browser.
+The current version can be found at james-forbes.com/tomFrancisTutorial
+
 What is an Entity Component System?
 -----------------------------------
 
