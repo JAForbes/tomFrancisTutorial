@@ -47,7 +47,12 @@ game = C({
 		'Key_Q': { QuickSave: { component: {} , every: Infinity }},
 		'Key_R': { QuickLoad: { component: {} , every: Infinity }}
 	},
-	InfiniteBackground: { image: s_background }
+	InfiniteBackground: { image: s_background },
+	DrawOrder: {
+		groups: [
+			'Weapon', 'Enemy', 'Particle', 'Player', 'Pickup'
+		]
+	}
 
 })
 
@@ -71,7 +76,6 @@ room01 = function(){
 		Friction: { value: 0.9 },
 		Dimensions: { width: 32, height: 32},
 		Sprite: { image: s_player },
-
 		KickBack: {ratio: 1},
 		Sounds: {
 			Splat: { sounds: sounds.Splat }
@@ -102,7 +106,7 @@ room01 = function(){
 		},
 		CollidesWith: {
 			Splatter: {
-				Splat: { wave: { Reform: {} }, components: { Sprite: { image: s_splat } } }
+				Splat: { wave: { Reform: {} }, components: { Particle: {}, Sprite: { image: s_splat } } }
 			},
 			Pickup: {
 				//Mix  collided Pickup components with yourself
@@ -115,8 +119,10 @@ room01 = function(){
 		},
 		Pickuper: {},
 		SAT: {},
+		Player: {}
 	}
 	Enemy = {
+		Enemy: {},
 		Angle: { value: 0},
 		Facing: { entity: mouse},
 		Location: { x: -200, y: 200},
@@ -157,6 +163,7 @@ room01 = function(){
 
 
 	Exploding_Enemy = {
+		Enemy: {},
 		Angle: { value: 0},
 		Facing: { entity: mouse},
 		Randomise: {
@@ -177,6 +184,7 @@ room01 = function(){
 			Splatter: {
 				Splat: {
 					components: {
+						Particle: {},
 						Sprite: { image: s_exploding_enemy_splat },
 						Repeat: {
 							Shrink: {
@@ -236,6 +244,7 @@ room01 = function(){
 						speed_range: [20,20],
 						image: s_laser,
 						components: {
+							Particle: {},
 							GarbageCollected: {},
 							SAT: {},
 							Shrinker: {},
@@ -265,6 +274,7 @@ room01 = function(){
 						speed_range: [30,30],
 						image: s_bullet,
 						components: {
+							Particle: {},
 							GarbageCollected: {},
 							SAT: {},
 							Shrinker: {},
@@ -298,11 +308,12 @@ room01 = function(){
 		Pickup: {
 			Create: {
 				components: _.extend({
+					Weapon: {},
 					Dimensions: { width: 32, height: 32 },
 					Sprite: { image: s_pistol_pickup },
 					OwnerOffset: {
 						Location : { x:0 , y:0 },
-						Angle: { value: 0}
+						Angle: { value: 0 }
 					},
 					// If there is already a Pistol owned by this entity
 					// Merge into the current id for that Pistol
@@ -331,6 +342,7 @@ room01 = function(){
 		Pickup: {
 			Create: {
 				components: _.extend({
+					Weapon: {},
 					Dimensions: { width: 64, height: 64 },
 					Sprite: { image: s_laser_rifle_pickup },
 					OwnerOffset: {
@@ -414,7 +426,7 @@ room01 = function(){
 		'Friction',
 		'Move',
 		'Stopped',
-		'Draw',
+		'OrderedDraw',
 		'GarbageCollection',
 		'Vulnerable',
 		'Pickup',

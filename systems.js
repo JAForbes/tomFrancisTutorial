@@ -25,26 +25,30 @@ systems = {
 		})
 	},
 
-	Draw: function(){
+	OrderedDraw: function(){
 		var canvas = C('Screen',1).el
 		var con = canvas.getContext('2d')
 
-		_.each(C('Sprite'),function(sprite,id){
-			var p = C('Location',id)
-			var d = C('Dimensions',id)
-			var angle = C('Angle',id).value
-			con.save()
-			con.translate(p.x,p.y)
-			//TODO check typeof if angles start going weird
-			con.rotate(sprite.angle || angle || 0)
-			con.drawImage(
-				sprite.image,
-				0-d.width/2,
-				0-d.height/2,
-				d.width, d.height
-			)
-			con.restore()
-
+		_.each( C('DrawOrder'), function(order, id){
+			_.each(order.groups, function(category, index){
+				_.each(C(category), function(component, draw_id){
+					var sprite = C('Sprite',draw_id)
+					var p = C('Location',draw_id)
+					var d = C('Dimensions',draw_id)
+					var angle = C('Angle',draw_id).value
+					con.save()
+					con.translate(p.x,p.y)
+					//TODO check typeof if angles start going weird
+					con.rotate(sprite.angle || angle || 0)
+					con.drawImage(
+						sprite.image,
+						0-d.width/2,
+						0-d.height/2,
+						d.width, d.height
+					)
+					con.restore()
+				})
+			})
 		})
 	},
 
