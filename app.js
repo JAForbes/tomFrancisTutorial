@@ -61,70 +61,6 @@ room01 = function(){
 		Mouse: { game: game },
 	})
 
-	LaserGun = {
-		Sounds: {
-			Shoot: { sounds: sounds.Laser }
-		},
-		Has: {
-			'Click|Key_SPACE' : {
-				Shoot:{
-					component : {
-						jitter: 0,
-						size: 30,
-						size_variation: 5,
-						spread: 0,
-						speed_range: [20,20],
-						image: s_laser,
-						components: {
-							GarbageCollected: {},
-							SAT: {},
-							Shrinker: {},
-							CollidesWith: {
-								Remover: {
-									Remove: {}
-								}
-							},
-							Damage: { value: 2 },
-						}
-					},
-					every: 4
-				}
-			}
-		}
-	}
-
-	Pistol = {
-		Has: {
-			'Click|Key_SPACE': {
-				Shoot: {
-					component : {
-						jitter: 0,
-						size: 16,
-						size_variation: 2,
-						spread: 0,
-						speed_range: [30,30],
-						image: s_bullet,
-						components: {
-							GarbageCollected: {},
-							SAT: {},
-							Shrinker: {},
-							CollidesWith: {
-								Remover: {
-									Remove: {}
-								}
-							},
-							Damage: { value: 1}
-						}
-					},
-					every: Infinity
-				}
-			}
-		},
-		Sounds: {
-			Shoot: { sounds: sounds.Pistol }
-		},
-	}
-
 	Player = {
 		BounceBox: { x:-1200, y:-1200, width: 2400, height: 2400 },
 		Angle: { value: 0 },
@@ -282,6 +218,69 @@ room01 = function(){
 		}
 	})
 
+	LaserGun = {
+		Sounds: {
+			Shoot: { sounds: sounds.Laser }
+		},
+		Has: {
+			'Click|Key_SPACE' : {
+				Shoot:{
+					component : {
+						jitter: 0,
+						size: 30,
+						size_variation: 5,
+						spread: 0,
+						speed_range: [20,20],
+						image: s_laser,
+						components: {
+							GarbageCollected: {},
+							SAT: {},
+							Shrinker: {},
+							CollidesWith: {
+								Remover: {
+									Remove: {}
+								}
+							},
+							Damage: { value: 2 },
+						}
+					},
+					every: 4
+				}
+			}
+		}
+	}
+
+	Pistol = {
+		Has: {
+			'Click|Key_SPACE': {
+				Shoot: {
+					component : {
+						jitter: 0,
+						size: 16,
+						size_variation: 2,
+						spread: 0,
+						speed_range: [30,30],
+						image: s_bullet,
+						components: {
+							GarbageCollected: {},
+							SAT: {},
+							Shrinker: {},
+							CollidesWith: {
+								Remover: {
+									Remove: {}
+								}
+							},
+							Damage: { value: 1}
+						}
+					},
+					every: Infinity
+				}
+			}
+		},
+		Sounds: {
+			Shoot: { sounds: sounds.Pistol }
+		},
+	}
 
 	PistolPickup = {
 		Location: { x: 200, y: 100},
@@ -301,7 +300,10 @@ room01 = function(){
 					OwnerOffset: {
 						Location : { x:0 , y:0 },
 						Angle: { angle: 0}
-					}
+					},
+					// If there is already a Pistol owned by this entity
+					// Merge into the current id for that Pistol
+					InventoryItem: { type: 'Pistol', replace: true }
 				}, Pistol)
 			}
 		},
@@ -329,9 +331,10 @@ room01 = function(){
 					Dimensions: { width: 64, height: 64 },
 					Sprite: { image: s_laser_rifle_pickup },
 					OwnerOffset: {
-						Location : { x:0 , y:0 },
+						Location : { x:0, y:0 },
 						Angle: { angle: 0}
-					}
+					},
+					InventoryItem: { type: 'Laser', replace: true }
 				}, LaserGun)
 			}
 		},
@@ -345,6 +348,9 @@ room01 = function(){
 
 	C(_.cloneDeep(PistolPickup))
 	C(_.cloneDeep(LaserPickup))
+	var pickup3 = C(_.cloneDeep(LaserPickup))
+	C('Location',{ x: 400, y: 200}, pickup3)
+
 	player = C(_.cloneDeep(Player))
 
 
@@ -374,7 +380,6 @@ room01 = function(){
 	use = [
 		'Randomise',
 		'Screen',
-
 		'InfiniteBackground',
 		'Camera',
 		'Mouse',
@@ -386,6 +391,7 @@ room01 = function(){
 		'ComponentAge',
 		'Every',
 		'Choose',
+		'Inventory',
 		'Create',
 		'Owner',
 		'OwnerOffset',

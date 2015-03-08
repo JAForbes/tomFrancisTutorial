@@ -371,6 +371,21 @@ systems = {
 		C.components.Create && C('RemoveCategory',{name: 'Create'})
 	},
 
+	Inventory: function(){
+		_.each( C('InventoryItem'), function(item, id){
+			var newly_created = C.ComponentAge.InventoryItem[id] == 1
+			if(newly_created && item.replace){
+
+				_.each( C('InventoryItem'), function(item2, id2){
+					if(id != id2){
+						C('Remove',{},id2)
+					}
+				})
+
+			}
+		})
+	},
+
 	OwnerOffset: function(){
 		_.each(C('OwnerOffset'), function(offsets, id){
 			var owner = C('Owner', id).owner
