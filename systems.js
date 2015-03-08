@@ -377,7 +377,7 @@ systems = {
 			if(newly_created && item.replace){
 
 				_.each( C('InventoryItem'), function(item2, id2){
-					if(id != id2){
+					if(id != id2 && item.type == item2.type){
 						C('Remove',{},id2)
 					}
 				})
