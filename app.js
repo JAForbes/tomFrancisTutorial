@@ -293,18 +293,18 @@ room01 = function(){
 		Dimensions: { height: 32, width: 32},
 		//todo have Pickups bob up and down, or rotate
 		//with a PickupAnimate system
-		Pickup : _.extend(
-			Pistol,
-			{
-				Create: {
-					components: {
-						Dimensions: { width: 32, height: 32 },
-						Sprite: { image: s_pistol_pickup }
-					},
-					shared: ['Location', 'Angle']
-				}
+		Pickup: {
+			Create: {
+				components: _.extend({
+					Dimensions: { width: 32, height: 32 },
+					Sprite: { image: s_pistol_pickup },
+					OwnerOffset: {
+						Location : { x:0 , y:0 },
+						Angle: { angle: 0}
+					}
+				}, Pistol)
 			}
-		),
+		},
 		SAT: {},
 		CollidesWith: {
 			Pickuper: {
@@ -323,18 +323,18 @@ room01 = function(){
 		Dimensions: { height: 64, width: 64},
 		//todo have Pickups bob up and down, or rotate
 		//with a PickupAnimate system
-		Pickup : _.extend(
-			LaserGun,
-			{
-				Create: {
-					components: {
-						Dimensions: { width: 32, height: 32 },
-						Sprite: { image: s_laser_rifle_pickup }
-					},
-					shared: ['Location', 'Angle']
-				}
+		Pickup: {
+			Create: {
+				components: _.extend({
+					Dimensions: { width: 64, height: 64 },
+					Sprite: { image: s_laser_rifle_pickup },
+					OwnerOffset: {
+						Location : { x:0 , y:0 },
+						Angle: { angle: 0}
+					}
+				}, LaserGun)
 			}
-		),
+		},
 		SAT: {},
 		CollidesWith: {
 			Pickuper: {
@@ -346,7 +346,7 @@ room01 = function(){
 	C(_.cloneDeep(PistolPickup))
 	C(_.cloneDeep(LaserPickup))
 	player = C(_.cloneDeep(Player))
-	C(LaserGun,player)
+
 
 	C('Tether',{ entity: player , elasticity: 0.5 },cameraBot)
 	C('Camera',game).tracking = cameraBot
@@ -357,6 +357,7 @@ room01 = function(){
 
 
 	C({
+		Location: { x:0, y:0 },
 		Every: {
 			//loops
 			300: {
@@ -386,7 +387,8 @@ room01 = function(){
 		'Every',
 		'Choose',
 		'Create',
-		'Shared',
+		'Owner',
+		'OwnerOffset',
 		'Patrol',
 		'Waypoint',
 		'Has',

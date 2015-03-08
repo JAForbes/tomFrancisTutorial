@@ -362,27 +362,35 @@ systems = {
 
 	Create: function(){
 		_.each( C('Create'), function(create, id){
-			var created = C(_.cloneDeep(create.components))
 
-			create.shared && C('Shared', { shared: create.shared, entity: id}, created)
+			//store owner on created
+			create.components.Owner = { owner: id }
+			//create child
+			var created = C(_.cloneDeep(create.components))
 		})
 		C.components.Create && C('RemoveCategory',{name: 'Create'})
 	},
 
-	Shared: function(){
-		_.each( C('Shared'), function(shared, id){
+	OwnerOffset: function(){
+		_.each(C('OwnerOffset'), function(offsets, id){
+			var owner = C('Owner', id).owner
 
-			var dead = true;
-			_.each(shared.shared, function(componentName){
-				var category = C.components[componentName]
-				var component = category[shared.entity]
-				if(component){
-					C(componentName,component,id)
-					dead = false
-				}
-
+			owner && _.each(offsets, function( attributes, category){
+				var ownerComponent = C(category,owner)
+				var childComponent = _.cloneDeep(ownerComponent)
+				_.each(attributes, function(value, attr){
+					childComponent[attr] += value
+				})
+				C(category, childComponent, id)
 			})
-			if(dead){
+
+		})
+	},
+
+	Owner: function(){
+		_.each( C('Owner'), function(owner,id){
+			var owner_dead = typeof C.components.Location[owner.owner] == 'undefined'
+			if( owner_dead ){
 				C('Remove',{},id)
 			}
 		})
