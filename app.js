@@ -136,7 +136,7 @@ room01 = function(){
 		Dimensions: { width: 32, height: 32},
 		Sprite: { image: s_player },
 
-		KickBack: {ratio: 0.2},
+		KickBack: {ratio: 1},
 		Sounds: {
 			Splat: { sounds: sounds.Splat }
 		},

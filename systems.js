@@ -725,13 +725,14 @@ systems = {
 
 	KickBack: function(){
 		_.each(C('Shoot'),function(shoot,id){
-			var kickBack = C('KickBack',id)
+			var owner = C('Owner',id).owner
+			var kickBack = C('KickBack',owner)
 			if(kickBack.ratio){
-				var a = C('Acceleration',id)
-				var d = C('Damage',id).value
+				var a = C('Acceleration',owner)
+				var d = shoot.components.Damage.value
 				var angle = -C('Angle',id).value
-				a.x += -(Math.cos(angle) * d + _.random(-shoot.size_variation,shoot.size_variation)) * kickBack.ratio
-				a.y += (Math.sin(angle) * d + _.random(-shoot.size_variation,shoot.size_variation)) * kickBack.ratio
+				a.x += -(Math.cos(angle) * d) * kickBack.ratio
+				a.y += (Math.sin(angle) * d) * kickBack.ratio
 			}
 		})
 	},
