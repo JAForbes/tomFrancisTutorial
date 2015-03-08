@@ -355,7 +355,6 @@ systems = {
 					//todo: probably don't need to cloneDeep
 					C(pickup, id)
 				}
-				console.log(collision,against)
 			})
 
 		})
@@ -363,9 +362,30 @@ systems = {
 
 	Create: function(){
 		_.each( C('Create'), function(create, id){
-			C(_.cloneDeep(create.components))
+			var created = C(_.cloneDeep(create.components))
+
+			create.shared && C('Shared', { shared: create.shared, entity: id}, created)
 		})
 		C.components.Create && C('RemoveCategory',{name: 'Create'})
+	},
+
+	Shared: function(){
+		_.each( C('Shared'), function(shared, id){
+
+			var dead = true;
+			_.each(shared.shared, function(componentName){
+				var category = C.components[componentName]
+				var component = category[shared.entity]
+				if(component){
+					C(componentName,component,id)
+					dead = false
+				}
+
+			})
+			if(dead){
+				C('Remove',{},id)
+			}
+		})
 	},
 
 	Every: function(){
