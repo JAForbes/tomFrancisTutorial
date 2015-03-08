@@ -69,9 +69,9 @@
 
 	var deleteEntity = function(entity){
 		return Object.keys(C.components)
-		.forEach(function(categoryName){
-			delete C.components[categoryName][entity]
-		})
+			.forEach(function(categoryName){
+				delete C.components[categoryName][entity]
+			})
 	}
 
 	var routes = {

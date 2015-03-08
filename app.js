@@ -77,6 +77,9 @@ room01 = function(){
 			Splat: { sounds: sounds.Splat }
 		},
 		Has: {
+			'RightClick' : {
+				CycleWeapons: { component: {}, every: Infinity },
+			},
 			'Key_A|Key_LEFT': {
 				Accelerate: { component: {x: -1} },
 
@@ -389,6 +392,7 @@ room01 = function(){
 		'SAT',
 		'CategoryAge',
 		'ComponentAge',
+		'CycleWeapons',
 		'Every',
 		'Choose',
 		'Inventory',
@@ -398,6 +402,7 @@ room01 = function(){
 		'Patrol',
 		'Waypoint',
 		'Has',
+		'CycleWeapons',
 		'Shoot',
 		'KickBack',
 		'Accelerate',

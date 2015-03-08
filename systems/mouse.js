@@ -1,10 +1,23 @@
 (function(){
 	window.addEventListener('mousedown',function(e){
-		C('Click',{ down: true })
+		var type = ({
+			1: 'Click',
+			3: 'RightClick'
+		})[e.which]
+		type && C(type, { down: true })
 	})
 	window.addEventListener('mouseup', function(e){
-		delete C.components.Click
+		var type = ({
+			1: 'Click',
+			3: 'RightClick'
+		})[e.which]
+		if(type){
+			delete C.components[type]
+		}
 	})
+	window.oncontextmenu = function(e){
+	  return false
+	}
 
 	var mouse = {x:0,y:0}
 	window.addEventListener('mousemove',function(e){

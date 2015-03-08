@@ -371,6 +371,45 @@ systems = {
 		C.components.Create && C('RemoveCategory',{name: 'Create'})
 	},
 
+	CycleWeapons: function(){
+		_.each( C('CycleWeapons'), function(cycle, id){
+			var inactive = [];
+			var active = []
+			//Inefficient to check _every_ owned item
+			//Perhaps it is a good idea to have a reference on the parent
+			//to its children.
+			_.each(C('Owner'), function(owner, owned_id){
+				if(owner.owner == id){
+					var backupAge = C.ComponentAge.Backup && C.ComponentAge.Backup[owned_id] || -1
+					var isActive = C.ComponentAge.Location[owned_id] > 0
+					var isItem = C.components.InventoryItem[owned_id]
+
+					if(isItem){
+						if( isActive ){
+							active.push(owned_id)
+						} else {
+							//-backupAge makes sortBy find the oldest
+							inactive.push( {id: owned_id, age: -backupAge })
+						}
+					}
+				}
+
+			})
+			if(active.length && inactive.length){
+				active.forEach(function(active_id){
+					// Disable display and usage of Inventory Item
+					C('Remove',{ omit: ['Backup', 'Owner', 'InventoryItem']},active_id)
+					// But allow for it to be enabled again
+					C('Backup',{ omit: ['Remove']}, active_id)
+				})
+				var longest_as_backup = _.sortBy(inactive,'age')[0]
+				longest_as_backup && C('Restore',{entity: longest_as_backup.id })
+			}
+
+		})
+		C.components.CycleWeapons && C('RemoveCategory',{name: 'CycleWeapons'})
+	},
+
 	Inventory: function(){
 		_.each( C('InventoryItem'), function(item, id){
 			var newly_created = C.ComponentAge.Location[id] == 1
@@ -388,7 +427,6 @@ systems = {
 						C('Remove',{ omit: ['Backup', 'Owner', 'InventoryItem']},id2)
 						// But allow for it to be enabled again
 						C('Backup',{ omit: ['Remove']}, id2)
-						console.log('Backing up',id2)
 					}
 
 				})
@@ -510,9 +548,7 @@ systems = {
 	Restore: function(){
 		_.each(C('Restore'), function(restore, restore_id){
 			var backup = C('Backup',restore.entity).components
-			console.log('Restore',restore.entity, backup)
 			if(backup){
-				console.log('Restoring',restore.entity)
 				C(backup,restore.entity)
 				C('Remove',{},restore_id)
 
