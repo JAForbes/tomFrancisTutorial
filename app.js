@@ -203,7 +203,7 @@ room01 = function(){
 		Location: { x:10, y:14 },
 		Velocity: { x:0, y: 0},
 		Dimensions: { width: 32, height: 32},
-		Angle: { angle: 0},
+		Angle: { value: 0},
 		//Sprite: { image: s_bullet },
 		Acceleration: { x:0 , y:0 },
 		//Stability of camera: Screenshake
@@ -288,7 +288,7 @@ room01 = function(){
 		Acceleration: { x: 0, y: 0},
 		Friction: { value: 1 },
 		Sprite: { image: s_pistol_pickup },
-		Angle: { angle: 0 },
+		Angle: { value: 0 },
 		Dimensions: { height: 32, width: 32},
 		//todo have Pickups bob up and down, or rotate
 		//with a PickupAnimate system
@@ -299,7 +299,7 @@ room01 = function(){
 					Sprite: { image: s_pistol_pickup },
 					OwnerOffset: {
 						Location : { x:0 , y:0 },
-						Angle: { angle: 0}
+						Angle: { value: 0}
 					},
 					// If there is already a Pistol owned by this entity
 					// Merge into the current id for that Pistol
@@ -321,7 +321,7 @@ room01 = function(){
 		Acceleration: { x: 0, y: 0},
 		Friction: { value: 1 },
 		Sprite: { image: s_laser_rifle_pickup },
-		Angle: { angle: 0 },
+		Angle: { value: 0 },
 		Dimensions: { height: 64, width: 64},
 		//todo have Pickups bob up and down, or rotate
 		//with a PickupAnimate system
@@ -332,7 +332,7 @@ room01 = function(){
 					Sprite: { image: s_laser_rifle_pickup },
 					OwnerOffset: {
 						Location : { x:0, y:0 },
-						Angle: { angle: 0}
+						Angle: { value: 0}
 					},
 					InventoryItem: { type: 'Laser', replace: true }
 				}, LaserGun)

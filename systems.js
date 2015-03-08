@@ -373,13 +373,24 @@ systems = {
 
 	Inventory: function(){
 		_.each( C('InventoryItem'), function(item, id){
-			var newly_created = C.ComponentAge.InventoryItem[id] == 1
-			if(newly_created && item.replace){
+			var newly_created = C.ComponentAge.Location[id] == 1
+			if(newly_created){
 
-				_.each( C('InventoryItem'), function(item2, id2){
-					if(id != id2 && item.type == item2.type){
+				_.each( _.omit(C('InventoryItem'),id), function(item2, id2){
+
+
+					if( item.type == item2.type && item.replace){
 						C('Remove',{},id2)
 					}
+
+					else {
+						// Disable display and usage of Inventory Item
+						C('Remove',{ omit: ['Backup', 'Owner', 'InventoryItem']},id2)
+						// But allow for it to be enabled again
+						C('Backup',{ omit: ['Remove']}, id2)
+						console.log('Backing up',id2)
+					}
+
 				})
 
 			}
@@ -499,8 +510,9 @@ systems = {
 	Restore: function(){
 		_.each(C('Restore'), function(restore, restore_id){
 			var backup = C('Backup',restore.entity).components
-
+			console.log('Restore',restore.entity, backup)
 			if(backup){
+				console.log('Restoring',restore.entity)
 				C(backup,restore.entity)
 				C('Remove',{},restore_id)
 
