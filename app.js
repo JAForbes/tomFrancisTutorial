@@ -388,7 +388,7 @@ room01 = function(){
 			//loops
 			300: {
 				Choose: {
-					//enemy: { Create: { components: Enemy } } ,
+					enemy: { Create: { components: Enemy } } ,
 					exploding_enemy: { Create: {components: Exploding_Enemy }}
 				}
 			}
