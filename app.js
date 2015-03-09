@@ -22,7 +22,7 @@ sounds = {
 		["sine",9.0000,0.2000,0.0000,0.1820,0.0660,0.1940,20.0000,1201.0000,2400.0000,-0.6820,0.0000,0.0000,0.0100,0.0003,0.0000,0.0000,0.0000,0.0780,0.1240,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.0000,0.0000],
 		["sine",9.0000,0.2000,0.0000,0.1820,0.0660,0.1940,20.0000,1201.0000,2400.0000,-0.6820,0.0000,0.0000,0.0100,0.0003,0.0000,0.0000,0.0000,0.0780,0.1240,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.0000,0.0000]
 	],
-	Pistol: [
+	WaveGun: [
 		["noise",6.0000,0.2000,0.0000,0.2260,3.0000,0.1480,841.0000,833.0000,1339.0000,0.4580,0.7400,0.1650,27.1723,-0.2714,0.3000,0.0980,0.5020,0.0585,0.6560,0.7192,0.1160,-0.4720,0.8130,0.6620,0.0370,0.7100,-0.3980],
 		["noise",6.0000,0.2000,0.0000,0.2260,3.0000,0.1480,841.0000,833.0000,1339.0000,0.4580,0.7400,0.1650,27.1723,-0.2714,0.3000,0.0980,0.5020,0.0585,0.6560,0.7192,0.1160,-0.4720,0.8130,0.6620,0.0370,0.7100,-0.3980],
 		["noise",6.0000,0.2000,0.0000,0.2260,3.0000,0.1480,841.0000,833.0000,1339.0000,0.4580,0.7400,0.1650,27.1723,-0.2714,0.3000,0.0980,0.5020,0.0585,0.6560,0.7192,0.1160,-0.4720,0.8130,0.6620,0.0370,0.7100,-0.3980]
@@ -86,7 +86,6 @@ room01 = function(){
 			},
 			'Key_A|Key_LEFT': {
 				Accelerate: { component: {x: -1} },
-
 			},
 			'Key_D|Key_RIGHT': {
 				Accelerate: { component: {x: 1} }
@@ -126,17 +125,18 @@ room01 = function(){
 		Angle: { value: 0},
 		Facing: { entity: mouse},
 		Location: { x: -200, y: 200},
-		//Velocity: { x:_.random(2,4), y:_.random(2,4) },
 		Velocity: { x:0, y:0 },
 		Acceleration: { x:0 , y:0 },
 		Speed: {value: 5},
 		Dimensions: { width: 64, height: 64 },
 		Sprite: { image: s_enemy },
-		// BounceBox: { x:-300, y:-300, width: 600, height: 600 },
 		SAT: {},
 		CollidesWith: {
 			Shrinker: {
 				Shrink: {min_size: 32, ratio: 0.9 }
+			},
+			Pusher: {
+				Pushed: {}
 			}
 		},
 		Friction: { value: 0.01 },
@@ -158,23 +158,25 @@ room01 = function(){
 			Shrink: {sounds: sounds.Shrink }
 		},
 		Remover: {},
-		Splatter: {}
+		Splatter: {},
 	}
 
 
 	Exploding_Enemy = {
 		Enemy: {},
 		Angle: { value: 0},
-		Facing: { entity: mouse},
+		Velocity: { x:0, y:0 },
 		Randomise: {
 			Location: {
 				x: [-250, 250],
 				y: [-250, 250]
 			},
-			Velocity: {
-				x: [2,4],
-				y: [2,4]
-			}
+			Angle: { value: [0, 2*Math.PI] }
+		},
+		Friction: { value: 0.7 },
+		AccelerationRate: { value: 1},
+		Repeat: {
+			Accelerate: { component: {} , remaining: Infinity}
 		},
 		Dimensions: { width: 64, height: 64 },
 		Sprite: { image: s_exploding_enemy },
@@ -194,15 +196,14 @@ room01 = function(){
 						},
 					},
 					velocity_range: [10,20]
-				}
-
-			}
-		},
-		Has: {
-			'@Collided': {
+				},
 				Remove: { component: {  omit: ['Splat'] } }
+			},
+			Pusher: {
+				Pushed: {}
 			}
 		},
+		Has: {},
 		Sounds: {
 			Splat: { sounds: sounds.Splat }
 		},
@@ -247,12 +248,13 @@ room01 = function(){
 							Particle: {},
 							GarbageCollected: {},
 							SAT: {},
-							Shrinker: {},
 							CollidesWith: {
 								Remover: {
 									Remove: {}
 								}
 							},
+							Shrinker: {},
+							Splatter: {},
 							Damage: { value: 2 },
 						}
 					},
@@ -262,45 +264,54 @@ room01 = function(){
 		}
 	}
 
-	Pistol = {
+	WaveGun = {
 		Has: {
 			'Click|Key_SPACE': {
 				Shoot: {
 					component : {
 						jitter: 0,
-						size: 16,
+						size: 64,
 						size_variation: 2,
 						spread: 0,
-						speed_range: [30,30],
-						image: s_bullet,
+						speed_range: [10,10],
+						image: s_waveGun,
 						components: {
 							Particle: {},
 							GarbageCollected: {},
 							SAT: {},
-							Shrinker: {},
+							Friction: { value: 0.95},
 							CollidesWith: {
-								Remover: {
-									Remove: {}
+								// Igniter: {
+								// 	Ignite: {}
+								// }
+							},
+
+							Repeat: {
+								Shrink: {
+									component: { min_size: 4, ratio: 0.96 },
+									remaining: Infinity
 								}
 							},
+							Pusher: {},
+							// Ignitable: {},
 							Damage: { value: 1}
 						}
 					},
-					every: Infinity
+					every: 3
 				}
 			}
 		},
 		Sounds: {
-			Shoot: { sounds: sounds.Pistol }
+			Shoot: { sounds: sounds.WaveGun }
 		},
 	}
 
-	PistolPickup = {
+	WaveGunPickup = {
 		Location: { x: 200, y: 100},
 		Velocity: { x:0, y:0 },
 		Acceleration: { x: 0, y: 0},
 		Friction: { value: 1 },
-		Sprite: { image: s_pistol_pickup },
+		Sprite: { image: s_waveGun },
 		Angle: { value: 0 },
 		Dimensions: { height: 32, width: 32},
 		//todo have Pickups bob up and down, or rotate
@@ -310,12 +321,12 @@ room01 = function(){
 				components: _.extend({
 					Weapon: {},
 					Dimensions: { width: 32, height: 32 },
-					Sprite: { image: s_pistol_pickup },
+					Sprite: { image: s_waveGun },
 					OwnerOffset: { x:15 , y:-8, angle: 0 },
-					// If there is already a Pistol owned by this entity
-					// Merge into the current id for that Pistol
-					InventoryItem: { type: 'Pistol', replace: true }
-				}, Pistol)
+					// If there is already a WaveGun owned by this entity
+					// Merge into the current id for that WaveGun
+					InventoryItem: { type: 'WaveGun', replace: true }
+				}, WaveGun)
 			}
 		},
 		SAT: {},
@@ -355,7 +366,7 @@ room01 = function(){
 		}
 	}
 
-	C(_.cloneDeep(PistolPickup))
+	C(_.cloneDeep(WaveGunPickup))
 	C(_.cloneDeep(LaserPickup))
 	var pickup3 = C(_.cloneDeep(LaserPickup))
 	C('Location',{ x: 400, y: 200}, pickup3)
@@ -377,7 +388,7 @@ room01 = function(){
 			//loops
 			300: {
 				Choose: {
-					enemy: { Create: { components: Enemy } } ,
+					//enemy: { Create: { components: Enemy } } ,
 					exploding_enemy: { Create: {components: Exploding_Enemy }}
 				}
 			}
@@ -426,6 +437,7 @@ room01 = function(){
 		'Pickup',
 		'Shrink',
 		'Reform',
+		'Pushed',
 		'Splat',
 		'Spawn',
 		'Sounds',

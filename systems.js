@@ -145,10 +145,21 @@ systems = {
 
 	Accelerate: function(){
 		_.each( C('Accelerate'), function(a, id){
-			var A = C('Acceleration',id)
+			var A = C('Acceleration',id) || {x:0, y:0}
 
-			a.x && (A.x += a.x)
-			a.y && (A.y += a.y)
+			if(a.x || a.y){
+				a.x && (A.x += a.x)
+				a.y && (A.y += a.y)
+			} else {
+
+				var angle = a.angle || C('Angle',id).value || 0
+				var accelerationRate = C('AccelerationRate',id).value || 1
+				A.x += Math.cos(angle) * accelerationRate
+				A.y += Math.sin(angle) * accelerationRate
+			}
+			C('Acceleration',A,id)
+
+
 		})
 		C.components.Accelerate &&C('RemoveCategory', {name: 'Accelerate'})
 	},
@@ -774,20 +785,33 @@ systems = {
 		})
 	},
 
+	Pushed: function(){
+		_.each( C('Pushed'), function(pushed, id){
+			_.each(C('Collided',id).collisions,function(collision, against){
+				var vAgainst = C('Velocity',against)
+				var a = C('Acceleration',id)
+				a.x += vAgainst.x
+				a.y += vAgainst.y
+			})
+		})
+		C.components.Pushed && C('RemoveCategory', {name: 'Pushed'})
+	},
+
 	Shoot: function(){
 		_.each(C('Shoot'),function(shoot,id){
 			var p = C('Location',id)
 			var size = shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
 			var angle = _.clone( C('Angle',id)).value
+			var speed = _.random(shoot.speed_range[0],shoot.speed_range[1])
 			var bullet = C({
 				Location: {x: p.x + _.random(-shoot.jitter,shoot.jitter), y: p.y + _.random(-shoot.jitter,shoot.jitter) },
 				Angle: { value: angle + _.random(shoot.spread * -1, shoot.spread * 1)},
 				Sprite: { image: shoot.image },
 				Dimensions: { width: size, height: size },
-				Velocity: { x: 0, y: 0 },
-				VelocitySyncedWithAngle: {},
-				Speed: { value: _.random(shoot.speed_range[0],shoot.speed_range[1]) },
-				Splatter: {}
+				Velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
+
+
+
 			})
 
 			systems.VelocitySyncedWithAngle()
@@ -858,14 +882,20 @@ systems = {
 			var d = C('Dimensions',id)
 			var v = C('Velocity',id)
 
+			var bouncing = false;
 			if(	p.x + d.width/2 > bb.x + bb.width || p.x - d.width/2 < bb.x ){
 				v.x *= -1
 				p.x += v.x
+				C('Angle',id).value += Math.PI
 			}
 			if(p.y + d.height/2 > bb.y + bb.height || p.y - d.height/2 < bb.y ) {
 				v.y *= -1
 				p.y += v.y
+				C('Angle',id).value += Math.PI
 			}
+
+
+
 		})
 	},
 
