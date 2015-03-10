@@ -398,7 +398,6 @@ room01 = function(){
 
 
 	use = [
-		'Randomise',
 		'Screen',
 		'InfiniteBackground',
 		'Camera',
@@ -414,6 +413,7 @@ room01 = function(){
 		'Choose',
 		'Inventory',
 		'Create',
+		'Randomise',
 		'Owner',
 		'OwnerOffset',
 		'Patrol',
