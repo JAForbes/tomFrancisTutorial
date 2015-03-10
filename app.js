@@ -22,7 +22,7 @@ sounds = {
 		["sine",9.0000,0.2000,0.0000,0.1820,0.0660,0.1940,20.0000,1201.0000,2400.0000,-0.6820,0.0000,0.0000,0.0100,0.0003,0.0000,0.0000,0.0000,0.0780,0.1240,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.0000,0.0000],
 		["sine",9.0000,0.2000,0.0000,0.1820,0.0660,0.1940,20.0000,1201.0000,2400.0000,-0.6820,0.0000,0.0000,0.0100,0.0003,0.0000,0.0000,0.0000,0.0780,0.1240,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.0000,0.0000]
 	],
-	WaveGun: [
+	CloudGun: [
 		["noise",6.0000,0.2000,0.0000,0.2260,3.0000,0.1480,841.0000,833.0000,1339.0000,0.4580,0.7400,0.1650,27.1723,-0.2714,0.3000,0.0980,0.5020,0.0585,0.6560,0.7192,0.1160,-0.4720,0.8130,0.6620,0.0370,0.7100,-0.3980],
 		["noise",6.0000,0.2000,0.0000,0.2260,3.0000,0.1480,841.0000,833.0000,1339.0000,0.4580,0.7400,0.1650,27.1723,-0.2714,0.3000,0.0980,0.5020,0.0585,0.6560,0.7192,0.1160,-0.4720,0.8130,0.6620,0.0370,0.7100,-0.3980],
 		["noise",6.0000,0.2000,0.0000,0.2260,3.0000,0.1480,841.0000,833.0000,1339.0000,0.4580,0.7400,0.1650,27.1723,-0.2714,0.3000,0.0980,0.5020,0.0585,0.6560,0.7192,0.1160,-0.4720,0.8130,0.6620,0.0370,0.7100,-0.3980]
@@ -67,6 +67,7 @@ room01 = function(){
 	})
 
 	Player = {
+		Alpha: { value: 0.5 },
 		BounceBox: { x:-1200, y:-1200, width: 2400, height: 2400 },
 		Angle: { value: 0 },
 		Facing: { entity: mouse },
@@ -76,7 +77,7 @@ room01 = function(){
 		Friction: { value: 0.9 },
 		Dimensions: { width: 32, height: 32},
 		Sprite: { image: s_player },
-		KickBack: {ratio: 1},
+		KickBack: {ratio: 0.5},
 		Sounds: {
 			Splat: { sounds: sounds.Splat }
 		},
@@ -264,16 +265,16 @@ room01 = function(){
 		}
 	}
 
-	WaveGun = {
+	CloudGun = {
 		Has: {
 			'Click|Key_SPACE': {
 				Shoot: {
 					component : {
 						jitter: 0,
-						size: 64,
-						size_variation: 2,
-						spread: 0,
-						speed_range: [10,10],
+						size: 16,
+						size_variation: 10,
+						spread: Math.PI/8,
+						speed_range: [2,10],
 						image: s_waveGun,
 						components: {
 							Particle: {},
@@ -285,11 +286,20 @@ room01 = function(){
 								// 	Ignite: {}
 								// }
 							},
-
+							Alpha: { value: 0.7},
 							Repeat: {
-								Shrink: {
-									component: { min_size: 4, ratio: 0.96 },
+								Grow: {
+									component: { max_size: 128, ratio: 1.005 },
 									remaining: Infinity
+								},
+								Fade: {
+									component: { ratio: 0.995 },
+									remaining: Infinity
+								}
+							},
+							Has: {
+								'@FadeComplete': {
+									Remove: { component: {} }
 								}
 							},
 							Pusher: {},
@@ -298,15 +308,15 @@ room01 = function(){
 						}
 					},
 					every: 3
-				}
+				},
 			}
 		},
 		Sounds: {
-			Shoot: { sounds: sounds.WaveGun }
+			Shoot: { sounds: sounds.CloudGun }
 		},
 	}
 
-	WaveGunPickup = {
+	CloudGunPickup = {
 		Location: { x: 200, y: 100},
 		Velocity: { x:0, y:0 },
 		Acceleration: { x: 0, y: 0},
@@ -323,10 +333,10 @@ room01 = function(){
 					Dimensions: { width: 32, height: 32 },
 					Sprite: { image: s_waveGun },
 					OwnerOffset: { x:15 , y:-8, angle: 0 },
-					// If there is already a WaveGun owned by this entity
-					// Merge into the current id for that WaveGun
-					InventoryItem: { type: 'WaveGun', replace: true }
-				}, WaveGun)
+					// If there is already a CloudGun owned by this entity
+					// Merge into the current id for that CloudGun
+					InventoryItem: { type: 'CloudGun', replace: true }
+				}, CloudGun)
 			}
 		},
 		SAT: {},
@@ -366,7 +376,7 @@ room01 = function(){
 		}
 	}
 
-	C(_.cloneDeep(WaveGunPickup))
+	C(_.cloneDeep(CloudGunPickup))
 	C(_.cloneDeep(LaserPickup))
 	var pickup3 = C(_.cloneDeep(LaserPickup))
 	C('Location',{ x: 400, y: 200}, pickup3)
@@ -436,6 +446,8 @@ room01 = function(){
 		'Vulnerable',
 		'Pickup',
 		'Shrink',
+		'Fade',
+		'Grow',
 		'Reform',
 		'Pushed',
 		'Splat',

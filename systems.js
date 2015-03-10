@@ -38,6 +38,7 @@ systems = {
 					var angle = C('Angle',draw_id).value
 					con.save()
 					con.translate(p.x,p.y)
+					con.globalAlpha = C('Alpha',draw_id).value || 1
 					//TODO check typeof if angles start going weird
 					con.rotate(sprite.angle || angle || 0)
 					con.drawImage(
@@ -736,6 +737,32 @@ systems = {
 		C.components.Shrink && C('RemoveCategory',{ name: 'Shrink'})
 	},
 
+	Grow: function(){
+		_.each(C('Grow'), function(grow, id){
+			var d = C('Dimensions',id)
+
+			if(d.width > grow.max_size || d.height > grow.max_size){
+				//C('Remove',{},id)
+				C('GrowComplete',{},id)
+			} else {
+				d.width *= grow.ratio
+				d.height *= grow.ratio
+			}
+		})
+		C.components.Grow && C('RemoveCategory',{ name: 'Grow'})
+	},
+
+	Fade: function(){
+		_.each(C('Fade'), function(fade, id){
+
+			var a = C('Alpha',id)
+			a.value *= fade.ratio
+			if( a.value < 1e-2 ) {
+				C('FadeComplete', {}, id)
+			}
+		})
+	},
+
 	RemoveEntity: function(){
 		_.each(C('Remove'), function(remove,id){
 			var removed = {}
@@ -802,26 +829,26 @@ systems = {
 			var p = C('Location',id)
 			var size = shoot.size + _.random(-shoot.size_variation,shoot.size_variation)
 			var angle = _.clone( C('Angle',id)).value
+			var spread_angle = angle + _.random(shoot.spread * -1, shoot.spread * 1)
 			var speed = _.random(shoot.speed_range[0],shoot.speed_range[1])
 			var bullet = C({
 				Location: {x: p.x + _.random(-shoot.jitter,shoot.jitter), y: p.y + _.random(-shoot.jitter,shoot.jitter) },
-				Angle: { value: angle + _.random(shoot.spread * -1, shoot.spread * 1)},
+				Angle: { value: spread_angle},
 				Sprite: { image: shoot.image },
 				Dimensions: { width: size, height: size },
-				Velocity: { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed },
+				Velocity: { x: Math.cos(spread_angle) * speed, y: Math.sin(spread_angle) * speed },
 
 
 
 			})
 
-			systems.VelocitySyncedWithAngle()
 			C(shoot.components,bullet)
 			//spawn bullet ahead of player
 			var p = C('Location',bullet)
 			var v = C('Velocity', bullet)
-
-			p.x += Math.cos(angle) * size+v.x
-			p.y += Math.sin(angle) * size+v.y
+			var spread_angle = C('Angle', bullet).value
+			p.x += Math.cos(spread_angle) * size+v.x
+			p.y += Math.sin(spread_angle) * size+v.y
 		})
 		C.components.Shoot && C('RemoveCategory', {name: 'Shoot'})
 	},
