@@ -670,6 +670,7 @@ systems = {
 
 	Ignite: function(){
 		_.each( C('Ignite'), function(ignite, id){
+			_.sample(ignite.sounds).play()
 			C({
 				Sprite: { image: ignite.image },
 				Dimensions: C('Dimensions',id),
@@ -679,6 +680,7 @@ systems = {
 				Alpha: { value : 1},
 				Splatter: {},
 				Shrinker: {},
+				Igniter: {},
 				SAT: {},
 				CollidesWith: {},
 				Repeat: {
