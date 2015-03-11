@@ -668,6 +668,40 @@ systems = {
 		})
 	},
 
+	Ignite: function(){
+		_.each( C('Ignite'), function(ignite, id){
+			C({
+				Sprite: { image: ignite.image },
+				Dimensions: C('Dimensions',id),
+				Location: C('Location', id),
+				Angle: { value: 0 },
+				Particle: {},
+				Alpha: { value : 1},
+				Splatter: {},
+				Shrinker: {},
+				SAT: {},
+				CollidesWith: {},
+				Repeat: {
+					Grow: { component: { max_size: 64, ratio: 4 }, remaining: Infinity },
+				},
+				Has: {
+					'@GrowComplete': {
+						Repeat: {
+							component: {
+								Fade: { component: {ratio: 0.5}, remaining: Infinity }
+							}
+						}
+					},
+					'@FadeComplete': {
+						Remove: { component: {} }
+					}
+				}
+			})
+
+			C('Remove',{},id)
+		})
+	},
+
 	Splat: function(){
 
 		_.each( C('Splat') , function(splat, id){
@@ -754,7 +788,6 @@ systems = {
 
 	Fade: function(){
 		_.each(C('Fade'), function(fade, id){
-
 			var a = C('Alpha',id)
 			a.value *= fade.ratio
 			if( a.value < 1e-2 ) {

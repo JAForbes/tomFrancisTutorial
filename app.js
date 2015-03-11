@@ -256,6 +256,7 @@ room01 = function(){
 							},
 							Shrinker: {},
 							Splatter: {},
+							Igniter: {},
 							Damage: { value: 2 },
 						}
 					},
@@ -282,9 +283,9 @@ room01 = function(){
 							SAT: {},
 							Friction: { value: 0.95},
 							CollidesWith: {
-								// Igniter: {
-								// 	Ignite: {}
-								// }
+								Igniter: {
+									Ignite: { image: s_explosion }
+								}
 							},
 							Alpha: { value: 0.95},
 							Repeat: {
@@ -451,6 +452,7 @@ room01 = function(){
 		'Reform',
 		'Pushed',
 		'Splat',
+		'Ignite',
 		'Spawn',
 		'Sounds',
 		'Backup',
