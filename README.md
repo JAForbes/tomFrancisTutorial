@@ -1,5 +1,24 @@
 # ECS JS port of Tom Francis' Amazing Game Design Tutorial
 
+Controls
+--------
+
+Q: quicksave
+R: load last quicksave
+Arrow keys to move, Left mouse button to shoot
+
+Features
+--------
+
+- Exploding enemies
+- Patrols
+- Spawn points
+- Camera system
+- Infinite Tiling background art
+- Level boundaries
+- Sound
+- Other things!
+
 What is this?
 -------------
 
