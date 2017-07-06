@@ -42,7 +42,7 @@ How do I run it?
 ----------------
 
 Simply download this repo and open `index.html` in your favourite web browser.
-The current version can be found at james-forbes.com/tomFrancisTutorial
+The current version can be found at https://james-forbes.com/tomFrancisTutorial
 
 What is an Entity Component System?
 -----------------------------------
